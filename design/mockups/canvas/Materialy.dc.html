@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Materiały źródłowe</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#2f5d8a}a:hover{color:#1f4268}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; padding: 64px 80px; background: #f6f5f2; color: #1c1d1f; display: flex; flex-direction: column; gap: 24px">
+<h1 style="margin: 0; font-size: 36px; line-height: 44px">Materiały źródłowe</h1>
+<p style="margin: 0; font-size: 16px; line-height: 26px; max-width: 900px">Pliki .md projektu, na których oparte są makiety. Najpierw wymagania (prd) i zakres (shape-notes), potem założenia, pilotaż audytu i profil danych. Makiety oceniaj względem tych dokumentów, a nie tylko wyglądu.</p>
+<div style="display: flex; flex-direction: column; gap: 14px; max-width: 980px">
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/prd.md" style="font-size: 16px; font-weight: 600">prd.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Wymagania produktu (szkic, 22.11.2026): FR-001–FR-022, historyjki US-01–US-04 i decyzje rozstrzygające rozbieżności z makietami.</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/shape-notes.md" style="font-size: 16px; font-weight: 600">shape-notes.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Główne źródło zakresu: problem, persony, model dostępu, wymagania funkcjonalne FR-001–FR-017, kryteria sukcesu.</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/zalozenia-projektu.md" style="font-size: 16px; font-weight: 600">zalozenia-projektu.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Założenia projektu KnowledgeOps Assistant (Support Knowledge Assistant &amp; Auditor).</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/pilotaz-audytu-techqa.md" style="font-size: 16px; font-weight: 600">pilotaz-audytu-techqa.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Pilotaż audytu na 12 przypadkach; źródło przykładów P01, P04, P05, P08, P11.</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/raport-techqa.md" style="font-size: 16px; font-weight: 600">raport-techqa.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Profil danych NVIDIA TechQA-RAG-Eval (20.11.2026).</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 16px 20px">
+<a href="docs/mockups-README.md" style="font-size: 16px; font-weight: 600">mockups-README.md</a>
+<p style="margin: 4px 0 0; font-size: 14px; line-height: 22px; color: #5d6166">Plan ekranów, iteracje 1–3, podjęte decyzje i znane ograniczenia makiet.</p>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

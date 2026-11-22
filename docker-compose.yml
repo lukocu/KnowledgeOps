@@ -1,0 +1,40 @@
+services:
+  db:
+    image: paradedb/paradedb:0.27.0-pg18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-knowledgeops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-knowledgeops}
+      POSTGRES_DB: ${POSTGRES_DB:-knowledgeops}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      # Obraz pg18 trzyma dane w /var/lib/postgresql (PGDATA=/var/lib/postgresql/18/docker).
+      - db-data:/var/lib/postgresql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-knowledgeops}:${POSTGRES_PASSWORD:-knowledgeops}@db:5432/${POSTGRES_DB:-knowledgeops}
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  frontend:
+    build: ./frontend
+    profiles: ["web"]
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:8080:80"
+
+volumes:
+  db-data:

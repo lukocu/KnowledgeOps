@@ -1,0 +1,37 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# JavaScript and builds
+node_modules/
+dist/
+build/
+
+# Pobrane dane i lokalne wyniki przetwarzania
+/data/
+
+# Materiały kursu i lokalne ustawienia agenta
+.claude/skills/
+.claude/settings.local.json
+.agents/
+skills-lock.json
+
+# Generowane przez React Router
+frontend/.react-router/
+
+# Tymczasowo poza publicznym repo: zawierają lokalne ścieżki (D:\Firma\...).
+# Usunąć wpisy po zastąpieniu ścieżek opisem, gdy projekt będzie gotowy.
+/docs/
+/AGENTS.md
+/context/foundation/architecture-notes.md
+/context/foundation/roadmap.md
+/context/foundation/shape-notes.md

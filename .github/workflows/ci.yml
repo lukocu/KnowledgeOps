@@ -1,0 +1,85 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      db:
+        image: paradedb/paradedb:0.27.0-pg18
+        env:
+          POSTGRES_USER: knowledgeops
+          POSTGRES_PASSWORD: knowledgeops
+          POSTGRES_DB: knowledgeops
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U knowledgeops -d knowledgeops"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://knowledgeops:knowledgeops@127.0.0.1:5432/knowledgeops
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.4.0
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy .
+      - name: Rozszerzenia bazy
+        working-directory: .
+        env:
+          PGPASSWORD: knowledgeops
+        run: psql -h 127.0.0.1 -U knowledgeops -d knowledgeops -v ON_ERROR_STOP=1 -f db/init/01-extensions.sql
+      - run: uv run pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run build
+
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.4.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Eksport OpenAPI
+        working-directory: backend
+        run: |
+          uv sync --locked
+          uv run python scripts/export_openapi.py
+      - name: Typy frontendu
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run api:types
+      - name: Kontrakt jest aktualny
+        run: git diff --exit-code backend/openapi.json frontend/app/api/schema.d.ts

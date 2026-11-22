@@ -1,0 +1,186 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-22T14:00:00Z"
+ },
+ "title": "KnowledgeOps Assistant – makiety",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "Opis projektu i zakres"
+  },
+  "S1A.dc.html": {
+   "x": 0,
+   "y": 1020,
+   "w": 1440,
+   "h": 900,
+   "title": "1A Asystent – odpowiedź z panelem dowodu"
+  },
+  "S1B.dc.html": {
+   "x": 3040,
+   "y": 1020,
+   "w": 1440,
+   "h": 900,
+   "title": "1B Asystent – karta cytatu (alternatywa)"
+  },
+  "S1C.dc.html": {
+   "x": 4560,
+   "y": 1020,
+   "w": 1440,
+   "h": 900,
+   "title": "1C Asystent – brak wystarczających dowodów"
+  },
+  "S2.dc.html": {
+   "x": 0,
+   "y": 2040,
+   "w": 1440,
+   "h": 900,
+   "title": "2 Przekaż sprawę do audytu"
+  },
+  "S3.dc.html": {
+   "x": 3040,
+   "y": 2040,
+   "w": 1440,
+   "h": 900,
+   "title": "3 Audyt i decyzja redaktora"
+  },
+  "S4.dc.html": {
+   "x": 0,
+   "y": 3060,
+   "w": 1440,
+   "h": 900,
+   "title": "4 Sprzeczne źródła"
+  },
+  "S5.dc.html": {
+   "x": 1520,
+   "y": 3060,
+   "w": 1440,
+   "h": 900,
+   "title": "5 Analizy i decyzje"
+  },
+  "Materialy.dc.html": {
+   "x": 3040,
+   "y": 3060,
+   "w": 1440,
+   "h": 900,
+   "title": "Materiały źródłowe (pliki .md)"
+  },
+  "S1N.dc.html": {
+   "x": 6080,
+   "y": 1020,
+   "w": 390,
+   "h": 844,
+   "title": "1N Asystent – wąskie okno"
+  },
+  "S3N.dc.html": {
+   "x": 4560,
+   "y": 2040,
+   "w": 390,
+   "h": 1640,
+   "title": "3N Audyt – wąskie okno"
+  },
+  "S1P.dc.html": {
+   "x": 1520,
+   "y": 1020,
+   "w": 1440,
+   "h": 900,
+   "title": "1P Asystent – przygotowywanie odpowiedzi"
+  },
+  "S2P.dc.html": {
+   "x": 1520,
+   "y": 2040,
+   "w": 1440,
+   "h": 900,
+   "title": "2P Przekaż sprawę – analiza trwa"
+  },
+  "S3ND.dc.html": {
+   "x": 5120,
+   "y": 2040,
+   "w": 390,
+   "h": 844,
+   "title": "3N-D Audyt – decyzja w arkuszu (wąskie okno)"
+  },
+  "S1ADark.dc.html": {
+   "x": 0,
+   "y": 4200,
+   "w": 1440,
+   "h": 900,
+   "title": "1A (ciemny) Asystent – odpowiedź z panelem dowodu"
+  },
+  "S1CDark.dc.html": {
+   "x": 1520,
+   "y": 4200,
+   "w": 1440,
+   "h": 900,
+   "title": "1C (ciemny) Brak wystarczających dowodów"
+  },
+  "S3Dark.dc.html": {
+   "x": 3040,
+   "y": 4200,
+   "w": 1440,
+   "h": 900,
+   "title": "3 (ciemny) Audyt i decyzja redaktora"
+  },
+  "S4Dark.dc.html": {
+   "x": 4560,
+   "y": 4200,
+   "w": 1440,
+   "h": 900,
+   "title": "4 (ciemny) Sprzeczne źródła"
+  },
+  "S5Dark.dc.html": {
+   "x": 6080,
+   "y": 4200,
+   "w": 1440,
+   "h": 900,
+   "title": "5 (ciemny) Analizy i decyzje"
+  },
+  "S1NDark.dc.html": {
+   "x": 0,
+   "y": 5220,
+   "w": 390,
+   "h": 844,
+   "title": "1N (ciemny) Asystent – wąskie okno"
+  },
+  "S3NDark.dc.html": {
+   "x": 520,
+   "y": 5220,
+   "w": 390,
+   "h": 1640,
+   "title": "3N (ciemny) Audyt – wąskie okno"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "S1A.dc.html",
+  "S1P.dc.html",
+  "S1B.dc.html",
+  "S1C.dc.html",
+  "S1N.dc.html",
+  "S2.dc.html",
+  "S2P.dc.html",
+  "S3.dc.html",
+  "S3N.dc.html",
+  "S3ND.dc.html",
+  "S4.dc.html",
+  "S5.dc.html",
+  "Materialy.dc.html",
+  "S1ADark.dc.html",
+  "S1CDark.dc.html",
+  "S3Dark.dc.html",
+  "S4Dark.dc.html",
+  "S5Dark.dc.html",
+  "S1NDark.dc.html",
+  "S3NDark.dc.html"
+ ],
+ "notes": {},
+ "designSystems": []
+}

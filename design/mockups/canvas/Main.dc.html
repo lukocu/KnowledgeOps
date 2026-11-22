@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Opis projektu</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; padding: 64px 80px; background: #f6f5f2; color: #1c1d1f; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: #5d6166; letter-spacing: 0.06em">MAKIETY · UKŁAD I PRZEPŁYWY · BEZ IMPLEMENTACJI</span>
+<h1 style="margin: 0; font-size: 44px; line-height: 52px">KnowledgeOps Assistant</h1>
+<p style="margin: 0; font-size: 18px; line-height: 28px; max-width: 900px">Desktopowa aplikacja dla konsultanta help desku i redaktora wiedzy. Odpowiada tylko na podstawie dowodów albo jawnie wstrzymuje się, a człowiek podejmuje decyzję.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 16px">Dwa scenariusze MVP</h2>
+<p style="margin: 0; font-size: 14px; line-height: 22px; color: #5d6166">1. Asystent RAG: odpowiedź z cytatami albo „Nie znaleziono wystarczających dowodów”.<br>2. Audyt rozwiązanej sprawy: każda teza notatki oceniana jako poparta, sprzeczna lub z niewystarczającymi dowodami, cała notatka jako pełne lub częściowe pokrycie, sprzeczność albo niewystarczające dowody; decyzję dla każdej tezy zapisuje redaktor.</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 16px">Ograniczenia MVP</h2>
+<p style="margin: 0; font-size: 14px; line-height: 22px; color: #5d6166">Brak logowania; przełącznik ról nie jest kontrolą dostępu. Bez integracji z systemem zgłoszeń, bez edycji i publikacji dokumentacji, bez wyszukiwania w internecie. Zapis decyzji nie zmienia dokumentacji. Interfejs po polsku i angielsku; pytania, odpowiedzi i analiza po angielsku (język korpusu). Analizy odwiedzającego są widoczne tylko w jego sesji.</p>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 16px">Dane w makietach</h2>
+<p style="margin: 0; font-size: 14px; line-height: 22px; color: #5d6166">Przykłady pochodzą z korpusu TechQA i z pilotażu 12 przypadków audytu. Przypadki oznaczone „syntetyczne” są dodane na potrzeby demo. Makiety nie pokazują wyników działającego systemu.</p>
+</div>
+</div>
+<div style="background: #fff; border: 1px solid #dcdad4; border-radius: 8px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px">Decyzje projektowe do oceny</h2>
+<p style="margin: 0; font-size: 14px; line-height: 22px; color: #5d6166">• Cytaty jako krótkie numery, pełne nazwy w liście źródeł i w panelu dowodu.<br>• Dowód w panelu bocznym (1A) zamiast małej karty (1B).<br>• Status to zawsze słowo i ikona. Teza: ● Poparta, ✕ Sprzeczność, ○ Niewystarczające dowody. Cała notatka: ● Pełne pokrycie, ◐ Częściowe pokrycie, ✕ Sprzeczność, ○ Niewystarczające dowody. Brak dowodu jest szary, nie czerwony, bo brak fragmentu nie dowodzi błędu.<br>• Ocena systemu oddzielona od decyzji redaktora; decyzja dotyczy każdej tezy osobno i nie jest wstępnie wybrana.<br>• Ekran audytu: dowód i panel decyzji obok siebie przy 1280 i 1440 px; szczegóły procesu zwinięte.</p>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 20px; color: #5d6166">Układ ekranów: rząd 1 – asystent (1A, 1B, 1C), rząd 2 – przekazanie, audyt i prototyp, rząd 3 – sprzeczne źródła i lista analiz, rząd 4 – wąskie ekrany (390 px) i stany postępu (1P, 2P). Styl to propozycja, nie zatwierdzony system. Wymagania: prd.md (22.11.2026).</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
