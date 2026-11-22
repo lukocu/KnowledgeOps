@@ -33,6 +33,8 @@ npm run dev
 
 Obraz SPA z nginx: `docker compose --profile web up -d --build`, strona pod `http://localhost:8080`.
 
+Skrypty z `db/init/` wykonują się tylko na pustym wolumenie bazy, więc nowe rozszerzenia dodawaj migracją. `docker compose down -v` kasuje wolumen razem z danymi.
+
 ## Kontrole jakości
 
 ```powershell

@@ -11,5 +11,8 @@ RUN uv sync --locked --no-dev --no-install-project
 
 COPY app ./app
 
+RUN useradd --system --uid 10001 --no-create-home app
+USER app
+
 EXPOSE 8000
 CMD ["fastapi", "run", "app/main.py", "--port", "8000"]

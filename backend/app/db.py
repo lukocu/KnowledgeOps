@@ -8,7 +8,14 @@ AsyncPool = AsyncConnectionPool
 
 def create_pool(database_url: str) -> AsyncPool:
     """Tworzy pulę bez otwierania połączeń; otwarcie następuje w `lifespan`."""
-    return AsyncConnectionPool(database_url, min_size=1, max_size=5, open=False)
+    return AsyncConnectionPool(
+        database_url,
+        min_size=1,
+        max_size=5,
+        open=False,
+        kwargs={"connect_timeout": 5},
+        check=AsyncConnectionPool.check_connection,
+    )
 
 
 def get_pool(request: Request) -> AsyncPool:

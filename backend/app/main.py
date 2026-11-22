@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Literal
@@ -9,6 +11,8 @@ from app.db import PoolDep, create_pool
 from app.settings import Settings
 
 HEALTH_QUERY_TIMEOUT_S = 2.0
+
+logger = logging.getLogger(__name__)
 
 
 class HealthResponse(BaseModel):
@@ -39,9 +43,12 @@ app = FastAPI(title="KnowledgeOps API", version="0.1.0", lifespan=lifespan)
 )
 async def health(pool: PoolDep, response: Response) -> HealthResponse:
     try:
-        async with pool.connection(timeout=HEALTH_QUERY_TIMEOUT_S) as conn:
-            await conn.execute("SELECT 1")
+        # Limit obejmuje pobranie połączenia z puli i samo zapytanie.
+        async with asyncio.timeout(HEALTH_QUERY_TIMEOUT_S):
+            async with pool.connection(timeout=HEALTH_QUERY_TIMEOUT_S) as conn:
+                await conn.execute("SELECT 1")
     except Exception:
+        logger.warning("Kontrola stanu bazy nie powiodła się", exc_info=True)
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         return HealthResponse(status="degraded", database="unavailable")
     return HealthResponse(status="ok", database="ok")
