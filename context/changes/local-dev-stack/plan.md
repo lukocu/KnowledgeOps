@@ -461,19 +461,19 @@ Nie dotyczy: brak danych i schematu. Zmiana obrazu ParadeDB w przyszłości wyma
 
 #### Manual
 
-- [ ] 3.5 npm run dev ładuje stronę i proxy /api działa
+- [x] 3.5 npm run dev ładuje stronę i proxy /api działa
 
 ### Phase 4: Git, CI i publikacja
 
 #### Automated
 
-- [ ] 4.1 git ls-files bez .env, data, skilli
-- [ ] 4.2 Skan sekretów bez niewyjaśnionych trafień
-- [ ] 4.3 Workflow ci zielony dla pierwszego pusha
-- [ ] 4.4 Kontrola kontraktu wykrywa nieaktualny openapi.json
+- [x] 4.1 git ls-files bez .env, data, skilli — e4647f8
+- [x] 4.2 Skan sekretów bez niewyjaśnionych trafień — e4647f8
+- [x] 4.3 Workflow ci zielony dla pierwszego pusha — e4647f8
+- [x] 4.4 Kontrola kontraktu wykrywa nieaktualny openapi.json — e4647f8
 
 #### Manual
 
-- [ ] 4.5 Użytkownik zatwierdził listę plików i e-mail
-- [ ] 4.6 Użytkownik potwierdził utworzenie publicznego repo
-- [ ] 4.7 Strona repo na GitHubie wygląda poprawnie
+- [x] 4.5 Użytkownik zatwierdził listę plików i e-mail — e4647f8
+- [x] 4.6 Użytkownik potwierdził utworzenie publicznego repo — e4647f8
+- [x] 4.7 Strona repo na GitHubie wygląda poprawnie — e4647f8
