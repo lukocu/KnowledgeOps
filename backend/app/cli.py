@@ -11,6 +11,7 @@ from app.migrations import MIGRATIONS_DIR, apply_migrations
 from app.settings import Settings
 from app.techqa.chunking import ChunkerConfig
 from app.techqa.importer import ImportReport, import_snapshot, load_manifest
+from app.techqa.search import Method, SearchHit, search_chunks
 
 
 def _migrate() -> int:
@@ -69,6 +70,26 @@ def _import_techqa(data_dir: Path | None) -> int:
     return 0
 
 
+def _print_hits(hits: list[SearchHit]) -> None:
+    for hit in hits:
+        snippet = " ".join(hit.snippet.split())
+        print(f"{hit.rank:>2}  {hit.score:8.3f}  {hit.doc_id}  {hit.chunk_id}")
+        print(f"    {' > '.join(hit.headings)}")
+        print(f"    {snippet}")
+
+
+def _search(query: str, method: Method, k: int, chunk_set: str | None) -> int:
+    if chunk_set is None:
+        chunk_set = load_manifest().chunk_set_id(ChunkerConfig())
+    with psycopg.connect(Settings().database_url) as conn:
+        hits = search_chunks(conn, query, method=method, chunk_set_id=chunk_set, k=k)
+    print(f"Zestaw: {chunk_set}, metoda: {method}, wyniki: {len(hits)}")
+    _print_hits(hits)
+    if not hits:
+        print("Brak wyników")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     commands = parser.add_subparsers(dest="command", required=True, metavar="polecenie")
@@ -82,13 +103,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=None,
         help="katalog z danymi (domyślnie TECHQA_DIR)",
     )
+    searcher = commands.add_parser(
+        "search", help="wyszukuje fragmenty (BM25 albo tsvector)"
+    )
+    searcher.add_argument("query", metavar="QUERY", help="zapytanie")
+    searcher.add_argument("--method", choices=("bm25", "fts"), default="bm25")
+    searcher.add_argument("--k", type=int, default=10, help="liczba wyników")
+    searcher.add_argument(
+        "--chunk-set",
+        default=None,
+        help="id zestawu (domyślnie techqa@<rewizja>/sections-v1)",
+    )
     args = parser.parse_args(argv)
+
+    # Konsola Windows domyślnie nie jest UTF-8; polskie komunikaty i treść dokumentów.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
 
     try:
         if args.command == "migrate":
             return _migrate()
         if args.command == "import-techqa":
             return _import_techqa(args.data_dir)
+        if args.command == "search":
+            return _search(args.query, args.method, args.k, args.chunk_set)
     except Exception as exc:
         print(f"Błąd: {exc}", file=sys.stderr)
         return 1

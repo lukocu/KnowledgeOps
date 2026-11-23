@@ -615,24 +615,24 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 
 #### Automated
 
-- [x] 3.1 ruff check, ruff format --check i mypy przechodzą
-- [x] 3.2 Testy importera przechodzą z DATABASE_URL
-- [x] 3.3 Pełny zestaw testów przechodzi
+- [x] 3.1 ruff check, ruff format --check i mypy przechodzą — 4ba836a
+- [x] 3.2 Testy importera przechodzą z DATABASE_URL — 4ba836a
+- [x] 3.3 Pełny zestaw testów przechodzi — 4ba836a
 
 #### Manual
 
-- [x] 3.4 Pierwszy pełny import w Compose z poprawnymi liczbami
+- [x] 3.4 Pierwszy pełny import w Compose z poprawnymi liczbami — 4ba836a
 
 ### Phase 4: Wyszukiwanie kontrolne i pełny przebieg
 
 #### Automated
 
-- [ ] 4.1 ruff check, ruff format --check i mypy przechodzą
-- [ ] 4.2 Testy wyszukiwania przechodzą z DATABASE_URL
+- [x] 4.1 ruff check, ruff format --check i mypy przechodzą
+- [x] 4.2 Testy wyszukiwania przechodzą z DATABASE_URL
 - [ ] 4.3 CI jest zielone dla wszystkich jobów
 
 #### Manual
 
-- [ ] 4.4 Drugi pełny import daje ten sam state_sha256
-- [ ] 4.5 search zwraca swg21996508 w top 10 dla TRAIN_Q000
-- [ ] 4.6 README pozwala przejść import od zera
+- [x] 4.4 Drugi pełny import daje ten sam state_sha256
+- [x] 4.5 search zwraca swg21996508 w top 10 dla TRAIN_Q000
+- [x] 4.6 README pozwala przejść import od zera
