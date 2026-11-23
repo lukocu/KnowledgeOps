@@ -593,7 +593,7 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 - [x] 1.2 Testy migracji przechodzą z DATABASE_URL — 7714906
 - [x] 1.3 migrate w Compose kończy się kodem 0 dwa razy z rzędu — 7714906
 - [x] 1.4 Kontener widzi /data/raw/techqa/corpus.zip — 7714906
-- [ ] 1.5 CI jest zielone z krokiem migrate
+- [x] 1.5 CI jest zielone z krokiem migrate — dcc31b1
 
 #### Manual
 
@@ -629,7 +629,7 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 
 - [x] 4.1 ruff check, ruff format --check i mypy przechodzą — ed1d206
 - [x] 4.2 Testy wyszukiwania przechodzą z DATABASE_URL — ed1d206
-- [ ] 4.3 CI jest zielone dla wszystkich jobów
+- [x] 4.3 CI jest zielone dla wszystkich jobów — dcc31b1
 
 #### Manual
 
