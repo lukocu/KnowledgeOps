@@ -627,12 +627,12 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 
 #### Automated
 
-- [x] 4.1 ruff check, ruff format --check i mypy przechodzą
-- [x] 4.2 Testy wyszukiwania przechodzą z DATABASE_URL
+- [x] 4.1 ruff check, ruff format --check i mypy przechodzą — ed1d206
+- [x] 4.2 Testy wyszukiwania przechodzą z DATABASE_URL — ed1d206
 - [ ] 4.3 CI jest zielone dla wszystkich jobów
 
 #### Manual
 
-- [x] 4.4 Drugi pełny import daje ten sam state_sha256
-- [x] 4.5 search zwraca swg21996508 w top 10 dla TRAIN_Q000
-- [x] 4.6 README pozwala przejść import od zera
+- [x] 4.4 Drugi pełny import daje ten sam state_sha256 — ed1d206
+- [x] 4.5 search zwraca swg21996508 w top 10 dla TRAIN_Q000 — ed1d206
+- [x] 4.6 README pozwala przejść import od zera — ed1d206
