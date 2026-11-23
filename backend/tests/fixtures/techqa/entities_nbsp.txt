@@ -1,0 +1,9 @@
+Title: IBM Entities &amp; non-breaking spaces - United States
+
+Text:
+PROBLEM(ABSTRACT)
+Use a &lt;tag&gt; with &quot;quotes&quot; &amp; an apostrophe&apos;s end.
+Copy the file&#160;now&#13;
+Hex &#x41;&#X42; and unknown &notanentity; stay.
+Trailing&nbsp; 
+Stray CR hereand more.

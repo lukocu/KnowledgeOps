@@ -1,0 +1,42 @@
+Title: IBM Procedure for verifying the sample configuration - United States
+
+Text:
+RESOLVING THE PROBLEM
+Step 1: open the administrative console, select the node agent number 1, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 2: open the administrative console, select the node agent number 2, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 3: open the administrative console, select the node agent number 3, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 4: open the administrative console, select the node agent number 4, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 5: open the administrative console, select the node agent number 5, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 6: open the administrative console, select the node agent number 6, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 7: open the administrative console, select the node agent number 7, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 8: open the administrative console, select the node agent number 8, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 9: open the administrative console, select the node agent number 9, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 10: open the administrative console, select the node agent number 10, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 11: open the administrative console, select the node agent number 11, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 12: open the administrative console, select the node agent number 12, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 13: open the administrative console, select the node agent number 13, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 14: open the administrative console, select the node agent number 14, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 15: open the administrative console, select the node agent number 15, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 16: open the administrative console, select the node agent number 16, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 17: open the administrative console, select the node agent number 17, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+Step 18: open the administrative console, select the node agent number 18, review the current settings and compare them with the values listed in the planning worksheet. Record any difference and keep the notes for the final verification of the whole configuration.
+
+CAUSE
+A short closing remark.

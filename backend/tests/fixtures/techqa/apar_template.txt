@@ -1,0 +1,27 @@
+Title: IBM APAR PI00001: sample connector hangs on shutdown - United States
+
+Text:
+APAR STATUS
+CLOSED AS PROGRAM ERROR.
+
+ERROR DESCRIPTION
+The connector hangs when the queue manager is stopped.
+
+LOCAL FIX
+Restart the connector process manually.
+
+PROBLEM SUMMARY
+Users of the sample connector are affected.
+
+PROBLEM CONCLUSION
+The shutdown hook was corrected to release the lock.
+
+TEMPORARY FIX
+None.
+
+COMMENTS
+No additional comments.
+
+APAR INFORMATION
+APAR NUMBER: PI00001
+REPORTED COMPONENT NAME: SAMPLE CONNECTOR

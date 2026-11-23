@@ -1,0 +1,47 @@
+Title: IBM Long log excerpt without blank lines - United States
+
+Text:
+PROBLEM(ABSTRACT)
+The log below shows the failure.
+
+DIAGNOSING THE PROBLEM
+2024-01-01 10:00:00 [Thread-0] INFO  com.example.Sample - step 0 done
+2024-01-01 10:00:01 [Thread-1] INFO  com.example.Sample - step 1 done
+2024-01-01 10:00:02 [Thread-2] INFO  com.example.Sample - step 2 done
+2024-01-01 10:00:03 [Thread-3] INFO  com.example.Sample - step 3 done
+2024-01-01 10:00:04 [Thread-4] INFO  com.example.Sample - step 4 done
+2024-01-01 10:00:05 [Thread-5] INFO  com.example.Sample - step 5 done
+2024-01-01 10:00:06 [Thread-6] INFO  com.example.Sample - step 6 done
+2024-01-01 10:00:07 [Thread-7] INFO  com.example.Sample - step 7 done
+2024-01-01 10:00:08 [Thread-8] INFO  com.example.Sample - step 8 done
+2024-01-01 10:00:09 [Thread-9] INFO  com.example.Sample - step 9 done
+2024-01-01 10:00:10 [Thread-10] INFO  com.example.Sample - step 10 done
+2024-01-01 10:00:11 [Thread-11] INFO  com.example.Sample - step 11 done
+2024-01-01 10:00:12 [Thread-12] INFO  com.example.Sample - step 12 done
+2024-01-01 10:00:13 [Thread-13] INFO  com.example.Sample - step 13 done
+2024-01-01 10:00:14 [Thread-14] INFO  com.example.Sample - step 14 done
+2024-01-01 10:00:15 [Thread-15] INFO  com.example.Sample - step 15 done
+2024-01-01 10:00:16 [Thread-16] INFO  com.example.Sample - step 16 done
+2024-01-01 10:00:17 [Thread-17] INFO  com.example.Sample - step 17 done
+2024-01-01 10:00:18 [Thread-18] INFO  com.example.Sample - step 18 done
+2024-01-01 10:00:19 [Thread-19] INFO  com.example.Sample - step 19 done
+2024-01-01 10:00:20 [Thread-20] INFO  com.example.Sample - step 20 done
+2024-01-01 10:00:21 [Thread-21] INFO  com.example.Sample - step 21 done
+2024-01-01 10:00:22 [Thread-22] INFO  com.example.Sample - step 22 done
+2024-01-01 10:00:23 [Thread-23] INFO  com.example.Sample - step 23 done
+2024-01-01 10:00:24 [Thread-24] INFO  com.example.Sample - step 24 done
+2024-01-01 10:00:25 [Thread-25] INFO  com.example.Sample - step 25 done
+2024-01-01 10:00:26 [Thread-26] INFO  com.example.Sample - step 26 done
+2024-01-01 10:00:27 [Thread-27] INFO  com.example.Sample - step 27 done
+2024-01-01 10:00:28 [Thread-28] INFO  com.example.Sample - step 28 done
+2024-01-01 10:00:29 [Thread-29] INFO  com.example.Sample - step 29 done
+2024-01-01 10:00:30 [Thread-30] INFO  com.example.Sample - step 30 done
+2024-01-01 10:00:31 [Thread-31] INFO  com.example.Sample - step 31 done
+2024-01-01 10:00:32 [Thread-32] INFO  com.example.Sample - step 32 done
+2024-01-01 10:00:33 [Thread-33] INFO  com.example.Sample - step 33 done
+2024-01-01 10:00:34 [Thread-34] INFO  com.example.Sample - step 34 done
+2024-01-01 10:00:35 [Thread-35] INFO  com.example.Sample - step 35 done
+2024-01-01 10:00:36 [Thread-36] INFO  com.example.Sample - step 36 done
+2024-01-01 10:00:37 [Thread-37] INFO  com.example.Sample - step 37 done
+2024-01-01 10:00:38 [Thread-38] INFO  com.example.Sample - step 38 done
+2024-01-01 10:00:39 [Thread-39] INFO  com.example.Sample - step 39 done

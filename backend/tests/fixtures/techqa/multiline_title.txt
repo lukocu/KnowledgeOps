@@ -1,0 +1,12 @@
+Title: IBM Widget Server fails to start after
+upgrading the sample runtime - United States
+
+Text:
+PROBLEM(ABSTRACT)
+The sample server does not start after the runtime upgrade.
+
+CAUSE
+The configuration file still points to the old runtime directory.
+
+RESOLVING THE PROBLEM
+Edit the configuration file and restart the server.

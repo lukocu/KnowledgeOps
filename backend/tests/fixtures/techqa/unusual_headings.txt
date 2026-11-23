@@ -1,0 +1,17 @@
+Title: IBM Unusual heading shapes - United States
+
+Text:
+PROBLEM(ABSTRACT)
+Intro text.
+
+CI62KML
+Part number description line.
+
+APPHDL  : 0-270 APPID: *LOCAL.sample.123
+A log message belongs here.
+
+Problem Description:
+Mixed case text that is not detected as a heading.
+
+CAUSE
+Closing text.

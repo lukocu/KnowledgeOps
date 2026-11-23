@@ -1,0 +1,7 @@
+Title: IBM Nested entities and semicolon-less strings - United States
+
+Text:
+PROBLEM(ABSTRACT)
+Double encoded: &amp;lt;b&amp;gt; and &amp;amp; and &amp;#27 inside the text.
+URL: http://example.com/path?a=1&param=1&amp=2&para=3
+Quoted: "&amp" and &copy and &#27 remain.

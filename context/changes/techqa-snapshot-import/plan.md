@@ -589,27 +589,27 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 
 #### Automated
 
-- [x] 1.1 ruff check, ruff format --check i mypy przechodzą
-- [x] 1.2 Testy migracji przechodzą z DATABASE_URL
-- [x] 1.3 migrate w Compose kończy się kodem 0 dwa razy z rzędu
-- [x] 1.4 Kontener widzi /data/raw/techqa/corpus.zip
+- [x] 1.1 ruff check, ruff format --check i mypy przechodzą — 7714906
+- [x] 1.2 Testy migracji przechodzą z DATABASE_URL — 7714906
+- [x] 1.3 migrate w Compose kończy się kodem 0 dwa razy z rzędu — 7714906
+- [x] 1.4 Kontener widzi /data/raw/techqa/corpus.zip — 7714906
 - [ ] 1.5 CI jest zielone z krokiem migrate
 
 #### Manual
 
-- [x] 1.6 Użytkownik akceptuje nazwy tabel i kolumn
+- [x] 1.6 Użytkownik akceptuje nazwy tabel i kolumn — 7714906
 
 ### Phase 2: Parsowanie, normalizacja i chunking
 
 #### Automated
 
-- [ ] 2.1 ruff check, ruff format --check i mypy przechodzą
-- [ ] 2.2 Testy jednostkowe przechodzą
-- [ ] 2.3 Niezmienniki na pełnym korpusie przechodzą lokalnie
+- [x] 2.1 ruff check, ruff format --check i mypy przechodzą
+- [x] 2.2 Testy jednostkowe przechodzą
+- [x] 2.3 Niezmienniki na pełnym korpusie przechodzą lokalnie
 
 #### Manual
 
-- [ ] 2.4 Przegląd fragmentów sześciu dokumentów kontrolnych
+- [x] 2.4 Przegląd fragmentów sześciu dokumentów kontrolnych
 
 ### Phase 3: Polecenie importu
 

@@ -1,0 +1,6 @@
+Title: IBM Plain note without any section headings - United States
+
+Text:
+This note is a plain paragraph of text. It has no headings at all.
+
+A second paragraph follows. It mentions version 8.0.0.1 only once.
