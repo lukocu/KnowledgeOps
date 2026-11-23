@@ -1,10 +1,10 @@
 ---
 change_id: techqa-snapshot-import
 title: Import migawki TechQA i indeks BM25 (S-01)
-status: impl_reviewed
+status: archived
 created: 2026-11-22
 updated: 2026-11-23
-archived_at: null
+archived_at: 2026-11-23T19:31:25Z
 ---
 
 ## Notes
