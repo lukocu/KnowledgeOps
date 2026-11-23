@@ -9,11 +9,15 @@ SNIPPET_CHARS = 200
 
 Method = Literal["bm25", "fts"]
 
-_BM25_SQL = """
+# Kanoniczny warunek i kolejność BM25; współdzielone z `app.retrieval` (wariant async).
+BM25_WHERE = "chunk_set_id = %(chunk_set_id)s AND text ||| %(query)s"
+BM25_ORDER_BY = 'pdb.score(id) DESC, id COLLATE "C"'
+
+_BM25_SQL = f"""
 SELECT id, doc_id, headings, left(text, %(snippet)s), pdb.score(id)::float8
 FROM chunks
-WHERE chunk_set_id = %(chunk_set_id)s AND text ||| %(query)s
-ORDER BY pdb.score(id) DESC, id COLLATE "C"
+WHERE {BM25_WHERE}
+ORDER BY {BM25_ORDER_BY}
 LIMIT %(k)s
 """
 
