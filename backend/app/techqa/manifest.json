@@ -1,0 +1,10 @@
+{
+  "source": "nvidia/TechQA-RAG-Eval",
+  "revision": "0b5bbc84b7f07d6d09d063130e90b716d8d4a32a",
+  "files": {
+    "README.md": "8d85191f81a748f2a66bb32cecb972727e69fcc0541c1f936c4debfa4823190b",
+    "train.json": "69d97231509482ed6bd5ec1c4bc0607acb82a88d11169eb8383592d0ca8b93c7",
+    "corpus.zip": "c06aa287dcc1abf8db6b49b8495df095db73342d729f6451ac330785245d10be"
+  },
+  "expected_documents": 28481
+}

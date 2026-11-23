@@ -603,25 +603,25 @@ Wszystkie działają w tymczasowej bazie na mini-migawce:
 
 #### Automated
 
-- [x] 2.1 ruff check, ruff format --check i mypy przechodzą
-- [x] 2.2 Testy jednostkowe przechodzą
-- [x] 2.3 Niezmienniki na pełnym korpusie przechodzą lokalnie
+- [x] 2.1 ruff check, ruff format --check i mypy przechodzą — e3a2339
+- [x] 2.2 Testy jednostkowe przechodzą — e3a2339
+- [x] 2.3 Niezmienniki na pełnym korpusie przechodzą lokalnie — e3a2339
 
 #### Manual
 
-- [x] 2.4 Przegląd fragmentów sześciu dokumentów kontrolnych
+- [x] 2.4 Przegląd fragmentów sześciu dokumentów kontrolnych — e3a2339
 
 ### Phase 3: Polecenie importu
 
 #### Automated
 
-- [ ] 3.1 ruff check, ruff format --check i mypy przechodzą
-- [ ] 3.2 Testy importera przechodzą z DATABASE_URL
-- [ ] 3.3 Pełny zestaw testów przechodzi
+- [x] 3.1 ruff check, ruff format --check i mypy przechodzą
+- [x] 3.2 Testy importera przechodzą z DATABASE_URL
+- [x] 3.3 Pełny zestaw testów przechodzi
 
 #### Manual
 
-- [ ] 3.4 Pierwszy pełny import w Compose z poprawnymi liczbami
+- [x] 3.4 Pierwszy pełny import w Compose z poprawnymi liczbami
 
 ### Phase 4: Wyszukiwanie kontrolne i pełny przebieg
 
