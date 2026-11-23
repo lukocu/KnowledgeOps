@@ -30,4 +30,7 @@ plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = ["db: testy wymagające działającej bazy (DATABASE_URL)"]
+markers = [
+    "db: testy wymagające działającej bazy (DATABASE_URL)",
+    "corpus: testy wymagające pobranych danych TechQA (TECHQA_DIR)",
+]

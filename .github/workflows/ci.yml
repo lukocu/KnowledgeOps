@@ -46,6 +46,8 @@ jobs:
         env:
           PGPASSWORD: knowledgeops
         run: psql -h 127.0.0.1 -U knowledgeops -d knowledgeops -v ON_ERROR_STOP=1 -f db/init/01-extensions.sql
+      - name: Migracje
+        run: uv run python -m app.cli migrate
       - run: uv run pytest
 
   frontend:

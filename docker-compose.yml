@@ -25,6 +25,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-knowledgeops}:${POSTGRES_PASSWORD:-knowledgeops}@db:5432/${POSTGRES_DB:-knowledgeops}
+    volumes:
+      - ./data/raw/techqa:/data/raw/techqa:ro
     ports:
       - "127.0.0.1:8000:8000"
     healthcheck:
