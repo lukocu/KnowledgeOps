@@ -154,3 +154,12 @@ def test_small_limits_keep_invariants() -> None:
         check_chunk_invariants(
             body, ChunkerConfig(max_chars=max_chars, overlap_chars=overlap)
         )
+
+
+@pytest.mark.parametrize(
+    ("max_chars", "overlap_chars"),
+    [(100, 100), (100, 150), (100, -1), (0, 0), (-5, 0)],
+)
+def test_invalid_config_is_rejected(max_chars: int, overlap_chars: int) -> None:
+    with pytest.raises(ValueError):
+        ChunkerConfig(max_chars=max_chars, overlap_chars=overlap_chars)

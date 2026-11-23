@@ -1,90 +1,20 @@
 import dataclasses
-import hashlib
-import json
-import os
-import zipfile
 from pathlib import Path
 
 import psycopg
 import pytest
 
-from app.migrations import MIGRATIONS_DIR, apply_migrations
 from app.techqa import importer
 from app.techqa.chunking import ChunkerConfig
-from app.techqa.importer import ImportFailure, Manifest, import_snapshot
-from tests.techqa.helpers import FIXTURES_DIR, fixture_paths
+from app.techqa.importer import IMPORT_LOCK_KEY, ImportFailure, import_snapshot
+from tests.techqa.helpers import (
+    CHUNK_SET_ID,
+    OTHER_REVISION,
+    SNAPSHOT_ID,
+    build_snapshot,
+)
 
-pytestmark = [
-    pytest.mark.db,
-    pytest.mark.skipif(not os.environ.get("DATABASE_URL"), reason="brak DATABASE_URL"),
-]
-
-REVISION = "0123456789abcdef0123456789abcdef01234567"
-DUPLICATED_FIXTURE = "apar_template"
-SNAPSHOT_ID = f"techqa@{REVISION}"
-CHUNK_SET_ID = f"{SNAPSHOT_ID}/sections-v1"
-
-
-def _sha(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def build_snapshot(
-    root: Path, *, extra_reference: str | None = None
-) -> tuple[Path, Manifest]:
-    """Mini-migawka: fikstury fazy 2, a jedna z nich jako dwie identyczne kopie."""
-    data_dir = root / "techqa"
-    data_dir.mkdir()
-    entries: dict[str, bytes] = {}
-    for path in fixture_paths():
-        if path.stem == DUPLICATED_FIXTURE:
-            continue
-        entries[path.stem] = path.read_bytes()
-    duplicated = (FIXTURES_DIR / f"{DUPLICATED_FIXTURE}.txt").read_bytes()
-    entries["dup_b"] = duplicated
-    entries["dup_a"] = duplicated
-
-    with zipfile.ZipFile(data_dir / "corpus.zip", "w") as archive:
-        archive.writestr("corpus/", b"")
-        for name, data in entries.items():
-            archive.writestr(f"corpus/{name}.txt", data)
-
-    references = ["code_block", "dup_a", "code_block"]
-    if extra_reference:
-        references.append(extra_reference)
-    train = [
-        {
-            "id": "TRAIN_Q000",
-            "question": "q",
-            "answer": "a",
-            "is_impossible": False,
-            "contexts": [
-                {"filename": f"{name}.txt", "text": "x"} for name in references
-            ],
-        },
-        {"id": "TRAIN_Q001", "question": "q", "answer": "", "is_impossible": True},
-    ]
-    (data_dir / "train.json").write_text(json.dumps(train), encoding="utf-8")
-    (data_dir / "README.md").write_text("# mini\n", encoding="utf-8")
-    (data_dir / "revision.txt").write_text(REVISION + "\r\n", encoding="utf-8")
-
-    manifest = Manifest(
-        source="test/mini",
-        revision=REVISION,
-        files={
-            name: _sha((data_dir / name).read_bytes())
-            for name in ("README.md", "train.json", "corpus.zip")
-        },
-        expected_documents=len(entries),
-    )
-    return data_dir, manifest
-
-
-@pytest.fixture
-def conn(temp_database: str):  # type: ignore[no-untyped-def]
-    with psycopg.connect(temp_database, autocommit=True) as connection:
-        apply_migrations(connection, MIGRATIONS_DIR)
-        yield connection
+pytestmark = pytest.mark.db
 
 
 def _count(conn: psycopg.Connection, table: str) -> int:
@@ -262,3 +192,123 @@ def test_chunk_offsets_match_document_text_in_sql(
     total, matching = row
     assert total > 0
     assert matching == total
+
+
+def test_import_takes_advisory_lock(
+    conn: psycopg.Connection, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_dir, manifest = build_snapshot(tmp_path)
+    held: list[int] = []
+
+    def inspect_locks(*args: object, **kwargs: object) -> None:
+        row = conn.execute(
+            "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory'"
+            " AND classid = 0 AND objid = %s AND pid = pg_backend_pid()"
+            " AND granted",
+            (IMPORT_LOCK_KEY,),
+        ).fetchone()
+        assert row is not None
+        held.append(int(row[0]))
+        raise RuntimeError("stop po sprawdzeniu blokady")
+
+    monkeypatch.setattr(importer, "_insert_chunk_set", inspect_locks)
+    with pytest.raises(RuntimeError, match="stop po sprawdzeniu"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    assert held == [1]
+    # Blokada transakcyjna znika razem z wycofaną transakcją.
+    assert conn.execute(
+        "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND objid = %s",
+        (IMPORT_LOCK_KEY,),
+    ).fetchone() == (0,)
+
+
+def test_import_of_other_snapshot_leaves_first_untouched(
+    conn: psycopg.Connection, tmp_path: Path
+) -> None:
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    dir_a, manifest_a = build_snapshot(tmp_path / "a")
+    dir_b, manifest_b = build_snapshot(tmp_path / "b", revision=OTHER_REVISION)
+    report_a = import_snapshot(conn, dir_a, manifest_a, ChunkerConfig())
+
+    def per_snapshot(snapshot_id: str) -> tuple[int, int, int]:
+        row = conn.execute(
+            "SELECT (SELECT count(*) FROM documents WHERE snapshot_id = %(s)s),"
+            " (SELECT count(*) FROM chunk_sets WHERE snapshot_id = %(s)s),"
+            " (SELECT count(*) FROM chunks WHERE snapshot_id = %(s)s)",
+            {"s": snapshot_id},
+        ).fetchone()
+        assert row is not None
+        return (int(row[0]), int(row[1]), int(row[2]))
+
+    before = per_snapshot(SNAPSHOT_ID)
+    assert before == (manifest_a.expected_documents, 1, report_a.chunks)
+
+    report_b = import_snapshot(conn, dir_b, manifest_b, ChunkerConfig())
+
+    assert report_b.snapshot_id == manifest_b.snapshot_id != SNAPSHOT_ID
+    assert report_b.comparison == "pierwszy import"
+    assert per_snapshot(SNAPSHOT_ID) == before
+    assert per_snapshot(manifest_b.snapshot_id) == before
+    assert conn.execute(
+        "SELECT state_sha256 FROM chunk_sets WHERE id = %s", (CHUNK_SET_ID,)
+    ).fetchone() == (report_a.state_sha256,)
+    assert _count(conn, "snapshots") == 2
+
+
+def test_unexpected_zip_entry_is_rejected(
+    conn: psycopg.Connection, tmp_path: Path
+) -> None:
+    data_dir, manifest = build_snapshot(tmp_path, extra_entries={"inne/plik.txt": b"x"})
+    with pytest.raises(ImportFailure, match="Nieoczekiwany wpis"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    _assert_empty(conn)
+
+
+def test_duplicate_zip_entry_is_rejected(
+    conn: psycopg.Connection, tmp_path: Path
+) -> None:
+    data_dir, manifest = build_snapshot(
+        tmp_path, duplicate_entries=("corpus/code_block.txt",)
+    )
+    with pytest.raises(ImportFailure, match="Powtórzony wpis"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    _assert_empty(conn)
+
+
+def test_invalid_utf8_document_is_rejected(
+    conn: psycopg.Connection, tmp_path: Path
+) -> None:
+    data_dir, manifest = build_snapshot(
+        tmp_path, extra_entries={"corpus/zly_utf8.txt": b"\xff\xfe\xfa"}
+    )
+    with pytest.raises(ImportFailure, match="zly_utf8.txt"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    _assert_empty(conn)
+
+
+def test_corrupt_zip_is_rejected(conn: psycopg.Connection, tmp_path: Path) -> None:
+    data_dir, manifest = build_snapshot(
+        tmp_path, corpus_zip_bytes=b"to nie jest archiwum zip"
+    )
+    with pytest.raises(ImportFailure, match="Uszkodzony plik zip"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    _assert_empty(conn)
+
+
+def test_train_context_without_filename_is_rejected(
+    conn: psycopg.Connection, tmp_path: Path
+) -> None:
+    train = [
+        {
+            "id": "TRAIN_Q042",
+            "question": "q",
+            "answer": "a",
+            "is_impossible": False,
+            "contexts": [{"text": "x"}],
+        }
+    ]
+    data_dir, manifest = build_snapshot(tmp_path, train=train)
+    with pytest.raises(ImportFailure, match="TRAIN_Q042.*filename"):
+        import_snapshot(conn, data_dir, manifest, ChunkerConfig())
+    _assert_empty(conn)

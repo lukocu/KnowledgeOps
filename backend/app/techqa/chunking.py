@@ -24,6 +24,14 @@ class ChunkerConfig:
     heading_pattern: str = DEFAULT_HEADING_PATTERN
     normalizer: str = NORMALIZER_VERSION
 
+    def __post_init__(self) -> None:
+        if self.max_chars <= 0:
+            raise ValueError("max_chars musi być dodatnie")
+        if not 0 <= self.overlap_chars < self.max_chars:
+            raise ValueError(
+                "overlap_chars musi mieścić się w przedziale [0, max_chars)"
+            )
+
     def config_sha256(self) -> str:
         canonical = json.dumps(
             asdict(self), sort_keys=True, separators=(",", ":"), ensure_ascii=False

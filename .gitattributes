@@ -1,0 +1,2 @@
+*.sql text eol=lf
+backend/tests/fixtures/techqa/*.txt text eol=lf

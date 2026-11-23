@@ -15,7 +15,9 @@ from app.techqa.search import Method, SearchHit, search_chunks
 
 
 def _migrate() -> int:
-    with psycopg.connect(Settings().database_url, autocommit=True) as conn:
+    with psycopg.connect(
+        Settings().database_url, autocommit=True, connect_timeout=5
+    ) as conn:
         applied = apply_migrations(conn, MIGRATIONS_DIR)
     if applied:
         for version in applied:
@@ -64,7 +66,7 @@ def _print_report(report: ImportReport) -> None:
 def _import_techqa(data_dir: Path | None) -> int:
     directory = data_dir if data_dir is not None else Settings().techqa_dir
     manifest = load_manifest()
-    with psycopg.connect(Settings().database_url) as conn:
+    with psycopg.connect(Settings().database_url, connect_timeout=5) as conn:
         report = import_snapshot(conn, directory, manifest, ChunkerConfig())
     _print_report(report)
     return 0
@@ -81,7 +83,7 @@ def _print_hits(hits: list[SearchHit]) -> None:
 def _search(query: str, method: Method, k: int, chunk_set: str | None) -> int:
     if chunk_set is None:
         chunk_set = load_manifest().chunk_set_id(ChunkerConfig())
-    with psycopg.connect(Settings().database_url) as conn:
+    with psycopg.connect(Settings().database_url, connect_timeout=5) as conn:
         hits = search_chunks(conn, query, method=method, chunk_set_id=chunk_set, k=k)
     print(f"Zestaw: {chunk_set}, metoda: {method}, wyniki: {len(hits)}")
     _print_hits(hits)
@@ -91,6 +93,11 @@ def _search(query: str, method: Method, k: int, chunk_set: str | None) -> int:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # Konsola Windows domyślnie nie jest UTF-8; polskie komunikaty i treść dokumentów.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
+
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     commands = parser.add_subparsers(dest="command", required=True, metavar="polecenie")
     commands.add_parser("migrate", help="stosuje brakujące migracje schematu")
@@ -115,11 +122,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="id zestawu (domyślnie techqa@<rewizja>/sections-v1)",
     )
     args = parser.parse_args(argv)
-
-    # Konsola Windows domyślnie nie jest UTF-8; polskie komunikaty i treść dokumentów.
-    for stream in (sys.stdout, sys.stderr):
-        if hasattr(stream, "reconfigure"):
-            stream.reconfigure(encoding="utf-8")
 
     try:
         if args.command == "migrate":

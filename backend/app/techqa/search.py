@@ -13,7 +13,7 @@ _BM25_SQL = """
 SELECT id, doc_id, headings, left(text, %(snippet)s), pdb.score(id)::float8
 FROM chunks
 WHERE chunk_set_id = %(chunk_set_id)s AND text ||| %(query)s
-ORDER BY pdb.score(id) DESC, id
+ORDER BY pdb.score(id) DESC, id COLLATE "C"
 LIMIT %(k)s
 """
 
@@ -21,7 +21,7 @@ _FTS_SQL = """
 SELECT id, doc_id, headings, left(text, %(snippet)s), ts_rank_cd(tsv, q)::float8
 FROM chunks, websearch_to_tsquery('english', %(query)s) AS q
 WHERE chunk_set_id = %(chunk_set_id)s AND tsv @@ q
-ORDER BY ts_rank_cd(tsv, q) DESC, id
+ORDER BY ts_rank_cd(tsv, q) DESC, id COLLATE "C"
 LIMIT %(k)s
 """
 
@@ -45,6 +45,8 @@ def search_chunks(
     k: int = 10,
 ) -> list[SearchHit]:
     """Zwraca k najlepszych fragmentów zestawu; remisy rozstrzyga `id`."""
+    if k < 1:
+        raise ValueError("k musi być dodatnie")
     statement = _BM25_SQL if method == "bm25" else _FTS_SQL
     params = {
         "query": query,

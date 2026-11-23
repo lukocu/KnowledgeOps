@@ -40,6 +40,6 @@ Zapytaniem jest pierwsza linia pytania z `train.json`. Format: pozycja. dokument
 
 ## Wnioski dla kolejnych etapów
 
-- BM25 znajduje oczekiwany dokument dla dwóch z trzech pytań (pozycja 1). Dla Q003 oczekiwanego dokumentu nie ma w top 10, więc to przypadek do obejrzenia w S-02 (Recall@k), nie błąd importu.
-- FTS jako punkt odniesienia jest słaby przy pełnych pytaniach, bo zapytanie jest iloczynem wszystkich słów. To zachowanie `websearch_to_tsquery`, nie błąd. Porównanie metod w S-02 powinno to uwzględnić.
+- BM25 znajduje oczekiwany dokument dla dwóch z trzech pytań (pozycja 1). Dla Q003 oczekiwanego dokumentu nie ma w top 10, więc to przypadek do obejrzenia w S-04 (Recall@k), nie błąd importu.
+- FTS jako punkt odniesienia jest słaby przy pełnych pytaniach, bo zapytanie jest iloczynem wszystkich słów. To zachowanie `websearch_to_tsquery`, nie błąd. Porównanie metod w S-04 powinno to uwzględnić.
 - Pytania nie mają w `train.json` pola `answerable` (wartość `None`), więc podział na odpowiadalne i nie jest tu dostępny. To temat S-04.

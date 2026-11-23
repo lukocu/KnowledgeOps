@@ -20,6 +20,8 @@ from app.techqa.parse import parse_document
 
 MANIFEST_PATH = Path(__file__).resolve().parent / "manifest.json"
 
+# Stały klucz blokady doradczej importu TechQA.
+IMPORT_LOCK_KEY = 7_204_001
 _ENTRY_PATTERN = re.compile(r"^corpus/([^/]+)\.txt$")
 _COPY_DOCUMENTS = (
     "COPY documents (snapshot_id, doc_id, canonical_doc_id, title, raw_text,"
@@ -131,11 +133,15 @@ def _verify_files(data_dir: Path, manifest: Manifest) -> None:
 def _read_corpus(zip_path: Path) -> list[tuple[str, bytes]]:
     """Zwraca (doc_id, bajty) posortowane po doc_id; katalogi pomijane."""
     entries: dict[str, bytes] = {}
-    with zipfile.ZipFile(zip_path) as archive:
+    try:
+        archive_file = zipfile.ZipFile(zip_path)
+    except zipfile.BadZipFile as exc:
+        raise ImportFailure(f"Uszkodzony plik zip {zip_path.name}: {exc}") from exc
+    with archive_file as archive:
         for info in archive.infolist():
             if info.is_dir():
                 continue
-            match = _ENTRY_PATTERN.match(info.filename)
+            match = _ENTRY_PATTERN.fullmatch(info.filename)
             if match is None:
                 raise ImportFailure(
                     f"Nieoczekiwany wpis w corpus.zip: {info.filename!r}"
@@ -148,10 +154,18 @@ def _read_corpus(zip_path: Path) -> list[tuple[str, bytes]]:
 
 
 def _check_train(train_path: Path, doc_ids: set[str]) -> TrainCheck:
-    records = json.loads(train_path.read_text(encoding="utf-8"))
+    try:
+        records = json.loads(train_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise ImportFailure(f"Nieprawidłowy plik {train_path.name}: {exc}") from exc
     references: list[str] = []
     for record in records:
         for context in record.get("contexts") or []:
+            if "filename" not in context:
+                raise ImportFailure(
+                    f"Rekord {record.get('id')!r} w {train_path.name}"
+                    " ma kontekst bez pola filename"
+                )
             filename = str(context["filename"])
             references.append(filename.removesuffix(".txt"))
     missing = sorted({ref for ref in references if ref not in doc_ids})
@@ -297,6 +311,8 @@ def import_snapshot(
 
     started = time.perf_counter()
     with conn.transaction():
+        # Blokada: dwa równoległe importy nie mogą czytać nieaktualnego stanu.
+        conn.execute("SELECT pg_advisory_xact_lock(%s)", (IMPORT_LOCK_KEY,))
         # 1. poprzedni hash stanu (brak wiersza oznacza pierwszy import)
         row = conn.execute(
             "SELECT state_sha256 FROM chunk_sets WHERE id = %s", (chunk_set_id,)
@@ -305,7 +321,10 @@ def import_snapshot(
         previous = row[0] if row else None
         # 2.
         conn.execute("SET LOCAL work_mem = '64MB'")
-        # 3. jawne usunięcie poprzedniego stanu w kolejności zależności
+        # 3. jawne usunięcie poprzedniego stanu w kolejności zależności.
+        # Uwaga: import zastępuje CAŁĄ migawkę (wszystkie jej zestawy fragmentów,
+        # dokumenty i wiersz migawki). Przy drugim wariancie chunkera (S-12)
+        # trzeba zawęzić usuwanie do jednego zestawu.
         conn.execute(
             "DELETE FROM chunks WHERE chunk_set_id IN"
             " (SELECT id FROM chunk_sets WHERE snapshot_id = %s)",
@@ -373,7 +392,8 @@ def import_snapshot(
         count_row = conn.execute(
             "SELECT count(*) FROM chunks WHERE chunk_set_id = %s", (chunk_set_id,)
         ).fetchone()
-        assert count_row is not None
+        if count_row is None:
+            raise ImportFailure("Nie udało się policzyć fragmentów zestawu")
         chunk_count = int(count_row[0])
         conn.execute(
             "UPDATE chunk_sets SET chunk_count = %s, state_sha256 = %s,"

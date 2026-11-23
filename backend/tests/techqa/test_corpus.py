@@ -10,6 +10,7 @@ import pytest
 
 from app.settings import Settings
 from app.techqa.chunking import ChunkerConfig
+from app.techqa.importer import load_manifest
 from app.techqa.normalize import normalize_body
 from app.techqa.parse import parse_document
 from tests.techqa.helpers import check_chunk_invariants
@@ -20,7 +21,6 @@ pytestmark = pytest.mark.corpus
 _UNTERMINATED = re.compile(
     r"&(#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*)(?![0-9A-Za-z;])"
 )
-_EXPECTED_DOCUMENTS = 28_481
 
 
 def _looks_like_entity(name: str) -> bool:
@@ -66,4 +66,4 @@ def test_full_corpus_invariants(capsys: pytest.CaptureFixture[str]) -> None:
             f"\nKorpus: dokumentów={documents}, fragmentów={total_chunks}, "
             f"dokumentów z ciągami '&…' bez średnika={with_unterminated}"
         )
-    assert documents == _EXPECTED_DOCUMENTS
+    assert documents == load_manifest().expected_documents
