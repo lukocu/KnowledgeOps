@@ -4,6 +4,91 @@
  */
 
 export interface paths {
+    "/api/answers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Answer */
+        post: operations["create_answer_api_answers_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/answers/{answer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Answer */
+        get: operations["get_answer_api_answers__answer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/corpus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Corpus */
+        get: operations["corpus_api_corpus_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Document */
+        get: operations["document_api_documents_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Evidence */
+        get: operations["evidence_api_evidence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -25,6 +110,228 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AbstainedResult */
+        AbstainedResult: {
+            /** Checked Chunks */
+            checked_chunks: components["schemas"]["CheckedChunk"][];
+            /** Omitted Claims */
+            omitted_claims: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            outcome: "abstained";
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "no_hits" | "no_claims" | "none_supported";
+        };
+        /**
+         * AnswerClaim
+         * @description Teza pokazana konsultantowi; `citation` to numer cytatu (1..N).
+         */
+        AnswerClaim: {
+            /** Citation */
+            citation: number;
+            /** Code */
+            code: string | null;
+            /** Text */
+            text: string;
+        };
+        /** AnswerRecord */
+        AnswerRecord: {
+            /** Chunk Set Id */
+            chunk_set_id: string;
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Duration Ms */
+            duration_ms: number | null;
+            /** Id */
+            id: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "answered" | "abstained" | "failed";
+            /** Question */
+            question: string;
+            /** Result */
+            result: (components["schemas"]["AnsweredResult"] | components["schemas"]["AbstainedResult"]) | null;
+            /** Snapshot Id */
+            snapshot_id: string;
+        };
+        /** AnswerRequest */
+        AnswerRequest: {
+            /** Question */
+            question: string;
+        };
+        /** AnsweredResult */
+        AnsweredResult: {
+            /** Checked Chunks */
+            checked_chunks: components["schemas"]["CheckedChunk"][];
+            /** Citations */
+            citations: components["schemas"]["Citation"][];
+            /** Claims */
+            claims: components["schemas"]["AnswerClaim"][];
+            /** Omitted Claims */
+            omitted_claims: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            outcome: "answered";
+        };
+        /** CheckedChunk */
+        CheckedChunk: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** Doc Id */
+            doc_id: string;
+            /** Headings */
+            headings: string[];
+            /** Rank */
+            rank: number;
+            /** Score */
+            score: number;
+            /** Title */
+            title: string;
+        };
+        /** ChunkSpan */
+        ChunkSpan: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** End Offset */
+            end_offset: number;
+            /** Ordinal */
+            ordinal: number;
+            /** Start Offset */
+            start_offset: number;
+        };
+        /**
+         * Citation
+         * @description Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.
+         */
+        Citation: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** Claims */
+            claims: components["schemas"]["CitationClaim"][];
+            /** Doc Id */
+            doc_id: string;
+            /** Headings */
+            headings: string[];
+            /** N */
+            n: number;
+            /** Title */
+            title: string;
+        };
+        /**
+         * CitationClaim
+         * @description Teza oparta na cytowanym fragmencie.
+         *
+         *     `claim_index` to pozycja tezy na liście `AnsweredResult.claims` (od 0);
+         *     offsety cytatu `[quote_start, quote_end)` są względne do tekstu fragmentu.
+         */
+        CitationClaim: {
+            /** Claim Index */
+            claim_index: number;
+            /** Quote */
+            quote: string;
+            /** Quote End */
+            quote_end: number;
+            /** Quote Start */
+            quote_start: number;
+        };
+        /** CorpusInfo */
+        CorpusInfo: {
+            /** Chunk Count */
+            chunk_count: number;
+            /** Chunk Set Id */
+            chunk_set_id: string;
+            /** Document Count */
+            document_count: number;
+            /** Revision */
+            revision: string;
+            /** Revision Short */
+            revision_short: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Source */
+            source: string;
+            /** Variant */
+            variant: string;
+        };
+        /** DocumentText */
+        DocumentText: {
+            /** Chunks */
+            chunks: components["schemas"]["ChunkSpan"][];
+            /** Doc Id */
+            doc_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Text */
+            text: string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * ErrorEvent
+         * @description Błąd przebiegu (`event: error`); `answer_id` gdy zapisano wiersz `failed`.
+         */
+        ErrorEvent: {
+            /** Answer Id */
+            answer_id: string | null;
+            /**
+             * Code
+             * @enum {string}
+             */
+            code: "model_unavailable" | "model_not_configured" | "database_unavailable" | "internal";
+            /** Message */
+            message: string;
+        };
+        /**
+         * EvidenceWindow
+         * @description Okno dowodu; offsety zaznaczenia są względne do `window_text`.
+         */
+        EvidenceWindow: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** Doc Id */
+            doc_id: string;
+            /** Has More After */
+            has_more_after: boolean;
+            /** Has More Before */
+            has_more_before: boolean;
+            /** Headings */
+            headings: string[];
+            /** Highlight End */
+            highlight_end: number;
+            /** Highlight Start */
+            highlight_start: number;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Title */
+            title: string;
+            /** Window Ordinal From */
+            window_ordinal_from: number;
+            /** Window Ordinal To */
+            window_ordinal_to: number;
+            /** Window Text */
+            window_text: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** HealthResponse */
         HealthResponse: {
             /**
@@ -38,6 +345,52 @@ export interface components {
              */
             status: "ok" | "degraded";
         };
+        /**
+         * ResultEvent
+         * @description Odpowiedź zapisana, czytelna przez `GET /api/answers/{id}` (`event: result`).
+         */
+        ResultEvent: {
+            /** Answer Id */
+            answer_id: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "answered" | "abstained";
+        };
+        /**
+         * StageEvent
+         * @description Zdarzenie etapu grafu (`event: stage`).
+         */
+        StageEvent: {
+            /** Data */
+            data?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "retrieve" | "draft" | "quote_check" | "verify" | "compose" | "abstain";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "started" | "done";
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -47,6 +400,183 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    create_answer_api_answers_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description Strumień zdarzeń: `stage` (postęp), potem `result` albo `error`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": components["schemas"]["StageEvent"] | components["schemas"]["ResultEvent"] | components["schemas"]["ErrorEvent"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_answer_api_answers__answer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                answer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnswerRecord"];
+                };
+            };
+            /** @description Brak odpowiedzi w tej sesji */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    corpus_api_corpus_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorpusInfo"];
+                };
+            };
+            /** @description Zestaw fragmentów nie został zaimportowany */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    document_api_documents_get: {
+        parameters: {
+            query: {
+                snapshot_id: string;
+                doc_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentText"];
+                };
+            };
+            /** @description Nieznany dokument */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evidence_api_evidence_get: {
+        parameters: {
+            query: {
+                chunk_id: string;
+                before?: number;
+                after?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceWindow"];
+                };
+            };
+            /** @description Nieznany fragment */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_health_get: {
         parameters: {
             query?: never;

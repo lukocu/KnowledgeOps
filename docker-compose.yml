@@ -25,6 +25,15 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-knowledgeops}:${POSTGRES_PASSWORD:-knowledgeops}@db:5432/${POSTGRES_DB:-knowledgeops}
+      # Puste domyślne wartości: brak zmiennych nie psuje startu (Settings ignoruje puste).
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      CHAT_MODEL: ${CHAT_MODEL:-}
+      CHAT_REASONING_EFFORT: ${CHAT_REASONING_EFFORT:-}
+      CHAT_TIMEOUT_S: ${CHAT_TIMEOUT_S:-}
+      ANSWER_DEADLINE_S: ${ANSWER_DEADLINE_S:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-}
     volumes:
       - ./data/raw/techqa:/data/raw/techqa:ro
     ports:

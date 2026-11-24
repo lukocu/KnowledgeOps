@@ -10,7 +10,7 @@ from app.techqa.importer import load_manifest
 class Settings(BaseSettings):
     """Ustawienia aplikacji czytane ze zmiennych środowiskowych."""
 
-    model_config = SettingsConfigDict(extra="ignore")
+    model_config = SettingsConfigDict(extra="ignore", env_ignore_empty=True)
 
     database_url: str
     techqa_dir: Path = Path("/data/raw/techqa")
@@ -32,8 +32,16 @@ class Settings(BaseSettings):
     langfuse_secret_key: SecretStr | None = None
     langfuse_base_url: str | None = None
 
+    # Ciasteczko sesji z flagą Secure (włącz za HTTPS).
+    session_cookie_secure: bool = False
+
     def effective_chunk_set_id(self) -> str:
         """Id zestawu fragmentów: z ustawień, a gdy puste, z manifestu i chunkera."""
         if self.chunk_set_id:
             return self.chunk_set_id
         return load_manifest().chunk_set_id(ChunkerConfig())
+
+
+def get_settings() -> Settings:
+    """Zależność FastAPI: ustawienia czytane ze środowiska przy każdym żądaniu."""
+    return Settings()

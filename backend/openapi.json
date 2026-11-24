@@ -1,6 +1,569 @@
 {
   "components": {
     "schemas": {
+      "AbstainedResult": {
+        "properties": {
+          "checked_chunks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckedChunk"
+            },
+            "title": "Checked Chunks",
+            "type": "array"
+          },
+          "omitted_claims": {
+            "title": "Omitted Claims",
+            "type": "integer"
+          },
+          "outcome": {
+            "const": "abstained",
+            "default": "abstained",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "reason": {
+            "enum": [
+              "no_hits",
+              "no_claims",
+              "none_supported"
+            ],
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason",
+          "checked_chunks",
+          "omitted_claims"
+        ],
+        "title": "AbstainedResult",
+        "type": "object"
+      },
+      "AnswerClaim": {
+        "description": "Teza pokazana konsultantowi; `citation` to numer cytatu (1..N).",
+        "properties": {
+          "citation": {
+            "title": "Citation",
+            "type": "integer"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "code",
+          "citation"
+        ],
+        "title": "AnswerClaim",
+        "type": "object"
+      },
+      "AnswerRecord": {
+        "properties": {
+          "chunk_set_id": {
+            "title": "Chunk Set Id",
+            "type": "string"
+          },
+          "config": {
+            "additionalProperties": true,
+            "title": "Config",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "answered",
+              "abstained",
+              "failed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "abstained": "#/components/schemas/AbstainedResult",
+                    "answered": "#/components/schemas/AnsweredResult"
+                  },
+                  "propertyName": "outcome"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AnsweredResult"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AbstainedResult"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "question",
+          "outcome",
+          "result",
+          "snapshot_id",
+          "chunk_set_id",
+          "config",
+          "created_at",
+          "duration_ms"
+        ],
+        "title": "AnswerRecord",
+        "type": "object"
+      },
+      "AnswerRequest": {
+        "properties": {
+          "question": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "AnswerRequest",
+        "type": "object"
+      },
+      "AnsweredResult": {
+        "properties": {
+          "checked_chunks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckedChunk"
+            },
+            "title": "Checked Chunks",
+            "type": "array"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerClaim"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "omitted_claims": {
+            "title": "Omitted Claims",
+            "type": "integer"
+          },
+          "outcome": {
+            "const": "answered",
+            "default": "answered",
+            "title": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claims",
+          "citations",
+          "checked_chunks",
+          "omitted_claims"
+        ],
+        "title": "AnsweredResult",
+        "type": "object"
+      },
+      "CheckedChunk": {
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "headings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Headings",
+            "type": "array"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "chunk_id",
+          "doc_id",
+          "title",
+          "headings",
+          "score"
+        ],
+        "title": "CheckedChunk",
+        "type": "object"
+      },
+      "ChunkSpan": {
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "end_offset": {
+            "title": "End Offset",
+            "type": "integer"
+          },
+          "ordinal": {
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "start_offset": {
+            "title": "Start Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "ordinal",
+          "start_offset",
+          "end_offset"
+        ],
+        "title": "ChunkSpan",
+        "type": "object"
+      },
+      "Citation": {
+        "description": "Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.",
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/CitationClaim"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "headings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Headings",
+            "type": "array"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "n",
+          "chunk_id",
+          "doc_id",
+          "title",
+          "headings",
+          "claims"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
+      "CitationClaim": {
+        "description": "Teza oparta na cytowanym fragmencie.\n\n`claim_index` to pozycja tezy na liście `AnsweredResult.claims` (od 0);\noffsety cytatu `[quote_start, quote_end)` są względne do tekstu fragmentu.",
+        "properties": {
+          "claim_index": {
+            "title": "Claim Index",
+            "type": "integer"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "quote_end": {
+            "title": "Quote End",
+            "type": "integer"
+          },
+          "quote_start": {
+            "title": "Quote Start",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "claim_index",
+          "quote",
+          "quote_start",
+          "quote_end"
+        ],
+        "title": "CitationClaim",
+        "type": "object"
+      },
+      "CorpusInfo": {
+        "properties": {
+          "chunk_count": {
+            "title": "Chunk Count",
+            "type": "integer"
+          },
+          "chunk_set_id": {
+            "title": "Chunk Set Id",
+            "type": "string"
+          },
+          "document_count": {
+            "title": "Document Count",
+            "type": "integer"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "string"
+          },
+          "revision_short": {
+            "title": "Revision Short",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "variant": {
+            "title": "Variant",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "revision",
+          "revision_short",
+          "source",
+          "chunk_set_id",
+          "variant",
+          "document_count",
+          "chunk_count"
+        ],
+        "title": "CorpusInfo",
+        "type": "object"
+      },
+      "DocumentText": {
+        "properties": {
+          "chunks": {
+            "items": {
+              "$ref": "#/components/schemas/ChunkSpan"
+            },
+            "title": "Chunks",
+            "type": "array"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "doc_id",
+          "title",
+          "text",
+          "chunks"
+        ],
+        "title": "DocumentText",
+        "type": "object"
+      },
+      "ErrorEvent": {
+        "description": "Błąd przebiegu (`event: error`); `answer_id` gdy zapisano wiersz `failed`.",
+        "properties": {
+          "answer_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Id"
+          },
+          "code": {
+            "enum": [
+              "model_unavailable",
+              "model_not_configured",
+              "database_unavailable",
+              "internal"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "answer_id",
+          "code",
+          "message"
+        ],
+        "title": "ErrorEvent",
+        "type": "object"
+      },
+      "EvidenceWindow": {
+        "description": "Okno dowodu; offsety zaznaczenia są względne do `window_text`.",
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "has_more_after": {
+            "title": "Has More After",
+            "type": "boolean"
+          },
+          "has_more_before": {
+            "title": "Has More Before",
+            "type": "boolean"
+          },
+          "headings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Headings",
+            "type": "array"
+          },
+          "highlight_end": {
+            "title": "Highlight End",
+            "type": "integer"
+          },
+          "highlight_start": {
+            "title": "Highlight Start",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "window_ordinal_from": {
+            "title": "Window Ordinal From",
+            "type": "integer"
+          },
+          "window_ordinal_to": {
+            "title": "Window Ordinal To",
+            "type": "integer"
+          },
+          "window_text": {
+            "title": "Window Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "snapshot_id",
+          "doc_id",
+          "title",
+          "headings",
+          "window_text",
+          "highlight_start",
+          "highlight_end",
+          "window_ordinal_from",
+          "window_ordinal_to",
+          "has_more_before",
+          "has_more_after"
+        ],
+        "title": "EvidenceWindow",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
       "HealthResponse": {
         "properties": {
           "database": {
@@ -26,6 +589,105 @@
         ],
         "title": "HealthResponse",
         "type": "object"
+      },
+      "ResultEvent": {
+        "description": "Odpowiedź zapisana, czytelna przez `GET /api/answers/{id}` (`event: result`).",
+        "properties": {
+          "answer_id": {
+            "title": "Answer Id",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "answered",
+              "abstained"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "answer_id",
+          "outcome"
+        ],
+        "title": "ResultEvent",
+        "type": "object"
+      },
+      "StageEvent": {
+        "description": "Zdarzenie etapu grafu (`event: stage`).",
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "stage": {
+            "enum": [
+              "retrieve",
+              "draft",
+              "quote_check",
+              "verify",
+              "compose",
+              "abstain"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "started",
+              "done"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "status"
+        ],
+        "title": "StageEvent",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
       }
     }
   },
@@ -35,6 +697,268 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/answers": {
+      "post": {
+        "operationId": "create_answer_api_answers_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "itemSchema": {
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    },
+                    "event": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "retry": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StageEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ResultEvent"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorEvent"
+                    }
+                  ],
+                  "title": "Response 200 Create Answer Api Answers Post"
+                }
+              }
+            },
+            "description": "Strumień zdarzeń: `stage` (postęp), potem `result` albo `error`."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Answer",
+        "tags": [
+          "answers"
+        ]
+      }
+    },
+    "/api/answers/{answer_id}": {
+      "get": {
+        "operationId": "get_answer_api_answers__answer_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "answer_id",
+            "required": true,
+            "schema": {
+              "title": "Answer Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerRecord"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Brak odpowiedzi w tej sesji"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Answer",
+        "tags": [
+          "answers"
+        ]
+      }
+    },
+    "/api/corpus": {
+      "get": {
+        "operationId": "corpus_api_corpus_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorpusInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Zestaw fragmentów nie został zaimportowany"
+          }
+        },
+        "summary": "Corpus",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/documents": {
+      "get": {
+        "operationId": "document_api_documents_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "title": "Doc Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentText"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Nieznany dokument"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Document",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
+    "/api/evidence": {
+      "get": {
+        "operationId": "evidence_api_evidence_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "chunk_id",
+            "required": true,
+            "schema": {
+              "title": "Chunk Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "maximum": 5,
+              "minimum": 0,
+              "title": "Before",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "maximum": 5,
+              "minimum": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceWindow"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Nieznany fragment"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Evidence",
+        "tags": [
+          "evidence"
+        ]
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_api_health_get",

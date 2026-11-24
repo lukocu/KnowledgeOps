@@ -7,7 +7,7 @@ from typing import Literal
 from fastapi import FastAPI, Response, status
 from pydantic import BaseModel
 
-from app.api import evidence
+from app.api import answers, evidence
 from app.db import PoolDep, create_pool
 from app.settings import Settings
 
@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(title="KnowledgeOps API", version="0.1.0", lifespan=lifespan)
 app.include_router(evidence.router)
+app.include_router(answers.router)
 
 
 @app.get(

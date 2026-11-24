@@ -728,11 +728,11 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [ ] 3.1 Migracja nakłada się czysto: `cd backend; uv run python -m app.cli migrate`
-- [ ] 3.2 Testy API odpowiedzi przechodzą: `cd backend; uv run pytest tests/api/test_answers.py`
-- [ ] 3.3 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest`
-- [ ] 3.4 Kontrakt jest aktualny (ponowna generacja po `git add` nie zmienia plików): `git add backend/openapi.json frontend/app/api/schema.d.ts; cd backend; uv run python scripts/export_openapi.py; cd ../frontend; npm run api:types; git diff --exit-code ../backend/openapi.json app/api/schema.d.ts`
-- [ ] 3.5 Typy frontu się kompilują: `cd frontend; npm run typecheck`
+- [x] 3.1 Migracja nakłada się czysto: `cd backend; uv run python -m app.cli migrate`
+- [x] 3.2 Testy API odpowiedzi przechodzą: `cd backend; uv run pytest tests/api/test_answers.py`
+- [x] 3.3 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest`
+- [x] 3.4 Kontrakt jest aktualny (ponowna generacja po `git add` nie zmienia plików): `git add backend/openapi.json frontend/app/api/schema.d.ts; cd backend; uv run python scripts/export_openapi.py; cd ../frontend; npm run api:types; git diff --exit-code ../backend/openapi.json app/api/schema.d.ts`
+- [x] 3.5 Typy frontu się kompilują: `cd frontend; npm run typecheck`
 
 #### Manual
 

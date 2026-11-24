@@ -15,7 +15,10 @@ pytestmark = [
 
 def test_second_run_applies_nothing(temp_database: str) -> None:
     with psycopg.connect(temp_database, autocommit=True) as conn:
-        assert apply_migrations(conn, MIGRATIONS_DIR) == ["0001_techqa_schema"]
+        assert apply_migrations(conn, MIGRATIONS_DIR) == [
+            "0001_techqa_schema",
+            "0002_answers",
+        ]
         assert apply_migrations(conn, MIGRATIONS_DIR) == []
 
 
