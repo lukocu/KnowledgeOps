@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { LanguageProvider, useT } from "./i18n/context";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -19,7 +20,7 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap",
   },
 ];
 
@@ -33,7 +34,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        {/* Dostawca języka w Layout, by obejmował też ErrorBoundary. */}
+        <LanguageProvider>{children}</LanguageProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -46,16 +48,16 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Ups!";
-  let details = "Wystąpił nieoczekiwany błąd.";
+  const t = useT();
+  let message = t("error.title");
+  let details = t("error.unexpected");
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Błąd";
+    message =
+      error.status === 404 ? t("error.notFoundTitle") : t("error.titleGeneric");
     details =
-      error.status === 404
-        ? "Nie znaleziono strony."
-        : error.statusText || details;
+      error.status === 404 ? t("error.notFound") : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;

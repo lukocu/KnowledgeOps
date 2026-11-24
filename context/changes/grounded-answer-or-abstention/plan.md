@@ -742,7 +742,7 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [ ] 4.1 Kontrole frontu przechodzą, w tym kompletność słownika EN przez typy: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 4.1 Kontrole frontu przechodzą, w tym kompletność słownika EN przez typy: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
 
 #### Manual
 
