@@ -756,9 +756,9 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 - [x] 5.1 Kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build` (fea3397)
 - [x] 5.2 Kontrakt pozostaje aktualny (porównanie z indeksem): `git add frontend/app/api/schema.d.ts; cd frontend; npm run api:types; git diff --exit-code app/api/schema.d.ts` (fea3397)
- (fea3397)
-#### Manual (fea3397)
- (fea3397)
+
+#### Manual
+
 - [ ] 5.3 Pytanie TRAIN_Q000 pokazuje kroki postępu w kolejności zdarzeń, potem odpowiedź z numerami cytatów i cytatem do `swg21996508` (fea3397)
 - [ ] 5.4 Panel dowodu pokazuje zaznaczony fragment, rozwija kontekst w górę i w dół i otwiera cały dokument z zaznaczeniem (fea3397)
 - [ ] 5.5 Pytanie kontrolne abstencji pokazuje ekran 1C z listą sprawdzonych fragmentów, a każdy otwiera się w panelu (fea3397)
