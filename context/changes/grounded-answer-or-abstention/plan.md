@@ -754,8 +754,8 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [ ] 5.1 Kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
-- [ ] 5.2 Kontrakt pozostaje aktualny (porównanie z indeksem): `git add frontend/app/api/schema.d.ts; cd frontend; npm run api:types; git diff --exit-code app/api/schema.d.ts`
+- [x] 5.1 Kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 5.2 Kontrakt pozostaje aktualny (porównanie z indeksem): `git add frontend/app/api/schema.d.ts; cd frontend; npm run api:types; git diff --exit-code app/api/schema.d.ts`
 
 #### Manual
 
