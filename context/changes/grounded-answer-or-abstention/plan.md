@@ -742,13 +742,13 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [x] 4.1 Kontrole frontu przechodzą, w tym kompletność słownika EN przez typy: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 4.1 Kontrole frontu przechodzą, w tym kompletność słownika EN przez typy: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build` (62d78c1)
 
 #### Manual
 
-- [ ] 4.2 Nagłówek przy 1280 i 1440 px odpowiada kanwie: logo, role, DEMO z opisem, PL/EN, migawka
-- [ ] 4.3 Przełączenie na EN zmienia wszystkie teksty interfejsu i `lang`, a odświeżenie zachowuje wybór języka i roli
-- [ ] 4.4 Przełącznik ról i język działają z klawiatury i mają czytelne etykiety dla czytnika ekranu
+- [ ] 4.2 Nagłówek przy 1280 i 1440 px odpowiada kanwie: logo, role, DEMO z opisem, PL/EN, migawka (62d78c1)
+- [ ] 4.3 Przełączenie na EN zmienia wszystkie teksty interfejsu i `lang`, a odświeżenie zachowuje wybór języka i roli (62d78c1)
+- [ ] 4.4 Przełącznik ról i język działają z klawiatury i mają czytelne etykiety dla czytnika ekranu (62d78c1)
 
 ### Phase 5: Ekrany 1P, 1A i 1C
 
