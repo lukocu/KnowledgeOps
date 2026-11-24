@@ -714,15 +714,15 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [x] 2.1 Zależności są zablokowane: `cd backend; uv sync --locked`
-- [x] 2.2 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .`
-- [x] 2.3 Testy grafu na fałszywym modelu przechodzą: `cd backend; uv run pytest tests/answering`
-- [x] 2.4 Pełny zestaw testów backendu przechodzi bez kluczy OpenAI i Langfuse: `cd backend; uv run pytest`
+- [x] 2.1 Zależności są zablokowane: `cd backend; uv sync --locked` (53fa1a8)
+- [x] 2.2 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .` (53fa1a8)
+- [x] 2.3 Testy grafu na fałszywym modelu przechodzą: `cd backend; uv run pytest tests/answering` (53fa1a8)
+- [x] 2.4 Pełny zestaw testów backendu przechodzi bez kluczy OpenAI i Langfuse: `cd backend; uv run pytest` (53fa1a8)
 
 #### Manual
 
-- [ ] 2.5 `uv run pytest -m live` na pełnej migawce: TRAIN_Q000 odpowiada z cytatem do `swg21996508`, a pytanie kontrolne kończy się abstencją
-- [ ] 2.6 Ślad przebiegu `live` w Langfuse Cloud ma spany węzłów, generacje `draft` i `verify` oraz identyfikatory pobranych fragmentów
+- [ ] 2.5 `uv run pytest -m live` na pełnej migawce: TRAIN_Q000 odpowiada z cytatem do `swg21996508`, a pytanie kontrolne kończy się abstencją (53fa1a8)
+- [ ] 2.6 Ślad przebiegu `live` w Langfuse Cloud ma spany węzłów, generacje `draft` i `verify` oraz identyfikatory pobranych fragmentów (53fa1a8)
 
 ### Phase 3: API odpowiedzi i sesja
 
