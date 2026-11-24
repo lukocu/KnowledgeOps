@@ -701,23 +701,23 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [x] 1.1 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .`
-- [x] 1.2 Testy wyszukiwania i dowodu przechodzą: `cd backend; uv run pytest tests/test_retrieval.py tests/api/test_evidence.py`
-- [x] 1.3 Pełny zestaw testów backendu przechodzi: `cd backend; uv run pytest`
+- [x] 1.1 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .` — c9c3f1f
+- [x] 1.2 Testy wyszukiwania i dowodu przechodzą: `cd backend; uv run pytest tests/test_retrieval.py tests/api/test_evidence.py` — c9c3f1f
+- [x] 1.3 Pełny zestaw testów backendu przechodzi: `cd backend; uv run pytest` — c9c3f1f
 
 #### Manual
 
-- [x] 1.4 `GET /api/evidence` dla pierwszego fragmentu `swg21996508` na pełnej migawce zwraca czytelne okno z zaznaczonym fragmentem
-- [x] 1.5 `abstention-check.md` zawiera wynik przeszukania korpusu i wybrane pytanie kontrolne abstencji
+- [x] 1.4 `GET /api/evidence` dla pierwszego fragmentu `swg21996508` na pełnej migawce zwraca czytelne okno z zaznaczonym fragmentem — c9c3f1f
+- [x] 1.5 `abstention-check.md` zawiera wynik przeszukania korpusu i wybrane pytanie kontrolne abstencji — c9c3f1f
 
 ### Phase 2: Graf odpowiedzi
 
 #### Automated
 
-- [ ] 2.1 Zależności są zablokowane: `cd backend; uv sync --locked`
-- [ ] 2.2 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .`
-- [ ] 2.3 Testy grafu na fałszywym modelu przechodzą: `cd backend; uv run pytest tests/answering`
-- [ ] 2.4 Pełny zestaw testów backendu przechodzi bez kluczy OpenAI i Langfuse: `cd backend; uv run pytest`
+- [x] 2.1 Zależności są zablokowane: `cd backend; uv sync --locked`
+- [x] 2.2 Kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .`
+- [x] 2.3 Testy grafu na fałszywym modelu przechodzą: `cd backend; uv run pytest tests/answering`
+- [x] 2.4 Pełny zestaw testów backendu przechodzi bez kluczy OpenAI i Langfuse: `cd backend; uv run pytest`
 
 #### Manual
 

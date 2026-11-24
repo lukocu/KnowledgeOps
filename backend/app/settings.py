@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.techqa.chunking import ChunkerConfig
@@ -16,6 +17,20 @@ class Settings(BaseSettings):
     chunk_set_id: str | None = None
     answer_k: int = 8
     evidence_context_chunks: int = 1
+
+    # Model czatu (OpenAI). Bez klucza endpoint odpowiedzi zgłasza błąd konfiguracji.
+    openai_api_key: SecretStr | None = None
+    chat_model: str = "gpt-6-luna"
+    # Wysiłek rozumowania modelu; pusty ciąg wyłącza parametr (modele bez rozumowania).
+    chat_reasoning_effort: str = "low"
+    # Limit jednego wywołania modelu i całego zapytania (egzekwuje go API).
+    chat_timeout_s: float = 12
+    answer_deadline_s: float = 25
+
+    # Langfuse (ślad zapytania). Bez kluczy ślad jest wyłączony.
+    langfuse_public_key: SecretStr | None = None
+    langfuse_secret_key: SecretStr | None = None
+    langfuse_base_url: str | None = None
 
     def effective_chunk_set_id(self) -> str:
         """Id zestawu fragmentów: z ustawień, a gdy puste, z manifestu i chunkera."""

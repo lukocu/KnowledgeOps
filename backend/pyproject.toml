@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]>=0.165.0",
+    "langchain-openai>=1.8.5",
+    "langfuse>=5.2.0",
+    "langgraph>=1.2.24",
     "psycopg[binary,pool]>=3.3.9",
     "pydantic-settings>=2.16.3",
 ]
@@ -33,4 +36,6 @@ testpaths = ["tests"]
 markers = [
     "db: testy wymagające działającej bazy (DATABASE_URL)",
     "corpus: testy wymagające pobranych danych TechQA (TECHQA_DIR)",
+    "live: testy na żywo (prawdziwy OpenAI, pełna migawka); uruchamiaj przez -m live",
 ]
+addopts = "-m 'not live'"
