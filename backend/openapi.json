@@ -892,6 +892,7 @@
     },
     "/api/evidence": {
       "get": {
+        "description": "Okno dowodu; bez `before`/`after` sąsiedztwo z `EVIDENCE_CONTEXT_CHUNKS`.",
         "operationId": "evidence_api_evidence_get",
         "parameters": [
           {
@@ -908,11 +909,17 @@
             "name": "before",
             "required": false,
             "schema": {
-              "default": 1,
-              "maximum": 5,
-              "minimum": 0,
-              "title": "Before",
-              "type": "integer"
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
             }
           },
           {
@@ -920,11 +927,17 @@
             "name": "after",
             "required": false,
             "schema": {
-              "default": 1,
-              "maximum": 5,
-              "minimum": 0,
-              "title": "After",
-              "type": "integer"
+              "anyOf": [
+                {
+                  "maximum": 5,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After"
             }
           }
         ],

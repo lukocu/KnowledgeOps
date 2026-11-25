@@ -41,7 +41,7 @@ function CodeBlock({ code }: { code: string }) {
             className="inline-flex h-7 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-white px-3 text-xs font-medium whitespace-nowrap text-text hover:brightness-95"
           >
             {copy === "copied" ? (
-              <CheckIcon size={16} stroke="#1a6b36" />
+              <CheckIcon size={16} className="flex-none text-success" />
             ) : copy === "failed" ? (
               <Icon>
                 <circle cx="12" cy="12" r="9" />

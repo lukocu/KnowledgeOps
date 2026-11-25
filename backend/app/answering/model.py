@@ -31,7 +31,7 @@ def make_chat_model(settings: Settings) -> BaseChatModel:
         extra_body: dict[str, Any] = {"provider": {"require_parameters": True}}
         if effort == "none":
             extra_body["reasoning"] = {"enabled": False}
-        elif effort:
+        else:
             extra_body["reasoning"] = {"effort": effort}
         return ChatOpenAI(
             model=settings.chat_model,
@@ -47,5 +47,5 @@ def make_chat_model(settings: Settings) -> BaseChatModel:
         base_url=base_url,
         timeout=settings.chat_timeout_s,
         max_retries=0,
-        reasoning_effort=None if effort == "none" else (effort or None),
+        reasoning_effort=None if effort == "none" else effort,
     )

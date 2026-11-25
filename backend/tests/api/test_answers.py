@@ -1,5 +1,6 @@
 """API odpowiedzi na fałszywym modelu: strumień SSE, sesja, zapis i odczyt."""
 
+import asyncio
 import json
 from collections.abc import Callable, Iterator
 from pathlib import Path
@@ -53,6 +54,32 @@ class FailingChatModel(BaseChatModel):
             raise TimeoutError("limit czasu modelu")
 
         return RunnableLambda(fail)
+
+
+class SlowChatModel(BaseChatModel):
+    """Model, który odpowiada dłużej niż termin całego zapytania."""
+
+    @property
+    def _llm_type(self) -> str:
+        return "slow-fake"
+
+    def _generate(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: Any = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        raise AssertionError("graf ma używać wyłącznie with_structured_output")
+
+    def with_structured_output(
+        self, schema: Any, **kwargs: Any
+    ) -> Runnable[LanguageModelInput, Any]:
+        async def slow(_: LanguageModelInput) -> Any:
+            await asyncio.sleep(10)
+            raise AssertionError("termin zapytania powinien minąć wcześniej")
+
+        return RunnableLambda(slow)
 
 
 @pytest.fixture(autouse=True)
@@ -296,3 +323,26 @@ def test_answer_survives_snapshot_reimport(
     record = api_client.get(f"/api/answers/{answer_id}")
     assert record.status_code == 200
     assert record.json()["outcome"] == "answered"
+
+
+def test_answer_deadline_saves_failed_row_and_sends_error(
+    api_client: TestClient,
+    imported_conn: psycopg.Connection,
+    use_model: Callable[[BaseChatModel], None],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ANSWER_DEADLINE_S", "0.5")
+    use_model(SlowChatModel())
+    events = post(api_client)
+
+    assert [name for name, _ in events][0] == "stage"
+    name, data = events[-1]
+    assert name == "error"
+    assert data["code"] == "model_unavailable"
+    assert data["answer_id"] is not None
+    row = imported_conn.execute(
+        "SELECT outcome, error FROM answers WHERE id = %s", (data["answer_id"],)
+    ).fetchone()
+    assert row is not None
+    assert row[0] == "failed"
+    assert "TimeoutError" in row[1]

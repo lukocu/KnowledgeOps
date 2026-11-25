@@ -23,9 +23,7 @@ def test_no_handler_and_safe_flush_without_keys(settings: Settings) -> None:
 
 
 def test_run_config_has_name_metadata_and_no_session_data(settings: Settings) -> None:
-    config = run_config(
-        settings, chunk_set_id="set", k=8, handler=None, retrieved_chunk_ids=["a", "b"]
-    )
+    config = run_config(settings, chunk_set_id="set", k=8, handler=None)
     assert config["run_name"] == "answer"
     assert config["callbacks"] == []
     metadata = config["metadata"]
@@ -34,7 +32,6 @@ def test_run_config_has_name_metadata_and_no_session_data(settings: Settings) ->
         "k": 8,
         "chat_model": settings.chat_model,
         "prompt_versions": prompt_versions(),
-        "retrieved_chunk_ids": ["a", "b"],
     }
     assert not any("session" in key for key in metadata)
 

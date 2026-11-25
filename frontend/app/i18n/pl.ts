@@ -7,6 +7,7 @@ export const pl = {
   "header.roleEditor": "Redaktor",
   "header.roleNotice":
     "Przełącznik ról nie jest zabezpieczeniem ani kontrolą dostępu. Rola nie zmienia uprawnień ani danych.",
+  "header.roleNoticeShort": "Rola nie jest kontrolą dostępu",
   "header.demo": "DEMO",
   "header.demoNotice":
     "Publiczne demo portfolio: dane, sprawy i oceny są przykładowe. Przełącznik ról nie jest zabezpieczeniem ani kontrolą dostępu.",

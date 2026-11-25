@@ -1,5 +1,7 @@
 from pathlib import Path
+from typing import Annotated
 
+from fastapi import Depends
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -23,7 +25,8 @@ class Settings(BaseSettings):
     # Opcjonalny adres API zgodnego z OpenAI (np. https://openrouter.ai/api/v1).
     openai_base_url: str | None = None
     chat_model: str = "gpt-6-luna"
-    # Wysiłek rozumowania modelu; pusty ciąg wyłącza parametr (modele bez rozumowania).
+    # Wysiłek rozumowania modelu; `none` wyłącza parametr (modele bez rozumowania).
+    # Pusta wartość w środowisku jest ignorowana i zostaje domyślne `low`.
     chat_reasoning_effort: str = "low"
     # Limit jednego wywołania modelu i całego zapytania (egzekwuje go API).
     chat_timeout_s: float = 12
@@ -47,3 +50,6 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Zależność FastAPI: ustawienia czytane ze środowiska przy każdym żądaniu."""
     return Settings()
+
+
+SettingsDep = Annotated[Settings, Depends(get_settings)]

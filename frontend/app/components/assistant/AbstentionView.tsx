@@ -38,25 +38,25 @@ export function AbstentionView({
           width="24"
           height="24"
           viewBox="0 0 16 16"
-          className="flex-none"
+          className="flex-none text-icon"
         >
           <circle
             cx="8"
             cy="8"
             r="6"
             fill="none"
-            stroke="#3f434a"
+            stroke="currentColor"
             strokeWidth="1.4"
             strokeDasharray="2.2 1.8"
           />
           <path
             d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.5-.7 1v.3"
             fill="none"
-            stroke="#3f434a"
+            stroke="currentColor"
             strokeWidth="1.3"
             strokeLinecap="round"
           />
-          <circle cx="8" cy="11.1" r=".8" fill="#3f434a" />
+          <circle cx="8" cy="11.1" r=".8" fill="currentColor" />
         </svg>
         <h1 className="m-0 text-[22px] leading-[30px] font-semibold">
           {t("abstain.title")}
@@ -65,7 +65,7 @@ export function AbstentionView({
       <p className="mt-2.5 mb-0 max-w-[680px] text-[15px] leading-6">
         {t("abstain.explain")}
       </p>
-      <p className="mt-2.5 mb-0 flex max-w-[680px] items-start gap-2 text-sm leading-[22px] text-[#3d4046]">
+      <p className="mt-2.5 mb-0 flex max-w-[680px] items-start gap-2 text-sm leading-[22px] text-secondary">
         <span className="mt-[3px] flex-none text-muted">
           <InfoIcon />
         </span>

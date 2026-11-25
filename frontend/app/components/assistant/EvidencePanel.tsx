@@ -40,7 +40,7 @@ function Notice({
   return (
     <div
       role="status"
-      className="flex flex-wrap items-center gap-2 text-sm leading-5 text-[#3d4046]"
+      className="flex flex-wrap items-center gap-2 text-sm leading-5 text-secondary"
     >
       <span className="text-muted">
         <InfoIcon />
@@ -408,7 +408,7 @@ export function EvidencePanel({
   return (
     <aside
       aria-label={t("evidence.panel")}
-      className="flex w-[400px] flex-none flex-col overflow-hidden border-l border-border-soft bg-white"
+      className="flex w-[min(400px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-white"
     >
       <div className="flex items-center justify-between pt-2.5 pr-3 pl-6">
         <h2

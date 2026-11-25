@@ -9,6 +9,7 @@ export const en: Record<TranslationKey, string> = {
   "header.roleEditor": "Editor",
   "header.roleNotice":
     "The role switch is not a security measure or access control. The role changes neither permissions nor data.",
+  "header.roleNoticeShort": "Role is not access control",
   "header.demo": "DEMO",
   "header.demoNotice":
     "Public portfolio demo: data, cases and ratings are examples. The role switch is not a security measure or access control.",

@@ -16,7 +16,8 @@ const STATUS_WORDS: Record<StepStatus, TranslationKey> = {
 };
 
 function StatusIcon({ status }: { status: StepStatus }) {
-  if (status === "done") return <CheckIcon size={18} stroke="#1a6b36" />;
+  if (status === "done")
+    return <CheckIcon size={18} className="flex-none text-success" />;
   if (status === "active") {
     return (
       <svg
@@ -25,11 +26,11 @@ function StatusIcon({ status }: { status: StepStatus }) {
         height="18"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#2f5fc4"
+        stroke="currentColor"
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="flex-none animate-spin"
+        className="flex-none animate-spin text-primary"
       >
         <path d="M12 3a9 9 0 1 0 9 9" />
       </svg>

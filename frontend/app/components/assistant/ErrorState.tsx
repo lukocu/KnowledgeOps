@@ -28,7 +28,7 @@ export function ErrorState({
   return (
     <section role="alert" className="mt-7">
       <div className="flex items-center gap-2.5">
-        <InfoIcon size={24} stroke="#3f434a" />
+        <InfoIcon size={24} className="flex-none text-icon" />
         <h1 className="m-0 text-[22px] leading-[30px] font-semibold">
           {t("errorState.title")}
         </h1>
@@ -36,7 +36,7 @@ export function ErrorState({
       <p className="mt-2.5 mb-0 max-w-[680px] text-[15px] leading-6">
         {t(MESSAGES[code])}
       </p>
-      <p className="mt-2.5 mb-0 flex max-w-[680px] items-start gap-2 text-sm leading-[22px] text-[#3d4046]">
+      <p className="mt-2.5 mb-0 flex max-w-[680px] items-start gap-2 text-sm leading-[22px] text-secondary">
         <span className="mt-[3px] flex-none text-muted">
           <InfoIcon />
         </span>
@@ -58,7 +58,7 @@ export function AnswerNotFound() {
   return (
     <section className="mt-7">
       <div className="flex items-center gap-2.5">
-        <InfoIcon size={24} stroke="#3f434a" />
+        <InfoIcon size={24} className="flex-none text-icon" />
         <h1 className="m-0 text-[22px] leading-[30px] font-semibold">
           {t("errorState.notFoundTitle")}
         </h1>

@@ -2,7 +2,6 @@
 
 import logging
 import os
-from collections.abc import Sequence
 
 from langchain_core.runnables import RunnableConfig
 from langfuse import Langfuse, get_client
@@ -63,12 +62,11 @@ def run_config(
     chunk_set_id: str,
     k: int,
     handler: CallbackHandler | None,
-    retrieved_chunk_ids: Sequence[str] | None = None,
 ) -> RunnableConfig:
     """Konfiguracja przebiegu grafu: nazwa `answer`, metadane i handler śladu.
 
     Identyfikatory pobranych fragmentów są znane dopiero po `retrieve`, więc
-    trafiają do śladu jako wynik tego węzła; tu można je podać tylko, gdy są znane.
+    trafiają do śladu jako wyjście spanu tego węzła, nie jako metadane.
     Do śladu nie trafia identyfikator sesji ani jego hash.
     """
     metadata: dict[str, object] = {
@@ -77,8 +75,6 @@ def run_config(
         "chat_model": settings.chat_model,
         "prompt_versions": prompt_versions(),
     }
-    if retrieved_chunk_ids is not None:
-        metadata["retrieved_chunk_ids"] = list(retrieved_chunk_ids)
     return RunnableConfig(
         run_name="answer",
         metadata=metadata,

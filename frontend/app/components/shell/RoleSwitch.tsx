@@ -45,8 +45,8 @@ export function RoleSwitch() {
           );
         })}
       </div>
-      <span id={noticeId} className="sr-only">
-        {t("header.roleNotice")}
+      <span id={noticeId} className="text-xs whitespace-nowrap text-muted">
+        {t("header.roleNoticeShort")}
       </span>
     </>
   );

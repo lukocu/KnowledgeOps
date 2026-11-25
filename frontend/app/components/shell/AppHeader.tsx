@@ -43,7 +43,14 @@ export function AppHeader() {
           viewBox="0 0 20 20"
           className="flex-none"
         >
-          <rect x="1" y="1" width="18" height="18" rx="5" fill="#1f2023" />
+          <rect
+            x="1"
+            y="1"
+            width="18"
+            height="18"
+            rx="5"
+            className="fill-text"
+          />
           <path
             d="M6 6.5h8M6 10h5"
             stroke="#fff"
@@ -52,7 +59,7 @@ export function AppHeader() {
           />
           <path
             d="M6 13.8h8"
-            stroke="#c98a2c"
+            className="stroke-accent"
             strokeWidth="2.4"
             strokeLinecap="round"
           />

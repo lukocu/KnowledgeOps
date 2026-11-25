@@ -79,7 +79,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Evidence */
+        /**
+         * Evidence
+         * @description Okno dowodu; bez `before`/`after` sąsiedztwo z `EVIDENCE_CONTEXT_CHUNKS`.
+         */
         get: operations["evidence_api_evidence_get"];
         put?: never;
         post?: never;
@@ -541,8 +544,8 @@ export interface operations {
         parameters: {
             query: {
                 chunk_id: string;
-                before?: number;
-                after?: number;
+                before?: number | null;
+                after?: number | null;
             };
             header?: never;
             path?: never;

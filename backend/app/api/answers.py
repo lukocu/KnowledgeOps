@@ -4,7 +4,7 @@ import asyncio
 import logging
 import time
 import uuid
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncGenerator, AsyncIterator, Callable
 from datetime import datetime
 from typing import Annotated, Any, Literal, cast
 
@@ -27,16 +27,14 @@ from app.answering.model import ModelNotConfiguredError, make_chat_model
 from app.answering.nodes import AnswerState
 from app.answering.prompts import prompt_versions
 from app.answering.schemas import AnswerResult
-from app.api.evidence import _connection as http_connection
-from app.db import PoolDep
+from app.db import CONNECTION_TIMEOUT_S, PoolDep, http_connection
 from app.observability import flush_traces, make_trace_handler, run_config
 from app.retrieval import get_corpus_info
 from app.session import ExistingSessionDep, SessionDep
-from app.settings import Settings, get_settings
+from app.settings import Settings, SettingsDep
 
 logger = logging.getLogger(__name__)
 
-CONNECTION_TIMEOUT_S = 5.0
 MAX_QUESTION_LENGTH = 2000
 
 router = APIRouter(prefix="/api", tags=["answers"])
@@ -69,7 +67,6 @@ def get_chat_model_factory() -> ChatModelFactory:
 
 
 ChatModelFactoryDep = Annotated[ChatModelFactory, Depends(get_chat_model_factory)]
-SettingsDep = Annotated[Settings, Depends(get_settings)]
 
 
 class AnswerRequest(BaseModel):
@@ -230,20 +227,32 @@ async def create_answer(
         final: AnswerState = {}
         failure: ErrorCode | None = None
         failure_detail = ""
+        stream = cast(
+            AsyncGenerator[tuple[str, Any]],
+            graph.astream(
+                initial_state(question, settings, chunk_set_id=chunk_set_id),
+                run_cfg,
+                stream_mode=["custom", "values"],
+            ),
+        )
+        # Termin obejmuje tylko pobranie kolejnego zdarzenia grafu, nie `yield`:
+        # anulowanie w trakcie zapisu do klienta nie zamieni się w TimeoutError
+        # poza blokiem (PEP 789), więc przekroczenie zawsze daje `failed`.
+        deadline = asyncio.get_running_loop().time() + settings.answer_deadline_s
         try:
-            async with asyncio.timeout(settings.answer_deadline_s):
-                async for mode, chunk in graph.astream(
-                    initial_state(question, settings, chunk_set_id=chunk_set_id),
-                    run_cfg,
-                    stream_mode=["custom", "values"],
-                ):
-                    if mode == "custom":
-                        yield ServerSentEvent(
-                            event="stage",
-                            data=StageEvent.model_validate(chunk),
-                        )
-                    else:
-                        final = cast(AnswerState, chunk)
+            while True:
+                async with asyncio.timeout_at(deadline):
+                    try:
+                        mode, chunk = await anext(stream)
+                    except StopAsyncIteration:
+                        break
+                if mode == "custom":
+                    yield ServerSentEvent(
+                        event="stage",
+                        data=StageEvent.model_validate(chunk),
+                    )
+                else:
+                    final = cast(AnswerState, chunk)
         except DATABASE_ERRORS:
             logger.warning("Baza niedostępna w trakcie odpowiedzi", exc_info=True)
             yield _error_event("database_unavailable")
@@ -252,6 +261,8 @@ async def create_answer(
             logger.warning("Przebieg odpowiedzi nie powiódł się", exc_info=True)
             failure = _classify(exc)
             failure_detail = f"{type(exc).__name__}: {exc}"
+        finally:
+            await stream.aclose()
 
         trace_id = getattr(handler, "last_trace_id", None) if handler else None
 

@@ -693,6 +693,15 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 - Dane pilotażu: `docs/raport-techqa.md:37-40`, `docs/pilotaz-audytu-techqa.md:15-18,87`
 - AI Devs 4: `01_01_grounding` (cache etapów, test dosłowności cytatu), `01_01_structured` (kolejność pól, wartości „unknown”), `03_01_observability` (span na etap, flush w `finally`)
 
+## Aneks po implementacji (przegląd 2026-11-25)
+
+Rozstrzygnięcia z implementacji i przeglądu (`reviews/impl-review.md`), które uzupełniają plan:
+
+- **Dostawca modelu (F5):** czat idzie przez API zgodne z OpenAI (`langchain-openai`), a dostawcę wybiera `OPENAI_BASE_URL` (puste = OpenAI). Obsługiwane są też Gemini (endpoint zgodny z OpenAI, `reasoning_effort`) i OpenRouter (`extra_body` z `provider.require_parameters` i `reasoning`). `CHAT_REASONING_EFFORT` ustawia wysiłek rozumowania, a `none` go wyłącza. Domyślny model w `.env.example` to sprawdzony w testach `live` `gemini-3.5-flash-lite` z `low`. DeepSeek przez OpenRouter nie przeszedł kontroli abstencji.
+- **Reguła odpowiedzi, krok 3→4 (F6):** gdy `quote_check` odrzuci wszystkie tezy, `verify` nie jest wywoływany i graf przechodzi wprost do `abstain` z powodem `none_supported` (bez zbędnego wywołania modelu i bez zdarzenia `verify`).
+- **Metadane śladu (F7):** identyfikatory pobranych fragmentów są znane dopiero po `retrieve`, więc trafiają do Langfuse jako wyjście spanu `retrieve`, a nie jako metadane przebiegu. Metadane to `chunk_set_id`, `k`, `chat_model` i `prompt_versions`.
+- **Termin zapytania (F1):** `answer_deadline_s` obejmuje tylko pobieranie kolejnych zdarzeń grafu, a nie wysyłanie ich do klienta, więc przekroczenie zawsze daje wiersz `failed` i zdarzenie `error`.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.

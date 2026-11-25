@@ -1,16 +1,11 @@
 """Endpointy dowodu i migawki: opis korpusu, okno dowodu i cały dokument."""
 
 import logging
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 from typing import Annotated
 
-import psycopg
-import psycopg_pool
 from fastapi import APIRouter, HTTPException, Query, status
-from psycopg import AsyncConnection
 
-from app.db import PoolDep
+from app.db import PoolDep, http_connection
 from app.retrieval import (
     CorpusInfo,
     DocumentText,
@@ -19,27 +14,15 @@ from app.retrieval import (
     get_document,
     get_evidence_window,
 )
-from app.settings import Settings
+from app.settings import SettingsDep
 
-CONNECTION_TIMEOUT_S = 5.0
 MAX_CONTEXT_CHUNKS = 5
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["evidence"])
 
-
-@asynccontextmanager
-async def _connection(pool: PoolDep) -> AsyncIterator[AsyncConnection]:
-    """Połączenie z puli; niedostępna baza daje 503."""
-    try:
-        async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
-            yield conn
-    except (psycopg.OperationalError, psycopg_pool.PoolTimeout) as exc:
-        logger.warning("Baza niedostępna", exc_info=True)
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE, "Baza danych jest niedostępna"
-        ) from exc
+ContextChunks = Annotated[int | None, Query(ge=0, le=MAX_CONTEXT_CHUNKS)]
 
 
 @router.get(
@@ -47,13 +30,16 @@ async def _connection(pool: PoolDep) -> AsyncIterator[AsyncConnection]:
     response_model=CorpusInfo,
     responses={404: {"description": "Zestaw fragmentów nie został zaimportowany"}},
 )
-async def corpus(pool: PoolDep) -> CorpusInfo:
-    chunk_set_id = Settings().effective_chunk_set_id()
-    async with _connection(pool) as conn:
+async def corpus(pool: PoolDep, settings: SettingsDep) -> CorpusInfo:
+    chunk_set_id = settings.effective_chunk_set_id()
+    async with http_connection(pool) as conn:
         try:
             return await get_corpus_info(conn, chunk_set_id)
         except LookupError as exc:
-            raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc
+            logger.warning("Brak zestawu fragmentów: %s", exc)
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND, "Zestaw fragmentów nie został zaimportowany"
+            ) from exc
 
 
 @router.get(
@@ -63,12 +49,20 @@ async def corpus(pool: PoolDep) -> CorpusInfo:
 )
 async def evidence(
     pool: PoolDep,
+    settings: SettingsDep,
     chunk_id: str,
-    before: Annotated[int, Query(ge=0, le=MAX_CONTEXT_CHUNKS)] = 1,
-    after: Annotated[int, Query(ge=0, le=MAX_CONTEXT_CHUNKS)] = 1,
+    before: ContextChunks = None,
+    after: ContextChunks = None,
 ) -> EvidenceWindow:
-    async with _connection(pool) as conn:
-        window = await get_evidence_window(conn, chunk_id, before=before, after=after)
+    """Okno dowodu; bez `before`/`after` sąsiedztwo z `EVIDENCE_CONTEXT_CHUNKS`."""
+    default = min(settings.evidence_context_chunks, MAX_CONTEXT_CHUNKS)
+    async with http_connection(pool) as conn:
+        window = await get_evidence_window(
+            conn,
+            chunk_id,
+            before=default if before is None else before,
+            after=default if after is None else after,
+        )
     if window is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Nieznany fragment")
     return window
@@ -79,9 +73,11 @@ async def evidence(
     response_model=DocumentText,
     responses={404: {"description": "Nieznany dokument"}},
 )
-async def document(pool: PoolDep, snapshot_id: str, doc_id: str) -> DocumentText:
-    chunk_set_id = Settings().effective_chunk_set_id()
-    async with _connection(pool) as conn:
+async def document(
+    pool: PoolDep, settings: SettingsDep, snapshot_id: str, doc_id: str
+) -> DocumentText:
+    chunk_set_id = settings.effective_chunk_set_id()
+    async with http_connection(pool) as conn:
         result = await get_document(
             conn, snapshot_id, doc_id, chunk_set_id=chunk_set_id
         )

@@ -42,7 +42,7 @@ export function CheckedChunksPanel({
   return (
     <aside
       aria-label={t("checked.panel")}
-      className="flex w-[420px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 pt-3 pb-4"
+      className="flex w-[min(420px,45%)] min-w-[300px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 pt-3 pb-4"
     >
       <div className="flex items-center justify-between">
         <h2

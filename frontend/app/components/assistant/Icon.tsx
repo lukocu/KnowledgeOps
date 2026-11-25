@@ -33,11 +33,13 @@ export function Icon({
 export const CheckIcon = ({
   size,
   stroke,
+  className,
 }: {
   size?: number;
   stroke?: string;
+  className?: string;
 }) => (
-  <Icon size={size} stroke={stroke}>
+  <Icon size={size} stroke={stroke} className={className}>
     <path d="M5 12l5 5 9-10" />
   </Icon>
 );
@@ -52,11 +54,13 @@ export const CopyIcon = () => (
 export const InfoIcon = ({
   size,
   stroke,
+  className,
 }: {
   size?: number;
   stroke?: string;
+  className?: string;
 }) => (
-  <Icon size={size} stroke={stroke}>
+  <Icon size={size} stroke={stroke} className={className}>
     <circle cx="12" cy="12" r="9" />
     <path d="M12 11v5" />
     <path d="M12 8h.01" />

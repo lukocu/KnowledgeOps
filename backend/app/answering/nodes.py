@@ -28,7 +28,7 @@ from app.answering.schemas import (
     RejectionReason,
     VerifyOutput,
 )
-from app.db import AsyncPool
+from app.db import CONNECTION_TIMEOUT_S, AsyncPool
 from app.retrieval import RetrievedChunk, search_bm25
 from app.settings import Settings
 
@@ -267,7 +267,7 @@ class AnswerNodes:
 
     async def retrieve(self, state: AnswerState) -> AnswerState:
         emit("retrieve", "started")
-        async with self._pool.connection() as conn:
+        async with self._pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
             retrieved = await search_bm25(
                 conn,
                 state["question"],
