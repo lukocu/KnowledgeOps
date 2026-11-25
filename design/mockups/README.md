@@ -71,11 +71,11 @@ Ograniczenia MVP, które makiety muszą respektować: brak logowania (przełącz
 
 ## Decyzje otwarte
 
-1. Położenie znacznika przy tezie z blokiem kodu: przed blokiem czy po nim.
+1. ~~Położenie znacznika przy tezie z blokiem kodu: przed blokiem czy po nim.~~ Rozstrzygnięte w planie S-02: numer przed blokiem kodu (kończy zdanie tezy).
 2. Krój Inter: sprawdzić licencję i polskie znaki.
 3. Teza w audycie: pokazywać dosłowne zdanie z notatki czy tezę przeredagowaną przez system.
 4. Zachowanie paneli poniżej 1400 px: zwężony panel czy zwijanie do wąskiej szyny.
 5. Zakładki tez w ekranie 3 zakładają niewielką liczbę tez. Dla kilkunastu trzeba przewijania lub listy.
-6. Domyślny język interfejsu: polski czy angielski.
+6. ~~Domyślny język interfejsu: polski czy angielski.~~ Rozstrzygnięte w planie S-02: domyślnie polski.
 
 Rozstrzygnięte 22.11.2026 (patrz PRD): kategorie decyzji redaktora (lista startowa), nazwa stanu sprzecznych źródeł, ciemny motyw (nice-to-have, FR-022).

@@ -770,8 +770,8 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [ ] 6.1 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest`
-- [ ] 6.2 Pełne kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 6.1 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest`
+- [x] 6.2 Pełne kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
 - [ ] 6.3 CI na gałęzi jest zielone (jobs `backend`, `frontend`, `contract`)
 
 #### Manual
