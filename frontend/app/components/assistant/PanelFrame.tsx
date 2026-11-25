@@ -61,6 +61,7 @@ function PanelSheet({
   children: ReactNode;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const closingByCleanup = useRef(false);
 
   // Efekt układu: `close()` w sprzątaniu działa, zanim React usunie element z DOM,
   // więc przeglądarka przywraca fokus na element sprzed otwarcia; trasa ustawia
@@ -68,8 +69,10 @@ function PanelSheet({
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
+    closingByCleanup.current = false;
     if (!dialog.open) dialog.showModal();
     return () => {
+      closingByCleanup.current = true;
       if (dialog.open) dialog.close();
     };
   }, []);
@@ -79,14 +82,17 @@ function PanelSheet({
       ref={dialogRef}
       aria-label={label}
       onCancel={(event) => {
-        // Escape obsługuje trasa (kolejność zamykania i powrót fokusu).
+        // Zamknięcie przez stan Reacta, nie natywnie. Escape z klawiatury obsługuje trasa
+        // (kolejność zamykania) i blokuje `cancel` już na `keydown`; tu trafia `cancel`
+        // bez klawisza, np. systemowy gest Wstecz.
         event.preventDefault();
+        onDismiss();
       }}
       // Natywne zamknięcie mimo `preventDefault()` synchronizuje stan. Zdarzenie `close`
-      // przychodzi asynchronicznie; jeśli dialog jest już znowu otwarty (podwójny efekt
-      // w StrictMode), to echo wcześniejszego `close()` i je pomijamy.
+      // przychodzi asynchronicznie; pomijamy echo `close()` ze sprzątania (także przy
+      // podwójnym efekcie w StrictMode).
       onClose={() => {
-        if (!dialogRef.current?.open) onDismiss();
+        if (!closingByCleanup.current && !dialogRef.current?.open) onDismiss();
       }}
       onClick={(event) => {
         // Klik w tło: celem jest sam dialog, bo treść wypełnia wewnętrzny kontener.

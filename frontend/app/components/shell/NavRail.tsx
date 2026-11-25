@@ -172,14 +172,17 @@ function NavDrawerDialog({
 }) {
   const t = useT();
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const closingByCleanup = useRef(false);
 
   // Efekt układu: `close()` w sprzątaniu działa, zanim React usunie element z DOM,
   // więc przeglądarka przywraca fokus na przycisk Menu.
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
+    closingByCleanup.current = false;
     if (!dialog.open) dialog.showModal();
     return () => {
+      closingByCleanup.current = true;
       if (dialog.open) dialog.close();
     };
   }, []);
@@ -188,17 +191,17 @@ function NavDrawerDialog({
     <dialog
       ref={dialogRef}
       id={id}
-      aria-label={t("nav.label")}
+      aria-label={t("nav.menu")}
       onCancel={(event) => {
         // Escape: zamknięcie przez stan Reacta, nie natywnie.
         event.preventDefault();
         onClose();
       }}
       // Natywne zamknięcie mimo `preventDefault()` (np. powtórzony Escape) synchronizuje stan.
-      // Zdarzenie `close` przychodzi asynchronicznie; jeśli dialog jest już znowu otwarty
-      // (podwójny efekt w StrictMode), to echo wcześniejszego `close()` i je pomijamy.
+      // Zdarzenie `close` przychodzi asynchronicznie; pomijamy echo `close()` ze sprzątania
+      // (także przy podwójnym efekcie w StrictMode).
       onClose={() => {
-        if (!dialogRef.current?.open) onClose();
+        if (!closingByCleanup.current && !dialogRef.current?.open) onClose();
       }}
       onClick={(event) => {
         // Klik w tło: celem jest sam dialog, bo treść wypełnia wewnętrzny kontener.

@@ -112,7 +112,7 @@ export function AppHeader({
           aria-label={t("nav.menu")}
           title={t("nav.menu")}
           aria-expanded={menuOpen}
-          aria-controls={menuId}
+          aria-controls={menuOpen ? menuId : undefined}
           aria-haspopup="dialog"
           onClick={onOpenMenu}
           className="inline-flex h-[36px] w-[36px] flex-none cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"

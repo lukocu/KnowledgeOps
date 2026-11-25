@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type CopyState = "idle" | "copied" | "failed";
 
@@ -8,20 +8,22 @@ export function useCopy(): {
   copy: (text: string) => Promise<void>;
 } {
   const [state, setState] = useState<CopyState>("idle");
+  const timer = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    if (state === "idle") return;
-    const timer = window.setTimeout(() => setState("idle"), 2000);
-    return () => window.clearTimeout(timer);
-  }, [state]);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
 
   async function copy(text: string) {
+    let result: CopyState;
     try {
       await navigator.clipboard.writeText(text);
-      setState("copied");
+      result = "copied";
     } catch {
-      setState("failed");
+      result = "failed";
     }
+    setState(result);
+    // Każde kopiowanie restartuje odliczanie 2 s.
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => setState("idle"), 2000);
   }
 
   return { state, copy };
