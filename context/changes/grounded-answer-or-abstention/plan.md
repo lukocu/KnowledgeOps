@@ -746,9 +746,9 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Manual
 
-- [ ] 4.2 Nagłówek przy 1280 i 1440 px odpowiada kanwie: logo, role, DEMO z opisem, PL/EN, migawka (62d78c1)
-- [ ] 4.3 Przełączenie na EN zmienia wszystkie teksty interfejsu i `lang`, a odświeżenie zachowuje wybór języka i roli (62d78c1)
-- [ ] 4.4 Przełącznik ról i język działają z klawiatury i mają czytelne etykiety dla czytnika ekranu (62d78c1)
+- [x] 4.2 Nagłówek przy 1280 i 1440 px odpowiada kanwie: logo, role, DEMO z opisem, PL/EN, migawka (62d78c1)
+- [x] 4.3 Przełączenie na EN zmienia wszystkie teksty interfejsu i `lang`, a odświeżenie zachowuje wybór języka i roli (62d78c1)
+- [x] 4.4 Przełącznik ról i język działają z klawiatury i mają czytelne etykiety dla czytnika ekranu (62d78c1)
 
 ### Phase 5: Ekrany 1P, 1A i 1C
 
@@ -760,11 +760,11 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 #### Manual
 
 - [x] 5.3 Pytanie TRAIN_Q000 pokazuje kroki postępu w kolejności zdarzeń, potem odpowiedź z numerami cytatów i cytatem do `swg21996508` (fea3397)
-- [ ] 5.4 Panel dowodu pokazuje zaznaczony fragment, rozwija kontekst w górę i w dół i otwiera cały dokument z zaznaczeniem (fea3397)
-- [ ] 5.5 Pytanie kontrolne abstencji pokazuje ekran 1C z listą sprawdzonych fragmentów, a każdy otwiera się w panelu (fea3397)
-- [ ] 5.6 Odświeżenie `/odpowiedz/:id` przywraca odpowiedź, a otwarcie tego adresu w oknie prywatnym daje stan „Nie znaleziono odpowiedzi w tej sesji” (fea3397)
-- [ ] 5.7 Zatrzymany backend lub brak klucza daje stan błędu ze słowem i ikoną oraz działające ponowienie (fea3397)
-- [ ] 5.8 Panel dowodu, numery cytatów i kompozytor obsługuje się samą klawiaturą (Tab, Enter, Escape z powrotem fokusu) (fea3397)
+- [x] 5.4 Panel dowodu pokazuje zaznaczony fragment, rozwija kontekst w górę i w dół i otwiera cały dokument z zaznaczeniem (fea3397)
+- [x] 5.5 Pytanie kontrolne abstencji pokazuje ekran 1C z listą sprawdzonych fragmentów, a każdy otwiera się w panelu (fea3397)
+- [x] 5.6 Odświeżenie `/odpowiedz/:id` przywraca odpowiedź, a otwarcie tego adresu w oknie prywatnym daje stan „Nie znaleziono odpowiedzi w tej sesji” (fea3397)
+- [x] 5.7 Zatrzymany backend lub brak klucza daje stan błędu ze słowem i ikoną oraz działające ponowienie (fea3397)
+- [x] 5.8 Panel dowodu, numery cytatów i kompozytor obsługuje się samą klawiaturą (Tab, Enter, Escape z powrotem fokusu) (fea3397)
 
 ### Phase 6: Weryfikacja i dokumentacja
 
@@ -772,11 +772,11 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 - [x] 6.1 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest` (9c9646b)
 - [x] 6.2 Pełne kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build` (9c9646b)
-- [ ] 6.3 CI na gałęzi jest zielone (jobs `backend`, `frontend`, `contract`) (9c9646b)
+- [x] 6.3 CI na gałęzi jest zielone (jobs `backend`, `frontend`, `contract`) (9c9646b)
 
 #### Manual
 
 - [x] 6.4 `uv run pytest -m live` przechodzi na pełnej migawce (TRAIN_Q000 z cytatem do `swg21996508`, pytanie kontrolne kończy się abstencją) (9c9646b)
 - [x] 6.5 Ślad TRAIN_Q000 w Langfuse Cloud ma etapy, identyfikatory pobranych fragmentów, wersje promptów i czasy (9c9646b)
-- [ ] 6.6 Zrzuty 1P, 1A i 1C przy 1280 i 1440 px zestawione z kanwą przechodzą listę kontrolną z „Jak weryfikujemy” i są zaakceptowane przez użytkownika (9c9646b)
-- [ ] 6.7 `docs/przeplyw-danych.md` i notatki w dokumentach fundamentowych odpowiadają decyzjom z planu (9c9646b)
+- [x] 6.6 Zrzuty 1P, 1A i 1C przy 1280 i 1440 px zestawione z kanwą przechodzą listę kontrolną z „Jak weryfikujemy” i są zaakceptowane przez użytkownika (9c9646b)
+- [x] 6.7 `docs/przeplyw-danych.md` i notatki w dokumentach fundamentowych odpowiadają decyzjom z planu (9c9646b)
