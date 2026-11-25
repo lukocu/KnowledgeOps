@@ -14,7 +14,10 @@ function section(chunk: CheckedChunk): string | null {
   return heading && heading.trim() !== "" ? heading : null;
 }
 
-/** Panel sprawdzonych fragmentów (1C): lista `checked_chunks` z „Otwórz fragment”. */
+/**
+ * Panel sprawdzonych fragmentów (1C): lista `checked_chunks` z „Otwórz fragment”.
+ * Obudowę (`aside` albo arkusz) daje `PanelFrame` w `AssistantFrame`.
+ */
 export function CheckedChunksPanel({
   chunks,
   showAll,
@@ -40,10 +43,7 @@ export function CheckedChunksPanel({
   const hidden = chunks.length - visible.length;
 
   return (
-    <aside
-      aria-label={t("checked.panel")}
-      className="flex w-[min(420px,45%)] min-w-[300px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 pt-3 pb-4"
-    >
+    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-surface-alt px-[16px] pt-5 pb-4 md:px-6 md:pt-3">
       <div className="flex items-center justify-between">
         <h2
           ref={headingRef}
@@ -57,7 +57,7 @@ export function CheckedChunksPanel({
           aria-label={t("checked.close")}
           title={t("checked.close")}
           onClick={onClose}
-          className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted hover:bg-surface"
+          className="inline-flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted hover:bg-surface md:h-8 md:w-8"
         >
           <CloseIcon />
         </button>
@@ -106,6 +106,6 @@ export function CheckedChunksPanel({
           </button>
         </div>
       ) : null}
-    </aside>
+    </div>
   );
 }

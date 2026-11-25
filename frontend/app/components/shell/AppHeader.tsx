@@ -105,7 +105,7 @@ export function AppHeader({
 
   // Wąskie okno (1N): dwa rzędy, żaden element nie znika.
   return (
-    <header className="flex flex-none flex-col gap-2 border-b border-border-soft bg-white px-4 pt-2 pb-2.5">
+    <header className="flex flex-none flex-col gap-2 border-b border-border-soft bg-white px-[16px] pt-2 pb-2.5">
       <div className="flex items-center gap-2">
         <button
           type="button"
@@ -115,7 +115,7 @@ export function AppHeader({
           aria-controls={menuId}
           aria-haspopup="dialog"
           onClick={onOpenMenu}
-          className="inline-flex h-9 w-9 flex-none cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"
+          className="inline-flex h-[36px] w-[36px] flex-none cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"
         >
           <svg
             aria-hidden="true"

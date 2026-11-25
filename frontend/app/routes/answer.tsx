@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { useParams } from "react-router";
 
 import { getAnswer, type CheckedChunk } from "../api/answers";
@@ -142,6 +148,7 @@ function AnswerScreen({ id }: { id: string }) {
 
   // --- Panel boczny ---
   let panel = null;
+  let panelFrame: ComponentProps<typeof AssistantFrame>["panelFrame"];
   if (answered && record && activeN !== null) {
     const citation = answered.citations.find((c) => c.n === activeN);
     if (citation) {
@@ -175,6 +182,11 @@ function AnswerScreen({ id }: { id: string }) {
           onClose={closeCitation}
         />
       );
+      panelFrame = {
+        label: t("evidence.panel"),
+        variant: "evidence",
+        onDismiss: closeCitation,
+      };
     }
   } else if (abstained && record && checkedOpen) {
     const chunk = chunkIndex === null ? null : checkedChunks[chunkIndex];
@@ -212,6 +224,12 @@ function AnswerScreen({ id }: { id: string }) {
           onClose={closeChunk}
         />
       );
+      // Wariant `checked` także dla fragmentu: szeroki panel nie zmienia szerokości.
+      panelFrame = {
+        label: t("evidence.panel"),
+        variant: "checked",
+        onDismiss: closeChunk,
+      };
     } else {
       panel = (
         <CheckedChunksPanel
@@ -222,6 +240,11 @@ function AnswerScreen({ id }: { id: string }) {
           onClose={closeChecked}
         />
       );
+      panelFrame = {
+        label: t("checked.panel"),
+        variant: "checked",
+        onDismiss: closeChecked,
+      };
     }
   }
 
@@ -235,6 +258,7 @@ function AnswerScreen({ id }: { id: string }) {
       </>
     );
     panel = null;
+    panelFrame = undefined;
   } else if (askState.status === "failed") {
     const { question, error } = askState;
     thread = (
@@ -244,6 +268,7 @@ function AnswerScreen({ id }: { id: string }) {
       </>
     );
     panel = null;
+    panelFrame = undefined;
   } else if (remote.status === "loading") {
     thread = (
       <p role="status" className="m-0 text-[15px] leading-6 text-muted">
@@ -310,6 +335,7 @@ function AnswerScreen({ id }: { id: string }) {
     <AssistantFrame
       thread={thread}
       panel={panel}
+      panelFrame={panelFrame}
       composer={
         <Composer
           ref={composerRef}

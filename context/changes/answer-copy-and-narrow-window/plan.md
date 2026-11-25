@@ -345,26 +345,26 @@ Brak. Tylko frontend, bez zmian w danych i API.
 
 #### Automated
 
-- [x] 2.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
-- [x] 2.2 Build przechodzi: `cd frontend; npm run build`
+- [x] 2.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck` — 2116791
+- [x] 2.2 Build przechodzi: `cd frontend; npm run build` — 2116791
 
 #### Manual
 
-- [x] 2.3 Przy 390×844 nagłówek ma dwa rzędy jak 1N, a przy 1280 px wygląda jak przed zmianą
-- [x] 2.4 Menu otwiera szufladę z nawigacją; Escape, klik w tło i Zamknij ją zamykają, a fokus wraca na Menu
-- [x] 2.5 Ekran startowy asystenta i odpowiedź przy 390 px nie przewijają się w poziomie
+- [x] 2.3 Przy 390×844 nagłówek ma dwa rzędy jak 1N, a przy 1280 px wygląda jak przed zmianą — 2116791
+- [x] 2.4 Menu otwiera szufladę z nawigacją; Escape, klik w tło i Zamknij ją zamykają, a fokus wraca na Menu — 2116791
+- [x] 2.5 Ekran startowy asystenta i odpowiedź przy 390 px nie przewijają się w poziomie — 2116791
 
 ### Phase 3: Arkusz dowodu i weryfikacja 390 px
 
 #### Automated
 
-- [ ] 3.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
-- [ ] 3.2 Build przechodzi: `cd frontend; npm run build`
+- [x] 3.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
+- [x] 3.2 Build przechodzi: `cd frontend; npm run build`
 
 #### Manual
 
-- [ ] 3.3 Przy 390×844 cytat otwiera arkusz od dołu; nawigacja cytatów, „Dokument” i trzy sposoby zamknięcia działają, fokus wraca na cytat
-- [ ] 3.4 Przy 390×844 abstencja: sprawdzone fragmenty i fragment w arkuszu, Escape wraca z fragmentu do listy, potem zamyka listę
-- [ ] 3.5 Tab nie wychodzi poza otwarty arkusz, a tło nie przewija się pod arkuszem
-- [ ] 3.6 Cały przepływ przy 390×844 bez przewijania w poziomie (`scrollWidth <= innerWidth` w każdym stanie), zrzuty zapisane
-- [ ] 3.7 Przy 1280 px panele boczne wyglądają i działają jak przed zmianą
+- [x] 3.3 Przy 390×844 cytat otwiera arkusz od dołu; nawigacja cytatów, „Dokument” i trzy sposoby zamknięcia działają, fokus wraca na cytat
+- [x] 3.4 Przy 390×844 abstencja: sprawdzone fragmenty i fragment w arkuszu, Escape wraca z fragmentu do listy, potem zamyka listę
+- [x] 3.5 Tab nie wychodzi poza otwarty arkusz, a tło nie przewija się pod arkuszem
+- [x] 3.6 Cały przepływ przy 390×844 bez przewijania w poziomie (`scrollWidth <= innerWidth` w każdym stanie), zrzuty zapisane
+- [x] 3.7 Przy 1280 px panele boczne wyglądają i działają jak przed zmianą

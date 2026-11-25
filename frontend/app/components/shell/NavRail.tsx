@@ -213,7 +213,7 @@ function NavDrawerDialog({
             aria-label={t("nav.close")}
             title={t("nav.close")}
             onClick={onClose}
-            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"
+            className="inline-flex h-[36px] w-[36px] cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"
           >
             <svg {...ICON_PROPS}>
               <path d="M6 6l12 12M18 6L6 18" />

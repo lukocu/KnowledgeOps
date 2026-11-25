@@ -24,11 +24,16 @@ export type EvidenceTarget = {
   claims: { index: number; text: string }[];
 };
 
-const LINK_BUTTON =
-  "inline-flex h-7 cursor-pointer items-center gap-1.5 border-0 bg-transparent px-1 text-[13px] font-medium whitespace-nowrap text-primary hover:underline disabled:cursor-wait disabled:opacity-60";
+const LINK_BUTTON_BASE =
+  "inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent px-1 text-[13px] font-medium whitespace-nowrap text-primary hover:underline disabled:cursor-wait disabled:opacity-60";
+
+const LINK_BUTTON = "h-7 " + LINK_BUTTON_BASE;
+
+/** Przycisk stopki: w wąskim oknie (arkusz 1N) 40 px wysokości. */
+const FOOTER_BUTTON = "h-[40px] md:h-7 " + LINK_BUTTON_BASE;
 
 const NAV_BUTTON =
-  "inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent";
+  "inline-flex h-[40px] w-[40px] cursor-pointer items-center justify-center rounded-lg md:h-8 md:w-8 border-0 bg-transparent p-0 text-muted hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent";
 
 function Notice({
   message,
@@ -292,7 +297,7 @@ function EvidenceBody({
   return (
     <>
       {target.claims.length > 0 ? (
-        <div className="flex flex-col gap-2 px-6 pt-2">
+        <div className="flex flex-col gap-2 px-[16px] pt-2 md:px-6">
           {target.claims.map((claim) => (
             <div
               key={claim.index}
@@ -307,7 +312,7 @@ function EvidenceBody({
         </div>
       ) : null}
 
-      <div className="px-6 pt-2.5">
+      <div className="px-[16px] pt-2.5 md:px-6">
         <div className="line-clamp-2 text-[15px] leading-[22px] font-semibold">
           {target.title}
         </div>
@@ -322,7 +327,7 @@ function EvidenceBody({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pt-3.5 pb-3">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[16px] pt-3.5 pb-3 md:px-6">
         {mode === "window" ? (
           <WindowView
             target={target}
@@ -342,11 +347,11 @@ function EvidenceBody({
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-border-soft px-6 py-2.5">
+      <div className="flex items-center justify-between border-t border-border-soft px-[16px] py-2.5 md:px-6">
         <button
           type="button"
           onClick={() => setMode(mode === "window" ? "document" : "window")}
-          className={LINK_BUTTON}
+          className={FOOTER_BUTTON}
         >
           {mode === "window" ? (
             <Icon size={14}>
@@ -373,6 +378,7 @@ function EvidenceBody({
  * Panel dowodu (S1A): fragment z oknem kontekstu i całym dokumentem na żądanie.
  * Używany dla cytatów odpowiedzi i dla sprawdzonych fragmentów przy abstencji.
  * Zamykanie klawiszem Escape obsługuje trasa (decyduje, gdzie wraca fokus).
+ * Obudowę (`aside` albo arkusz) daje `PanelFrame` w `AssistantFrame`.
  */
 export function EvidencePanel({
   position,
@@ -406,11 +412,8 @@ export function EvidencePanel({
   }, []);
 
   return (
-    <aside
-      aria-label={t("evidence.panel")}
-      className="flex w-[min(400px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-white"
-    >
-      <div className="flex items-center justify-between pt-2.5 pr-3 pl-6">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
+      <div className="flex items-center justify-between px-[16px] pt-5 md:pt-2.5 md:pr-3 md:pl-6">
         <h2
           ref={headingRef}
           tabIndex={-1}
@@ -456,6 +459,6 @@ export function EvidencePanel({
         target={target}
         footerLabel={footerLabel}
       />
-    </aside>
+    </div>
   );
 }
