@@ -45,7 +45,11 @@ export function RoleSwitch() {
           );
         })}
       </div>
-      <span id={noticeId} className="text-xs whitespace-nowrap text-muted">
+      {/* Poniżej 768 px (1N) notka jest tylko dla czytników ekranu; treść zostaje też w title. */}
+      <span
+        id={noticeId}
+        className="sr-only text-xs whitespace-nowrap text-muted md:not-sr-only"
+      >
         {t("header.roleNoticeShort")}
       </span>
     </>

@@ -26,6 +26,8 @@ export const en: Record<TranslationKey, string> = {
   "nav.assistant": "Assistant",
   "nav.expand": "Expand menu with labels",
   "nav.collapse": "Collapse menu to icons",
+  "nav.menu": "Menu",
+  "nav.close": "Close menu",
   "nav.dataSource": "Data: public, historical NVIDIA TechQA-RAG-Eval dataset.",
 
   "assistant.title": "Assistant",

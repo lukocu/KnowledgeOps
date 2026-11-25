@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { client } from "../../api/client";
 import type { components } from "../../api/schema";
 import { useT } from "../../i18n/context";
+import { useMediaQuery, WIDE_QUERY } from "../../lib/use-media-query";
 import { DemoBadge } from "./DemoBadge";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { RoleSwitch } from "./RoleSwitch";
@@ -29,56 +30,118 @@ function useCorpusInfo(): CorpusInfo | null {
   return corpus;
 }
 
-export function AppHeader() {
+function Logo({ narrow }: { narrow: boolean }) {
+  const t = useT();
+  return (
+    <span
+      className={
+        "inline-flex items-center gap-2 font-semibold " +
+        (narrow ? "text-[15px]" : "text-sm")
+      }
+    >
+      <svg
+        aria-hidden="true"
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        className="flex-none"
+      >
+        <rect x="1" y="1" width="18" height="18" rx="5" className="fill-text" />
+        <path
+          d="M6 6.5h8M6 10h5"
+          stroke="#fff"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M6 13.8h8"
+          className="stroke-accent"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+        />
+      </svg>
+      {t("app.name")}
+    </span>
+  );
+}
+
+export function AppHeader({
+  onOpenMenu,
+  menuOpen,
+  menuId,
+}: {
+  onOpenMenu: () => void;
+  menuOpen: boolean;
+  menuId: string;
+}) {
   const t = useT();
   const corpus = useCorpusInfo();
+  const wide = useMediaQuery(WIDE_QUERY);
 
+  const corpusLabel = (
+    <span
+      className="ml-auto text-[13px] text-muted"
+      title={
+        corpus
+          ? t("header.corpusSnapshot", { revision: corpus.revision_short })
+          : undefined
+      }
+    >
+      {t("header.corpus")}
+    </span>
+  );
+
+  if (wide) {
+    return (
+      <header className="flex h-11 flex-none items-center gap-4 border-b border-border-soft bg-white px-4">
+        <Logo narrow={false} />
+        <RoleSwitch />
+        <DemoBadge />
+        <LanguageSwitch />
+        {corpusLabel}
+      </header>
+    );
+  }
+
+  // Wąskie okno (1N): dwa rzędy, żaden element nie znika.
   return (
-    <header className="flex h-11 flex-none items-center gap-4 border-b border-border-soft bg-white px-4">
-      <span className="inline-flex items-center gap-2 text-sm font-semibold">
-        <svg
-          aria-hidden="true"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          className="flex-none"
+    <header className="flex flex-none flex-col gap-2 border-b border-border-soft bg-white px-4 pt-2 pb-2.5">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label={t("nav.menu")}
+          title={t("nav.menu")}
+          aria-expanded={menuOpen}
+          aria-controls={menuId}
+          aria-haspopup="dialog"
+          onClick={onOpenMenu}
+          className="inline-flex h-9 w-9 flex-none cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-muted"
         >
-          <rect
-            x="1"
-            y="1"
+          <svg
+            aria-hidden="true"
             width="18"
             height="18"
-            rx="5"
-            className="fill-text"
-          />
-          <path
-            d="M6 6.5h8M6 10h5"
-            stroke="#fff"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
             strokeWidth="1.8"
             strokeLinecap="round"
-          />
-          <path
-            d="M6 13.8h8"
-            className="stroke-accent"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-        </svg>
-        {t("app.name")}
-      </span>
-      <RoleSwitch />
-      <DemoBadge />
-      <LanguageSwitch />
-      <span
-        className="ml-auto text-[13px] text-muted"
-        title={
-          corpus
-            ? t("header.corpusSnapshot", { revision: corpus.revision_short })
-            : undefined
-        }
-      >
-        {t("header.corpus")}
-      </span>
+            strokeLinejoin="round"
+            className="flex-none"
+          >
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+        <Logo narrow />
+        <span className="ml-auto inline-flex items-center gap-2">
+          <DemoBadge />
+          <LanguageSwitch />
+        </span>
+      </div>
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+        <RoleSwitch />
+        {corpusLabel}
+      </div>
     </header>
   );
 }

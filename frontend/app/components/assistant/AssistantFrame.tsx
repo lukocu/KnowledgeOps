@@ -16,10 +16,10 @@ export function AssistantFrame({
   return (
     <div className="flex min-h-0 flex-1">
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 xl:px-10 pt-7 pb-6">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-4 pb-6 md:px-6 md:pt-7 xl:px-10">
           {thread}
         </div>
-        <div className="flex-none px-6 xl:px-10 pb-4">{composer}</div>
+        <div className="flex-none px-4 pb-4 md:px-6 xl:px-10">{composer}</div>
       </div>
       {panel}
     </div>

@@ -332,27 +332,27 @@ Brak. Tylko frontend, bez zmian w danych i API.
 
 #### Automated
 
-- [x] 1.1 Testy frontendu przechodzą: `cd frontend; npm test`
-- [x] 1.2 Lint, format i typy przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck`
-- [x] 1.3 Build przechodzi: `cd frontend; npm run build`
+- [x] 1.1 Testy frontendu przechodzą: `cd frontend; npm test` — 67506d5
+- [x] 1.2 Lint, format i typy przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck` — 67506d5
+- [x] 1.3 Build przechodzi: `cd frontend; npm run build` — 67506d5
 
 #### Manual
 
-- [x] 1.4 Kopia odpowiedzi z kodem, wklejona do edytora tekstu, ma przy każdej tezie `[n]`, kod pod tezą i listę źródeł z `doc_id`
-- [x] 1.5 Przycisk pokazuje „Skopiowano” z ikoną i po 2 s wraca do stanu początkowego; „Kopiuj” przy bloku kodu działa jak wcześniej
+- [x] 1.4 Kopia odpowiedzi z kodem, wklejona do edytora tekstu, ma przy każdej tezie `[n]`, kod pod tezą i listę źródeł z `doc_id` — 67506d5
+- [x] 1.5 Przycisk pokazuje „Skopiowano” z ikoną i po 2 s wraca do stanu początkowego; „Kopiuj” przy bloku kodu działa jak wcześniej — 67506d5
 
 ### Phase 2: Wąska powłoka (< 768 px)
 
 #### Automated
 
-- [ ] 2.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
-- [ ] 2.2 Build przechodzi: `cd frontend; npm run build`
+- [x] 2.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
+- [x] 2.2 Build przechodzi: `cd frontend; npm run build`
 
 #### Manual
 
-- [ ] 2.3 Przy 390×844 nagłówek ma dwa rzędy jak 1N, a przy 1280 px wygląda jak przed zmianą
-- [ ] 2.4 Menu otwiera szufladę z nawigacją; Escape, klik w tło i Zamknij ją zamykają, a fokus wraca na Menu
-- [ ] 2.5 Ekran startowy asystenta i odpowiedź przy 390 px nie przewijają się w poziomie
+- [x] 2.3 Przy 390×844 nagłówek ma dwa rzędy jak 1N, a przy 1280 px wygląda jak przed zmianą
+- [x] 2.4 Menu otwiera szufladę z nawigacją; Escape, klik w tło i Zamknij ją zamykają, a fokus wraca na Menu
+- [x] 2.5 Ekran startowy asystenta i odpowiedź przy 390 px nie przewijają się w poziomie
 
 ### Phase 3: Arkusz dowodu i weryfikacja 390 px
 

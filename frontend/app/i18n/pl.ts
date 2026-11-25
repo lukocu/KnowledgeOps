@@ -24,6 +24,8 @@ export const pl = {
   "nav.assistant": "Asystent",
   "nav.expand": "Rozwiń menu z podpisami",
   "nav.collapse": "Zwiń menu do ikon",
+  "nav.menu": "Menu",
+  "nav.close": "Zamknij menu",
   "nav.dataSource":
     "Dane: publiczny, historyczny zbiór NVIDIA TechQA-RAG-Eval.",
 
