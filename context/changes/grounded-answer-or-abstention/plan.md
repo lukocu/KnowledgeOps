@@ -721,8 +721,8 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Manual
 
-- [ ] 2.5 `uv run pytest -m live` na pełnej migawce: TRAIN_Q000 odpowiada z cytatem do `swg21996508`, a pytanie kontrolne kończy się abstencją (53fa1a8)
-- [ ] 2.6 Ślad przebiegu `live` w Langfuse Cloud ma spany węzłów, generacje `draft` i `verify` oraz identyfikatory pobranych fragmentów (53fa1a8)
+- [x] 2.5 `uv run pytest -m live` na pełnej migawce: TRAIN_Q000 odpowiada z cytatem do `swg21996508`, a pytanie kontrolne kończy się abstencją (53fa1a8)
+- [x] 2.6 Ślad przebiegu `live` w Langfuse Cloud ma spany węzłów, generacje `draft` i `verify` oraz identyfikatory pobranych fragmentów (53fa1a8)
 
 ### Phase 3: API odpowiedzi i sesja
 
@@ -736,7 +736,7 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Manual
 
-- [ ] 3.6 `curl -N -X POST` na `/api/answers` z pytaniem TRAIN_Q000 pokazuje kolejne zdarzenia `stage`, a potem `result` w czasie widocznie krótszym niż 10 s (89d8e45)
+- [x] 3.6 `curl -N -X POST` na `/api/answers` z pytaniem TRAIN_Q000 pokazuje kolejne zdarzenia `stage`, a potem `result` w czasie widocznie krótszym niż 10 s (89d8e45)
 
 ### Phase 4: Powłoka aplikacji (zakres S-03)
 
@@ -759,7 +759,7 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Manual
 
-- [ ] 5.3 Pytanie TRAIN_Q000 pokazuje kroki postępu w kolejności zdarzeń, potem odpowiedź z numerami cytatów i cytatem do `swg21996508` (fea3397)
+- [x] 5.3 Pytanie TRAIN_Q000 pokazuje kroki postępu w kolejności zdarzeń, potem odpowiedź z numerami cytatów i cytatem do `swg21996508` (fea3397)
 - [ ] 5.4 Panel dowodu pokazuje zaznaczony fragment, rozwija kontekst w górę i w dół i otwiera cały dokument z zaznaczeniem (fea3397)
 - [ ] 5.5 Pytanie kontrolne abstencji pokazuje ekran 1C z listą sprawdzonych fragmentów, a każdy otwiera się w panelu (fea3397)
 - [ ] 5.6 Odświeżenie `/odpowiedz/:id` przywraca odpowiedź, a otwarcie tego adresu w oknie prywatnym daje stan „Nie znaleziono odpowiedzi w tej sesji” (fea3397)
@@ -776,7 +776,7 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Manual
 
-- [ ] 6.4 `uv run pytest -m live` przechodzi na pełnej migawce (TRAIN_Q000 z cytatem do `swg21996508`, pytanie kontrolne kończy się abstencją) (9c9646b)
-- [ ] 6.5 Ślad TRAIN_Q000 w Langfuse Cloud ma etapy, identyfikatory pobranych fragmentów, wersje promptów i czasy (9c9646b)
+- [x] 6.4 `uv run pytest -m live` przechodzi na pełnej migawce (TRAIN_Q000 z cytatem do `swg21996508`, pytanie kontrolne kończy się abstencją) (9c9646b)
+- [x] 6.5 Ślad TRAIN_Q000 w Langfuse Cloud ma etapy, identyfikatory pobranych fragmentów, wersje promptów i czasy (9c9646b)
 - [ ] 6.6 Zrzuty 1P, 1A i 1C przy 1280 i 1440 px zestawione z kanwą przechodzą listę kontrolną z „Jak weryfikujemy” i są zaakceptowane przez użytkownika (9c9646b)
 - [ ] 6.7 `docs/przeplyw-danych.md` i notatki w dokumentach fundamentowych odpowiadają decyzjom z planu (9c9646b)
