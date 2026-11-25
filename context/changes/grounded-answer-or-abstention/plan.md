@@ -770,13 +770,13 @@ Do tego zalecenie, żeby nie wklejać danych osobowych, i odwołanie do pyt. 10.
 
 #### Automated
 
-- [x] 6.1 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest`
-- [x] 6.2 Pełne kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
-- [ ] 6.3 CI na gałęzi jest zielone (jobs `backend`, `frontend`, `contract`)
+- [x] 6.1 Pełne kontrole backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run mypy .; uv run pytest` (9c9646b)
+- [x] 6.2 Pełne kontrole frontu przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build` (9c9646b)
+- [ ] 6.3 CI na gałęzi jest zielone (jobs `backend`, `frontend`, `contract`) (9c9646b)
 
 #### Manual
 
-- [ ] 6.4 `uv run pytest -m live` przechodzi na pełnej migawce (TRAIN_Q000 z cytatem do `swg21996508`, pytanie kontrolne kończy się abstencją)
-- [ ] 6.5 Ślad TRAIN_Q000 w Langfuse Cloud ma etapy, identyfikatory pobranych fragmentów, wersje promptów i czasy
-- [ ] 6.6 Zrzuty 1P, 1A i 1C przy 1280 i 1440 px zestawione z kanwą przechodzą listę kontrolną z „Jak weryfikujemy” i są zaakceptowane przez użytkownika
-- [ ] 6.7 `docs/przeplyw-danych.md` i notatki w dokumentach fundamentowych odpowiadają decyzjom z planu
+- [ ] 6.4 `uv run pytest -m live` przechodzi na pełnej migawce (TRAIN_Q000 z cytatem do `swg21996508`, pytanie kontrolne kończy się abstencją) (9c9646b)
+- [ ] 6.5 Ślad TRAIN_Q000 w Langfuse Cloud ma etapy, identyfikatory pobranych fragmentów, wersje promptów i czasy (9c9646b)
+- [ ] 6.6 Zrzuty 1P, 1A i 1C przy 1280 i 1440 px zestawione z kanwą przechodzą listę kontrolną z „Jak weryfikujemy” i są zaakceptowane przez użytkownika (9c9646b)
+- [ ] 6.7 `docs/przeplyw-danych.md` i notatki w dokumentach fundamentowych odpowiadają decyzjom z planu (9c9646b)
