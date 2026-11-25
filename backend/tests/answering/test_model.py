@@ -54,3 +54,33 @@ def test_base_url_maps_effort_to_reasoning_object() -> None:
     assert isinstance(model, ChatOpenAI)
     assert model.extra_body is not None
     assert model.extra_body["reasoning"] == {"effort": "low"}
+
+
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
+
+
+def test_other_provider_gets_plain_reasoning_effort_and_no_extra_body() -> None:
+    model = make_chat_model(
+        settings(
+            openai_api_key=SecretStr("k"),
+            openai_base_url=GEMINI_URL,
+            chat_model="gemini-3.8-flash",
+            chat_reasoning_effort="low",
+        )
+    )
+    assert isinstance(model, ChatOpenAI)
+    assert model.openai_api_base == GEMINI_URL
+    assert model.reasoning_effort == "low"
+    assert not model.extra_body
+
+
+def test_other_provider_none_effort_omits_parameter() -> None:
+    model = make_chat_model(
+        settings(
+            openai_api_key=SecretStr("k"),
+            openai_base_url=GEMINI_URL,
+            chat_reasoning_effort="none",
+        )
+    )
+    assert isinstance(model, ChatOpenAI)
+    assert model.reasoning_effort is None
