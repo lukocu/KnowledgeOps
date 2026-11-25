@@ -1,7 +1,7 @@
 ---
 change_id: answer-copy-and-narrow-window
 title: Answer copy and narrow window
-status: implementing
+status: implemented
 created: 2026-11-25
 updated: 2026-11-25
 archived_at: null

@@ -358,13 +358,13 @@ Brak. Tylko frontend, bez zmian w danych i API.
 
 #### Automated
 
-- [x] 3.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck`
-- [x] 3.2 Build przechodzi: `cd frontend; npm run build`
+- [x] 3.1 Testy, lint, format i typy przechodzą: `cd frontend; npm test; npm run lint; npm run format:check; npm run typecheck` — b1c90b1
+- [x] 3.2 Build przechodzi: `cd frontend; npm run build` — b1c90b1
 
 #### Manual
 
-- [x] 3.3 Przy 390×844 cytat otwiera arkusz od dołu; nawigacja cytatów, „Dokument” i trzy sposoby zamknięcia działają, fokus wraca na cytat
-- [x] 3.4 Przy 390×844 abstencja: sprawdzone fragmenty i fragment w arkuszu, Escape wraca z fragmentu do listy, potem zamyka listę
-- [x] 3.5 Tab nie wychodzi poza otwarty arkusz, a tło nie przewija się pod arkuszem
-- [x] 3.6 Cały przepływ przy 390×844 bez przewijania w poziomie (`scrollWidth <= innerWidth` w każdym stanie), zrzuty zapisane
-- [x] 3.7 Przy 1280 px panele boczne wyglądają i działają jak przed zmianą
+- [x] 3.3 Przy 390×844 cytat otwiera arkusz od dołu; nawigacja cytatów, „Dokument” i trzy sposoby zamknięcia działają, fokus wraca na cytat — b1c90b1
+- [x] 3.4 Przy 390×844 abstencja: sprawdzone fragmenty i fragment w arkuszu, Escape wraca z fragmentu do listy, potem zamyka listę — b1c90b1
+- [x] 3.5 Tab nie wychodzi poza otwarty arkusz, a tło nie przewija się pod arkuszem — b1c90b1
+- [x] 3.6 Cały przepływ przy 390×844 bez przewijania w poziomie (`scrollWidth <= innerWidth` w każdym stanie), zrzuty zapisane — b1c90b1
+- [x] 3.7 Przy 1280 px panele boczne wyglądają i działają jak przed zmianą — b1c90b1
