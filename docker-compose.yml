@@ -27,6 +27,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-knowledgeops}:${POSTGRES_PASSWORD:-knowledgeops}@db:5432/${POSTGRES_DB:-knowledgeops}
       # Puste domyślne wartości: brak zmiennych nie psuje startu (Settings ignoruje puste).
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
       CHAT_MODEL: ${CHAT_MODEL:-}
       CHAT_REASONING_EFFORT: ${CHAT_REASONING_EFFORT:-}
       CHAT_TIMEOUT_S: ${CHAT_TIMEOUT_S:-}

@@ -20,6 +20,8 @@ class Settings(BaseSettings):
 
     # Model czatu (OpenAI). Bez klucza endpoint odpowiedzi zgłasza błąd konfiguracji.
     openai_api_key: SecretStr | None = None
+    # Opcjonalny adres API zgodnego z OpenAI (np. https://openrouter.ai/api/v1).
+    openai_base_url: str | None = None
     chat_model: str = "gpt-6-luna"
     # Wysiłek rozumowania modelu; pusty ciąg wyłącza parametr (modele bez rozumowania).
     chat_reasoning_effort: str = "low"
