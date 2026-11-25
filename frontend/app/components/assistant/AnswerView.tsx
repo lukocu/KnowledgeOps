@@ -1,34 +1,39 @@
-import { useEffect, useState } from "react";
-
 import type { AnswerRecord, AnsweredResult } from "../../api/answers";
 import { useLanguage, useT } from "../../i18n/context";
+import { formatAnswerForCopy } from "../../lib/copy-answer";
 import { pluralForm } from "../../lib/plural";
 import { CitationMarker } from "./CitationMarker";
 import { CheckIcon, CopyIcon, Icon } from "./Icon";
 import { PreparationDetails } from "./PreparationDetails";
 import { SourcesRow } from "./SourcesRow";
+import { useCopy, type CopyState } from "./useCopy";
 
-type CopyState = "idle" | "copied" | "failed";
+/** Ikona stanu kopiowania: kopiuj, skopiowano albo błąd (znaczenie niesie tekst obok). */
+function CopyStateIcon({
+  state,
+  checkClassName,
+}: {
+  state: CopyState;
+  checkClassName?: string;
+}) {
+  if (state === "copied") {
+    return <CheckIcon size={16} className={checkClassName} />;
+  }
+  if (state === "failed") {
+    return (
+      <Icon>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 8v5M12 16h.01" />
+      </Icon>
+    );
+  }
+  return <CopyIcon />;
+}
 
 /** Blok kodu pod tezą z przyciskiem „Kopiuj” (kopiuje sam kod). */
 function CodeBlock({ code }: { code: string }) {
   const t = useT();
-  const [copy, setCopy] = useState<CopyState>("idle");
-
-  useEffect(() => {
-    if (copy === "idle") return;
-    const timer = window.setTimeout(() => setCopy("idle"), 2000);
-    return () => window.clearTimeout(timer);
-  }, [copy]);
-
-  async function copyCode() {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopy("copied");
-    } catch {
-      setCopy("failed");
-    }
-  }
+  const { state: copy, copy: copyText } = useCopy();
 
   return (
     <div className="mt-2">
@@ -36,20 +41,14 @@ function CodeBlock({ code }: { code: string }) {
         <div className="flex justify-end px-1.5 pt-1">
           <button
             type="button"
-            onClick={() => void copyCode()}
+            onClick={() => void copyText(code)}
             aria-label={t("answer.copyCodeLabel")}
             className="inline-flex h-7 cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-white px-3 text-xs font-medium whitespace-nowrap text-text hover:brightness-95"
           >
-            {copy === "copied" ? (
-              <CheckIcon size={16} className="flex-none text-success" />
-            ) : copy === "failed" ? (
-              <Icon>
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 8v5M12 16h.01" />
-              </Icon>
-            ) : (
-              <CopyIcon />
-            )}
+            <CopyStateIcon
+              state={copy}
+              checkClassName="flex-none text-success"
+            />
             {copy === "copied"
               ? t("answer.copied")
               : copy === "failed"
@@ -87,6 +86,7 @@ export function AnswerView({
 }) {
   const t = useT();
   const { lang } = useLanguage();
+  const { state: copyState, copy } = useCopy();
   const total = result.citations.length;
   const documents = new Set(result.citations.map((c) => c.doc_id)).size;
 
@@ -139,6 +139,32 @@ export function AnswerView({
       />
 
       <div className="mt-[18px] flex flex-wrap items-center gap-4">
+        <button
+          type="button"
+          onClick={() =>
+            void copy(
+              formatAnswerForCopy(result, record.snapshot_id, {
+                sources: t("answer.copySources"),
+                snapshot: t("answer.copySnapshot"),
+              }),
+            )
+          }
+          className="inline-flex h-9 flex-none cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-primary px-4 text-sm font-medium whitespace-nowrap text-white hover:brightness-95"
+        >
+          <CopyStateIcon state={copyState} checkClassName="flex-none" />
+          {copyState === "copied"
+            ? t("answer.copied")
+            : copyState === "failed"
+              ? t("answer.copyFailed")
+              : t("answer.copyAnswer")}
+        </button>
+        <span role="status" className="sr-only">
+          {copyState === "copied"
+            ? t("answer.copied")
+            : copyState === "failed"
+              ? t("answer.copyFailed")
+              : ""}
+        </span>
         <span
           role="status"
           className="inline-flex items-center gap-2 text-[13px] whitespace-nowrap text-text"

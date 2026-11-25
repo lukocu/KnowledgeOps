@@ -67,6 +67,9 @@ export const en: Record<TranslationKey, string> = {
   "answer.copied": "Copied",
   "answer.copyFailed": "Not copied",
   "answer.copyCodeLabel": "Copy code",
+  "answer.copyAnswer": "Copy answer with citations",
+  "answer.copySources": "Sources",
+  "answer.copySnapshot": "Snapshot",
   "citation.label": "Citation {n} of {total}",
 
   "details.answeredTitle": "How the answer was produced",

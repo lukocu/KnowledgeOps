@@ -66,6 +66,9 @@ export const pl = {
   "answer.copied": "Skopiowano",
   "answer.copyFailed": "Nie skopiowano",
   "answer.copyCodeLabel": "Kopiuj kod",
+  "answer.copyAnswer": "Kopiuj odpowiedź z cytatami",
+  "answer.copySources": "Źródła",
+  "answer.copySnapshot": "Migawka",
   "citation.label": "Cytat {n} z {total}",
 
   "details.answeredTitle": "Jak powstała odpowiedź",
