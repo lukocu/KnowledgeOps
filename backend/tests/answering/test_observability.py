@@ -1,12 +1,15 @@
 """Obserwowalność bez kluczy: brak wyjątków, handlera i połączeń sieciowych."""
 
 import pytest
+from fastapi import HTTPException
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
+from starlette.requests import Request
 
 from app.answering.model import ModelNotConfiguredError, make_chat_model
 from app.answering.prompts import prompt_version, prompt_versions
 from app.observability import flush_traces, make_trace_handler, run_config
+from app.session import COOKIE_NAME, hash_token, make_require_session, require_session
 from app.settings import Settings
 
 
@@ -65,3 +68,65 @@ def test_make_chat_model_sets_timeout_and_model(settings: Settings) -> None:
     assert isinstance(model, ChatOpenAI)
     assert model.model_name == "some-model"
     assert model.request_timeout == 7
+
+
+def test_run_config_supports_custom_name_prompts_and_metadata(
+    settings: Settings,
+) -> None:
+    config = run_config(
+        settings,
+        chunk_set_id="set",
+        k=6,
+        handler=None,
+        run_name="audit",
+        prompt_versions_map={"extract": "aaaaaaaaaaaa", "verify": "bbbbbbbbbbbb"},
+        extra_metadata={"audit_id": "abc-123", "claims_total": 4},
+    )
+    assert config["run_name"] == "audit"
+    assert config["callbacks"] == []
+    assert config["metadata"] == {
+        "chunk_set_id": "set",
+        "k": 6,
+        "chat_model": settings.chat_model,
+        "chat_reasoning_effort": settings.chat_reasoning_effort,
+        "prompt_versions": {"extract": "aaaaaaaaaaaa", "verify": "bbbbbbbbbbbb"},
+        "audit_id": "abc-123",
+        "claims_total": 4,
+    }
+
+
+def test_run_config_rejects_session_keys_in_extra_metadata(settings: Settings) -> None:
+    with pytest.raises(ValueError, match="sesji"):
+        run_config(
+            settings,
+            chunk_set_id="set",
+            k=8,
+            handler=None,
+            extra_metadata={"session_hash": "secret"},
+        )
+
+
+def test_settings_audit_defaults(settings: Settings) -> None:
+    assert settings.audit_k == 8
+    assert settings.audit_deadline_s == 90
+    assert settings.audit_claim_concurrency == 3
+    assert settings.audit_max_claims == 12
+
+
+def test_make_require_session_custom_detail_and_cookie_hash() -> None:
+    empty_request = Request({"type": "http", "headers": []})
+    with pytest.raises(HTTPException) as answer_exc:
+        require_session(empty_request)
+    assert answer_exc.value.status_code == 404
+    assert answer_exc.value.detail == "Nie znaleziono odpowiedzi"
+
+    require_audit = make_require_session("Nie znaleziono analizy")
+    with pytest.raises(HTTPException) as audit_exc:
+        require_audit(empty_request)
+    assert audit_exc.value.status_code == 404
+    assert audit_exc.value.detail == "Nie znaleziono analizy"
+
+    with_cookie = Request(
+        {"type": "http", "headers": [(b"cookie", f"{COOKIE_NAME}=tok-123".encode())]}
+    )
+    assert require_audit(with_cookie) == hash_token("tok-123")

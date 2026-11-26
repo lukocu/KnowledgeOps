@@ -36,6 +36,12 @@ class Settings(BaseSettings):
     chat_timeout_s: float = 12
     answer_deadline_s: float = 25
 
+    # Limity audytu notatki ze sprawy (FR-006..FR-009).
+    audit_k: int = 8
+    audit_deadline_s: float = 90
+    audit_claim_concurrency: int = 3
+    audit_max_claims: int = 12
+
     # Opcjonalny model sędziego ewaluacji; brak `eval_judge_model` -> `CHAT_*`.
     eval_judge_model: str | None = None
     eval_judge_base_url: str | None = None

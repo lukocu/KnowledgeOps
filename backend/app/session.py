@@ -5,6 +5,7 @@ W bazie trzymamy wyłącznie SHA-256 tokenu. Przełącznik ról nie ma tu znacze
 
 import hashlib
 import secrets
+from collections.abc import Callable
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, Response, status
@@ -47,13 +48,24 @@ def get_or_create_session(
     return hash_token(token)
 
 
-def require_session(request: Request) -> str:
-    """Hash tokenu istniejącej sesji; bez ciasteczka 404, bez tworzenia sesji (GET)."""
-    token = _existing_token(request)
-    if token is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Nie znaleziono odpowiedzi")
-    return hash_token(token)
+def make_require_session(
+    detail: str = "Nie znaleziono zasobu",
+) -> Callable[[Request], str]:
+    """Tworzy zależność wymagającą istniejącej sesji; bez ciasteczka 404 (GET)."""
 
+    def _require(request: Request) -> str:
+        token = _existing_token(request)
+        if token is None:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, detail)
+        return hash_token(token)
+
+    return _require
+
+
+require_session = make_require_session("Nie znaleziono odpowiedzi")
 
 SessionDep = Annotated[str, Depends(get_or_create_session)]
 ExistingSessionDep = Annotated[str, Depends(require_session)]
+AuditSessionDep = Annotated[
+    str, Depends(make_require_session("Nie znaleziono analizy"))
+]

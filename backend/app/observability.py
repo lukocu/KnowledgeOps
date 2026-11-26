@@ -72,8 +72,11 @@ def run_config(
     chunk_set_id: str,
     k: int,
     handler: CallbackHandler | None,
+    run_name: str = "answer",
+    prompt_versions_map: dict[str, str] | None = None,
+    extra_metadata: dict[str, object] | None = None,
 ) -> RunnableConfig:
-    """Konfiguracja przebiegu grafu: nazwa `answer`, metadane i handler śladu.
+    """Konfiguracja przebiegu grafu: nazwa, metadane i handler śladu.
 
     Identyfikatory pobranych fragmentów są znane dopiero po `retrieve`, więc
     trafiają do śladu jako wyjście spanu tego węzła, nie jako metadane.
@@ -84,10 +87,19 @@ def run_config(
         "k": k,
         "chat_model": settings.chat_model,
         "chat_reasoning_effort": settings.chat_reasoning_effort,
-        "prompt_versions": prompt_versions(),
+        "prompt_versions": (
+            prompt_versions()
+            if prompt_versions_map is None
+            else dict(prompt_versions_map)
+        ),
     }
+    if extra_metadata:
+        for key, value in extra_metadata.items():
+            if "session" in key.lower():
+                raise ValueError("Metadane śladu nie mogą zawierać danych sesji.")
+            metadata[key] = value
     return RunnableConfig(
-        run_name="answer",
+        run_name=run_name,
         metadata=metadata,
         callbacks=[handler] if handler is not None else [],
     )
