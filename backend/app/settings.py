@@ -32,6 +32,13 @@ class Settings(BaseSettings):
     chat_timeout_s: float = 12
     answer_deadline_s: float = 25
 
+    # Opcjonalny model sędziego ewaluacji; brak `eval_judge_model` -> `CHAT_*`.
+    eval_judge_model: str | None = None
+    eval_judge_base_url: str | None = None
+    eval_judge_api_key: SecretStr | None = None
+    eval_judge_reasoning_effort: str | None = None
+    eval_judge_timeout_s: float = 20
+
     # Langfuse (ślad zapytania). Bez kluczy ślad jest wyłączony.
     langfuse_public_key: SecretStr | None = None
     langfuse_secret_key: SecretStr | None = None

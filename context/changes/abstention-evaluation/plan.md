@@ -403,25 +403,25 @@ Brak migracji bazy danych i brak zmian w kontrakcie API (OpenAPI / frontend bez 
 
 #### Automated
 
-- [x] 1.1 Testy jednostkowe i korpusowe Fazy 1 przechodzą (`pytest tests/evals/test_dataset.py tests/evals/test_prepare.py`)
-- [x] 1.2 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
-- [x] 1.3 Polecenia `eval-prepare-abstention --help` i `eval-freeze-abstention --help` zwracają kod 0
+- [x] 1.1 Testy jednostkowe i korpusowe Fazy 1 przechodzą (`pytest tests/evals/test_dataset.py tests/evals/test_prepare.py`) — 376e738
+- [x] 1.2 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`) — 376e738
+- [x] 1.3 Polecenia `eval-prepare-abstention --help` i `eval-freeze-abstention --help` zwracają kod 0 — 376e738
 
 #### Manual
 
-- [x] 1.4 Eksport `eval-prepare-abstention` na lokalnej bazie generuje czytelny `data/evals/abstention-candidates-review.md` z top-10 BM25
+- [x] 1.4 Eksport `eval-prepare-abstention` na lokalnej bazie generuje czytelny `data/evals/abstention-candidates-review.md` z top-10 BM25 — 376e738
 
 ### Phase 2: Sędziowie automatyczni, metryki deterministyczne i testy
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe Fazy 2 przechodzą (`pytest tests/evals/test_metrics.py tests/evals/test_judge.py`)
-- [ ] 2.2 Wszystkie dotychczasowe testy backendu nadal przechodzą (`pytest`)
-- [ ] 2.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
+- [x] 2.1 Testy jednostkowe Fazy 2 przechodzą (`pytest tests/evals/test_metrics.py tests/evals/test_judge.py`)
+- [x] 2.2 Wszystkie dotychczasowe testy backendu nadal przechodzą (`pytest`)
+- [x] 2.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
 
 #### Manual
 
-- [ ] 2.4 Przegląd promptów `citation_support.md` i `reference_agreement.md` potwierdza zgodność z definicją wsparcia z PRD
+- [x] 2.4 Przegląd promptów `citation_support.md` i `reference_agreement.md` potwierdza zgodność z definicją wsparcia z PRD
 
 ### Phase 3: Runner ewaluacji, Langfuse Cloud i raport Markdown
 
