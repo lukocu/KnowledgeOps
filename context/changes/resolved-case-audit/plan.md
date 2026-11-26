@@ -330,11 +330,11 @@ Budujemy ekrany `2`, `2P`, `3` i `3N` (desktop `>= 1280 px` i wąskie okno `390 
 
 #### Automated
 
-- [x] 4.1 Kontrole frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
-- [x] 4.2 Pełna weryfikacja backendu nadal przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest`
+- [x] 4.1 Kontrole frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build` — 011b5ad
+- [x] 4.2 Pełna weryfikacja backendu nadal przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest` — 011b5ad
 
 #### Manual
 
-- [x] 4.3 Przekazanie sprawy na `/audyt` (ekran `2`), przejście przez stan postępu (ekran `2P`) oraz odświeżenie strony w trakcie trwania analizy — postęp przetrwa odświeżenie i przejdzie do wyniku (ekran `3`).
-- [x] 4.4 Widok wyniku na `1280 px` i `390 px` bez przewijania w poziomie: przełączanie tez `T1`/`T2`, otwieranie `Kontekstu sprawy` w `PanelFrame`, otwieranie `Pokaż szerszy kontekst` i `Otwórz cały dokument` w `EvidencePanel`, przełączanie języka `PL`/`EN`, widoczność linku w `AbstentionView` (1C).
-- [x] 4.5 Ręczne przepuszczenie 12 przypadków pilotażu z `docs/pilotaz-audytu-techqa.md` przez graf audytu z ręcznym porównaniem kategorii i cytatów (bez raportowania jako pomiar końcowy S-11) oraz potwierdzenie aktualizacji `docs/przeplyw-danych.md`.
+- [x] 4.3 Przekazanie sprawy na `/audyt` (ekran `2`), przejście przez stan postępu (ekran `2P`) oraz odświeżenie strony w trakcie trwania analizy — postęp przetrwa odświeżenie i przejdzie do wyniku (ekran `3`). — 011b5ad
+- [x] 4.4 Widok wyniku na `1280 px` i `390 px` bez przewijania w poziomie: przełączanie tez `T1`/`T2`, otwieranie `Kontekstu sprawy` w `PanelFrame`, otwieranie `Pokaż szerszy kontekst` i `Otwórz cały dokument` w `EvidencePanel`, przełączanie języka `PL`/`EN`, widoczność linku w `AbstentionView` (1C). — 011b5ad
+- [x] 4.5 Ręczne przepuszczenie 12 przypadków pilotażu z `docs/pilotaz-audytu-techqa.md` przez graf audytu z ręcznym porównaniem kategorii i cytatów (bez raportowania jako pomiar końcowy S-11) oraz potwierdzenie aktualizacji `docs/przeplyw-danych.md`. — 011b5ad
