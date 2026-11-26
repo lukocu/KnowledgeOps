@@ -315,16 +315,16 @@ Budujemy ekrany `2`, `2P`, `3` i `3N` (desktop `>= 1280 px` i wąskie okno `390 
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe reguł i grafu audytu przechodzą: `cd backend; uv run pytest tests/test_audit_rules.py tests/test_audit_graph.py`
-- [x] 2.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
+- [x] 2.1 Testy jednostkowe reguł i grafu audytu przechodzą: `cd backend; uv run pytest tests/test_audit_rules.py tests/test_audit_graph.py` — 54aac32
+- [x] 2.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .` — 54aac32
 
 ### Phase 3: Wykonanie w tle (`lifespan`), API `/api/audits` i synchronizacja OpenAPI/TS
 
 #### Automated
 
-- [ ] 3.1 Testy API audytu i cały zestaw testów backendu przechodzą: `cd backend; uv run pytest`
-- [ ] 3.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
-- [ ] 3.3 Kontrakt OpenAPI i typy frontendu są zsynchronizowane i przechodzą typecheck: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck`
+- [x] 3.1 Testy API audytu i cały zestaw testów backendu przechodzą: `cd backend; uv run pytest`
+- [x] 3.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
+- [x] 3.3 Kontrakt OpenAPI i typy frontendu są zsynchronizowane i przechodzą typecheck: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck`
 
 ### Phase 4: Frontend (`2`, `2P`, `3`, `3N`), panel `Kontekst sprawy`, i18n i weryfikacja pilotażu
 

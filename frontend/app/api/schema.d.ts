@@ -38,6 +38,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/audits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Audit Endpoint */
+        post: operations["create_audit_endpoint_api_audits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/audits/{audit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit Endpoint */
+        get: operations["get_audit_endpoint_api_audits__audit_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/corpus": {
         parameters: {
             query?: never;
@@ -192,6 +226,111 @@ export interface components {
              */
             outcome: "answered";
         };
+        /**
+         * AuditClaimResponse
+         * @description Pojedyncza zweryfikowana teza w odpowiedzi `GET /api/audits/{audit_id}`.
+         */
+        AuditClaimResponse: {
+            /** Checked Docs */
+            checked_docs: components["schemas"]["CheckedDoc"][];
+            /** Claim Id */
+            claim_id: string;
+            /** Claim Index */
+            claim_index: number;
+            /** Claim Label */
+            claim_label: string;
+            /** Claim Text */
+            claim_text: string;
+            /** Error */
+            error: string | null;
+            /** Evidence */
+            evidence: components["schemas"]["ClaimEvidence"][];
+            /** Rationale */
+            rationale: string;
+            /** Scope Note */
+            scope_note: string | null;
+            /** Source End */
+            source_end: number | null;
+            /** Source Excerpt */
+            source_excerpt: string;
+            /** Source Start */
+            source_start: number | null;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "supported" | "contradicted" | "insufficient";
+        };
+        /**
+         * AuditDetailResponse
+         * @description Pełny stan audytu (w kolejce, w toku, zakończony lub błędny).
+         */
+        AuditDetailResponse: {
+            /** Audit Id */
+            audit_id: string;
+            case_context: components["schemas"]["CaseContext"] | null;
+            /** Case Description */
+            case_description: string;
+            /** Case Ref */
+            case_ref: string | null;
+            /** Chunk Set Ids */
+            chunk_set_ids: string[];
+            /** Claims */
+            claims: components["schemas"]["AuditClaimResponse"][];
+            /** Claims Done */
+            claims_done: number;
+            /** Claims Total */
+            claims_total: number;
+            /** Completed At */
+            completed_at: string | null;
+            /** Config */
+            config: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Duration Ms */
+            duration_ms: number | null;
+            /** Error */
+            error: string | null;
+            /** Include Synthetic */
+            include_synthetic: boolean;
+            /** Note Verdict */
+            note_verdict: ("full" | "partial" | "contradiction" | "insufficient") | null;
+            /** Resolution Note */
+            resolution_note: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "queued" | "extracting" | "retrieving" | "verifying" | "aggregating" | "completed" | "failed";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "completed" | "failed";
+        };
+        /**
+         * CaseContext
+         * @description Wyodrębniony kontekst sprawy (FR-007) — wszystkie pola jawne.
+         */
+        CaseContext: {
+            /** Constraints */
+            constraints: string[];
+            /** Environment */
+            environment: string | null;
+            /** Missing Info */
+            missing_info: string[];
+            /** Problem */
+            problem: string | null;
+            /** Solution */
+            solution: string | null;
+        };
         /** CheckedChunk */
         CheckedChunk: {
             /** Chunk Id */
@@ -206,6 +345,31 @@ export interface components {
             score: number;
             /** Title */
             title: string;
+        };
+        /**
+         * CheckedDoc
+         * @description Unikalny dokument bazy wiedzy sprawdzony podczas weryfikacji tezy.
+         */
+        CheckedDoc: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** Chunk Set Id */
+            chunk_set_id: string;
+            /** Document Id */
+            document_id: string;
+            /** Document Title */
+            document_title: string;
+            /**
+             * Is Synthetic
+             * @default false
+             */
+            is_synthetic: boolean;
+            /** Score */
+            score: number;
+            /** Snapshot Id */
+            snapshot_id?: string | null;
+            /** Source Doc Id */
+            source_doc_id: string;
         };
         /** ChunkSpan */
         ChunkSpan: {
@@ -267,6 +431,37 @@ export interface components {
             quote_end: number;
             /** Quote Start */
             quote_start: number;
+        };
+        /**
+         * ClaimEvidence
+         * @description Zweryfikowany cytat z bazy wiedzy lub najbliższy sprawdzony fragment.
+         */
+        ClaimEvidence: {
+            /** Chunk Id */
+            chunk_id: string;
+            /** Chunk Set Id */
+            chunk_set_id: string;
+            /** Document Id */
+            document_id: string;
+            /** Document Title */
+            document_title: string;
+            /**
+             * Is Synthetic
+             * @default false
+             */
+            is_synthetic: boolean;
+            /** Quote */
+            quote: string;
+            /** Quote End */
+            quote_end: number;
+            /** Quote Start */
+            quote_start: number;
+            /** Snapshot Id */
+            snapshot_id?: string | null;
+            /** Source Doc Id */
+            source_doc_id: string;
+            /** Supports Claim */
+            supports_claim: boolean;
         };
         /** ConflictComparisonRow */
         ConflictComparisonRow: {
@@ -372,6 +567,36 @@ export interface components {
             source: string;
             /** Variant */
             variant: string;
+        };
+        /**
+         * CreateAuditRequest
+         * @description Wejście zlecenia audytu notatki ze sprawy.
+         */
+        CreateAuditRequest: {
+            /** Case Description */
+            case_description: string;
+            /** Case Ref */
+            case_ref?: string | null;
+            /** Resolution Note */
+            resolution_note: string;
+        };
+        /**
+         * CreateAuditResponse
+         * @description Odpowiedź po przyjęciu audytu do kolejki (`202 Accepted`).
+         */
+        CreateAuditResponse: {
+            /** Audit Id */
+            audit_id: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "queued" | "extracting" | "retrieving" | "verifying" | "aggregating" | "completed" | "failed";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "completed" | "failed";
         };
         /** DocumentText */
         DocumentText: {
@@ -580,6 +805,84 @@ export interface operations {
                 };
             };
             /** @description Brak odpowiedzi w tej sesji */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_audit_endpoint_api_audits_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAuditRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateAuditResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Brak konfiguracji modelu, niedostępna baza danych lub brak migawki. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_audit_endpoint_api_audits__audit_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditDetailResponse"];
+                };
+            };
+            /** @description Brak analizy w tej sesji */
             404: {
                 headers: {
                     [name: string]: unknown;

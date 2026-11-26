@@ -7,11 +7,14 @@ from typing import Literal
 from fastapi import FastAPI, Response, status
 from pydantic import BaseModel
 
-from app.api import answers, evidence
+from app.api import answers, audits, evidence
+from app.auditing.runner import AuditTaskManager
+from app.auditing.store import fail_orphaned_audits
 from app.db import PoolDep, create_pool
 from app.settings import Settings
 
 HEALTH_QUERY_TIMEOUT_S = 2.0
+ORPHAN_CLEANUP_TIMEOUT_S = 2.0
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +31,33 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # wait=False: aplikacja startuje nawet gdy baza jest niedostępna.
     await pool.open(wait=False)
     app.state.pool = pool
+    audit_tasks = AuditTaskManager()
+    app.state.audit_tasks = audit_tasks
+    try:
+        async with asyncio.timeout(ORPHAN_CLEANUP_TIMEOUT_S):
+            async with pool.connection(timeout=ORPHAN_CLEANUP_TIMEOUT_S) as conn:
+                orphaned = await fail_orphaned_audits(conn)
+                if orphaned:
+                    logger.warning(
+                        "Oznaczono %d osieroconych audytów jako failed przy starcie",
+                        orphaned,
+                    )
+    except Exception:
+        logger.warning(
+            "Nie udało się wyczyścić osieroconych audytów przy starcie",
+            exc_info=True,
+        )
     try:
         yield
     finally:
+        await audit_tasks.shutdown()
         await pool.close()
 
 
 app = FastAPI(title="KnowledgeOps API", version="0.1.0", lifespan=lifespan)
 app.include_router(evidence.router)
 app.include_router(answers.router)
+app.include_router(audits.router)
 
 
 @app.get(

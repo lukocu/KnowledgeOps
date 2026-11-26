@@ -220,6 +220,355 @@
         "title": "AnsweredResult",
         "type": "object"
       },
+      "AuditClaimResponse": {
+        "description": "Pojedyncza zweryfikowana teza w odpowiedzi `GET /api/audits/{audit_id}`.",
+        "properties": {
+          "checked_docs": {
+            "items": {
+              "$ref": "#/components/schemas/CheckedDoc"
+            },
+            "title": "Checked Docs",
+            "type": "array"
+          },
+          "claim_id": {
+            "title": "Claim Id",
+            "type": "string"
+          },
+          "claim_index": {
+            "title": "Claim Index",
+            "type": "integer"
+          },
+          "claim_label": {
+            "title": "Claim Label",
+            "type": "string"
+          },
+          "claim_text": {
+            "title": "Claim Text",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/ClaimEvidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "scope_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope Note"
+          },
+          "source_end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source End"
+          },
+          "source_excerpt": {
+            "title": "Source Excerpt",
+            "type": "string"
+          },
+          "source_start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Start"
+          },
+          "verdict": {
+            "enum": [
+              "supported",
+              "contradicted",
+              "insufficient"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim_id",
+          "claim_index",
+          "claim_label",
+          "claim_text",
+          "source_excerpt",
+          "source_start",
+          "source_end",
+          "verdict",
+          "rationale",
+          "scope_note",
+          "evidence",
+          "checked_docs",
+          "error"
+        ],
+        "title": "AuditClaimResponse",
+        "type": "object"
+      },
+      "AuditDetailResponse": {
+        "description": "Pełny stan audytu (w kolejce, w toku, zakończony lub błędny).",
+        "properties": {
+          "audit_id": {
+            "title": "Audit Id",
+            "type": "string"
+          },
+          "case_context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaseContext"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "case_description": {
+            "title": "Case Description",
+            "type": "string"
+          },
+          "case_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Ref"
+          },
+          "chunk_set_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Chunk Set Ids",
+            "type": "array"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/AuditClaimResponse"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "claims_done": {
+            "title": "Claims Done",
+            "type": "integer"
+          },
+          "claims_total": {
+            "title": "Claims Total",
+            "type": "integer"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "config": {
+            "additionalProperties": true,
+            "title": "Config",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Ms"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "include_synthetic": {
+            "title": "Include Synthetic",
+            "type": "boolean"
+          },
+          "note_verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "full",
+                  "partial",
+                  "contradiction",
+                  "insufficient"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Verdict"
+          },
+          "resolution_note": {
+            "title": "Resolution Note",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "queued",
+              "extracting",
+              "retrieving",
+              "verifying",
+              "aggregating",
+              "completed",
+              "failed"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit_id",
+          "case_ref",
+          "case_description",
+          "resolution_note",
+          "status",
+          "stage",
+          "claims_total",
+          "claims_done",
+          "note_verdict",
+          "case_context",
+          "claims",
+          "snapshot_id",
+          "chunk_set_ids",
+          "include_synthetic",
+          "config",
+          "error",
+          "duration_ms",
+          "created_at",
+          "completed_at"
+        ],
+        "title": "AuditDetailResponse",
+        "type": "object"
+      },
+      "CaseContext": {
+        "description": "Wyodrębniony kontekst sprawy (FR-007) — wszystkie pola jawne.",
+        "properties": {
+          "constraints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Constraints",
+            "type": "array"
+          },
+          "environment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Environment"
+          },
+          "missing_info": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Info",
+            "type": "array"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem"
+          },
+          "solution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solution"
+          }
+        },
+        "required": [
+          "problem",
+          "environment",
+          "solution",
+          "constraints",
+          "missing_info"
+        ],
+        "title": "CaseContext",
+        "type": "object"
+      },
       "CheckedChunk": {
         "properties": {
           "chunk_id": {
@@ -259,6 +608,61 @@
           "score"
         ],
         "title": "CheckedChunk",
+        "type": "object"
+      },
+      "CheckedDoc": {
+        "description": "Unikalny dokument bazy wiedzy sprawdzony podczas weryfikacji tezy.",
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "chunk_set_id": {
+            "title": "Chunk Set Id",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "document_title": {
+            "title": "Document Title",
+            "type": "string"
+          },
+          "is_synthetic": {
+            "default": false,
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          },
+          "source_doc_id": {
+            "title": "Source Doc Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "document_title",
+          "source_doc_id",
+          "chunk_id",
+          "chunk_set_id",
+          "score"
+        ],
+        "title": "CheckedDoc",
         "type": "object"
       },
       "ChunkSpan": {
@@ -399,6 +803,76 @@
           "quote_end"
         ],
         "title": "CitationClaim",
+        "type": "object"
+      },
+      "ClaimEvidence": {
+        "description": "Zweryfikowany cytat z bazy wiedzy lub najbliższy sprawdzony fragment.",
+        "properties": {
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "chunk_set_id": {
+            "title": "Chunk Set Id",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "document_title": {
+            "title": "Document Title",
+            "type": "string"
+          },
+          "is_synthetic": {
+            "default": false,
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "quote_end": {
+            "title": "Quote End",
+            "type": "integer"
+          },
+          "quote_start": {
+            "title": "Quote Start",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          },
+          "source_doc_id": {
+            "title": "Source Doc Id",
+            "type": "string"
+          },
+          "supports_claim": {
+            "title": "Supports Claim",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "chunk_id",
+          "document_id",
+          "document_title",
+          "source_doc_id",
+          "chunk_set_id",
+          "quote",
+          "quote_start",
+          "quote_end",
+          "supports_claim"
+        ],
+        "title": "ClaimEvidence",
         "type": "object"
       },
       "ConflictComparisonRow": {
@@ -701,6 +1175,80 @@
           "chunk_count"
         ],
         "title": "CorpusInfo",
+        "type": "object"
+      },
+      "CreateAuditRequest": {
+        "description": "Wejście zlecenia audytu notatki ze sprawy.",
+        "properties": {
+          "case_description": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Case Description",
+            "type": "string"
+          },
+          "case_ref": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Ref"
+          },
+          "resolution_note": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Resolution Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_description",
+          "resolution_note"
+        ],
+        "title": "CreateAuditRequest",
+        "type": "object"
+      },
+      "CreateAuditResponse": {
+        "description": "Odpowiedź po przyjęciu audytu do kolejki (`202 Accepted`).",
+        "properties": {
+          "audit_id": {
+            "title": "Audit Id",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "queued",
+              "extracting",
+              "retrieving",
+              "verifying",
+              "aggregating",
+              "completed",
+              "failed"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit_id",
+          "status",
+          "stage"
+        ],
+        "title": "CreateAuditResponse",
         "type": "object"
       },
       "DocumentText": {
@@ -1184,6 +1732,95 @@
         "summary": "Get Answer",
         "tags": [
           "answers"
+        ]
+      }
+    },
+    "/api/audits": {
+      "post": {
+        "operationId": "create_audit_endpoint_api_audits_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAuditRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateAuditResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "Brak konfiguracji modelu, niedostępna baza danych lub brak migawki."
+          }
+        },
+        "summary": "Create Audit Endpoint",
+        "tags": [
+          "audits"
+        ]
+      }
+    },
+    "/api/audits/{audit_id}": {
+      "get": {
+        "operationId": "get_audit_endpoint_api_audits__audit_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "audit_id",
+            "required": true,
+            "schema": {
+              "title": "Audit Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Brak analizy w tej sesji"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Audit Endpoint",
+        "tags": [
+          "audits"
         ]
       }
     },
