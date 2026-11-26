@@ -1,0 +1,1823 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "techqa@0b5bbc84b7f07d6d09d063130e90b716d8d4a32a",
+  "train_json_sha256": "69d97231509482ed6bd5ec1c4bc0607acb82a88d11169eb8383592d0ca8b93c7",
+  "split_seed": 20261125,
+  "dev_ratio": 0.3,
+  "excluded_conflict_ids": [
+    "DEV_Q082",
+    "DEV_Q189",
+    "DEV_Q195",
+    "DEV_Q228",
+    "DEV_Q276",
+    "DEV_Q298",
+    "TRAIN_Q138",
+    "TRAIN_Q156",
+    "TRAIN_Q210",
+    "TRAIN_Q238",
+    "TRAIN_Q248",
+    "TRAIN_Q333"
+  ],
+  "items": [
+    {
+      "question_id": "DEV_Q000",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg24042191",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q001",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21968787 dotyczy DASH i 'Too many open files' (ulimit), ale fragment nie potwierdza rozwiązania dla AIX.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q002",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21978390",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q003",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla UrbanCode i timeoutu shell task; top-10 dotyczy Connect:Direct, Cognos, Domino i Gentran.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q004",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia Error 2070 (PI20755, PI29943-45, swg21488477) dotyczą symptom 5 i licencji sieciowej, nie GradPack sym. 3.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q005",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1IC95983 dotyczy Win32Exception w MQCONNX (ProcessManager), ale dla Access Denied zamiast invalid handle.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q006",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg1PI25634 wprost opisuje ten błąd: XMLAccess wykonywany na bazowym portalu po instalacji WebSphere Portal 8.5 CF01.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q007",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21625776",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q008",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21412061",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q009",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia dotyczą innych produktów (Cognos, CDC) lub pełnego dysku (swg21636650); brak BPMInstallOfflinePackage.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q010",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21317981",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q011",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21577379",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q012",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21959723",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q013",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21665766",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q014",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21138332",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q015",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla DFHTS0001, modułu DFHTSPT ani offsetu 3A1E; top-10 opisuje inne abendy 0C4/AKEA w CICS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q016",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21502095",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q017",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 dla IIB/WMB Toolkit dotyczy połączeń, debuggera, eksportu i CVE; brak instrukcji silent install fix packów.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q018",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21659437 (i swg21659582) wprost opisują ten sam SQL -803 na LSW_SNAPSHOT dla duplikatów akronimów z wielu Process Center.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q019",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21700397",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q020",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg24041964 (PI53566) opisuje wyciek pamięci ODR (HttpRouteAction), ale nie potwierdza związku z aktualizacją WAS 8.5.5.3.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q021",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21298897",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q022",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22005352",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q023",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21433278",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q024",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1IT01265 pasuje do migracji klienta WMQ 7.5.0.x i błędu .NET, ale fragment nie potwierdza AMQ6048/CCSID 1208->1252.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q025",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21959588",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q026",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21499749 to MustGather DNS dla DataPower z krokami i CLI; pełny tekst może opisywać czyszczenie cache DNS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q027",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21618564",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q028",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21975747",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q029",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21496354",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q030",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21636533",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q031",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21615508 ma identyczny tytuł i opis problemu z klastrowanym SSP w Decision Center oraz sekcję RESOLVING THE PROBLEM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q032",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21994175",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q033",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21269136",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q034",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21413628",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q035",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22013168",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q036",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia WTX (PK90066, PK88357, swg21976821) dotyczą innych błędów/platform; brak przyczyny portu 6002 w Launcher 9.0.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q037",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Wszystkie 10 trafień (m.in. swg22013693, swg21994053) to dokładne alerty 'Action required' dla IIB H.E. V9 i WMB H.E. V8.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q038",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21451229",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q039",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21638268",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q040",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21600618",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q041",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak informacji o wydaniu ITCAM for J2EE 7.1.1 IF4; trafienia dotyczą 7.1.0.3 IF4 (PM65060) i 7.1.1 RP1 (swg24037988).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q042",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21635341 dotyczy niewykrywania WAS przez IM przy instalacji Portal 8; pełny tekst może dotyczyć także Portal 8.5.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q043",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg24042656",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q044",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak biuletynu dla CVE-2017-1699; top-10 to inne CVE (CVE-2016-1000031, CVE-2017-1382, CVE-2017-1795, CVE-2013-0248).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q045",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak instrukcji uzyskania nowego kodu autoryzacyjnego SPSS 18 GradPack na nowy komputer; swg21994470 to ogólny spis linków.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q046",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22002589",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q047",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22013294",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q048",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21685441",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q049",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1PK13031 dotyczy ostrzeżenia o błędnym helperze Oracle 10g, ale fragment nie potwierdza DSRA7019W i rozwiązania dla WAS 8.5.5.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q050",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21991890",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q051",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21495799",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q052",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21500046",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q053",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21635341",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q054",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak dokumentu MustGather/logów dla RDz Integrated Debugger; trafienia to konkretne APAR-y (PI17909, PI27614) i inne błędy.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q055",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21412846",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q056",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] APAR-y PK62541 i PK09468 dotyczą ADMA8019E na poziomie cell, lecz fragmenty nie potwierdzają namespace bindings ani skutków.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q057",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg22011624 i swg22009455 mają pasujący tytuł i wysoki wynik BM25, ale lista CVE jest poza skrótem; wymaga pełnego tekstu.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q058",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg22011748 ma dużą przewagę BM25 (336 vs 249) przy pasującym tytule, lecz lista 8 CVE jest poza skrótem; wymaga pełnego tekstu.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q059",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak biuletynu dla CVE-2017-1583 w WSRR; trafienia dla WSRR (swg22006813, swg21988198) dotyczą innych CVE.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q060",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla modułu EQA10OSM i CICS TS 5.2; dokumenty opisują inne moduły (CEEZLOD, DFHZNEP, CEEPLPKA) i abendy 0C4/0C2.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q061",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] APAR-y PI64495 i PI83585 dotyczą problemów z wyłączaniem JVMSERVER w CICS, lecz skróty nie potwierdzają stanu BEING DISABLED.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q062",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #9 (swg21692191) to bezpośrednio dokument 'Fix Pack 8.0.0.5 (V8.0 Fix Pack 5) for WebSphere Message Broker'.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q063",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21509510",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q064",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21995099",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q065",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak instrukcji dla widoku App Health agenta WAS; trafienia dotyczą baseliningu, LQE, SiteProtector i WebLogic (PM17739).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q066",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22000947",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q067",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21615427",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q068",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21162896",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q069",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21623002 i IC94205 opisują SYSTEM.PROTECTION.POLICY.QUEUE bez AMS (kod 2085), lecz nie widać błędu AMQ9050 ani MQ v8.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q070",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #1 (swg22012109) to dokładnie szukany biuletyn bezpieczeństwa dla WebSphere MQ FTE i CVE-2016-3092.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q071",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21260969",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q072",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22005345",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q073",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21237907 opisuje usuwanie kolejek ghost (RESOLVING THE PROBLEM), a IT12103 dotyczy masowego ich narastania w IBM MQ 8.0.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q074",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21959169",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q075",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla NullPointerException w aktualizacji BPM 8.5.5->8.5.6 przez IM; dokumenty dotyczą innych wersji lub Solaris/PFS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q076",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21671988, IV64051 i swg21681555 opisują fałszywe alerty Inactive w agencie rz, lecz dla konkretnych przyczyn (TCPS, tnsping).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q077",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21592093",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q078",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #1 (swg21902248) to dokładnie alert wymaganych działań dla WebSphere MQ Hypervisor Edition i glibc CVE-2015-1472.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q079",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21659437 (i swg21659582) wprost wyjaśniają SqlIntegrityConstraintViolationException przy wdrażaniu z wielu Process Center.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q080",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21960062",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q081",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21612134 i IV82700 wprost wyjaśniają pliki _attachlock/_master/_notifier w .com_ibm_tools_attach (IBM Java Attach API).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q083",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak instrukcji dla IHS 7-8.5 + HOD V11 na z/OS; swg21986779 dotyczy HOD V12+, a swg21984702 dotyczy IHS V9 dla HOD V11.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q084",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21963694 (7.1.1.0.2/RHEL7) i swg21972181 (7.1.1.0/RHEL 7.1) są bliskie, ale skróty nie pokazują odpowiedzi ani KCI1138E.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q085",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla awarii Event Dashboard z japońskim filtrem w WebGUI 8.1 FP11; trafienia to DOORS NG, XGS i starsze WebGUI.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q086",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak dokumentów o IBM HTTP Server 7.0.0.41 i TLS 1.2; trafienia dotyczą innych produktów (Traveler, Domino, ISIM, VMWare).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q087",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak informacji o kompatybilności WMB v7 z MQ v8; trafienia dotyczą wtyczki Explorer (IS02), agentów ITCAM i błędów WBIFN.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q088",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21320206",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q089",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg22002063",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q090",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21608473",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q091",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia dla Datacap/Rulerunner dotyczą innych błędów (1334, XML, DLL RRX, brak zadań, WAN), brak błędu 'Unable to connect'.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q092",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak dokumentów o WebSphere Application Server (WSAS) z Oracle 12c; trafienia dotyczą innych produktów (Sterling, TWS, Cognos).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q093",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21696179",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q094",
+      "split": "test",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21638268",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q095",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21657155 wprost opisuje błąd CTGAZ0001E przy zapisie aplikacji w APMUI, weryfikację servletu gettime i skrypt connManager.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q096",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak diagnostyki zaginionych wiadomości trwałych; swg21518392 opisuje ogólnie JMS file store, reszta niezwiązana.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q097",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg22003509 to dokładnie ten biuletyn bezpieczeństwa dla IBM MQ (CVE-2016-6089, właściciel '555' na Linux x86-64).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q100",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak informacji o wsparciu TLS w ITCAM Agent for WebSphere DataPower 7.1; trafienia dotyczą FP3, wymagań, certyfikatów i trapów.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q101",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21957998 to dokładnie ten biuletyn bezpieczeństwa dla WMB/IIB Toolkit (CVE-2015-0118); swg21959898 to wersja japońska.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q102",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21965783",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q103",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21439561 dotyczy dokładnie SessionBeanTimeoutException (dla Coaches), a swg21289468 timeoutów SFSB; pełny tekst nieznany.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q104",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21990013 dotyczy diagnostyki nieładującego się pluginu Rhapsody, lecz fragment nie potwierdza rozwiązania tego błędu.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q105",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] 10 alertów o tym samym tytule (IIB/WMB HE RHEL); swg22012862 ma wysoki score (263), lecz fragment nie pokazuje listy CVE.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q107",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla błędu 'BO Service is not supported or disabled' / BOCore.init; dokumenty dotyczą innych wyjątków WPS/WAS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q111",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] Pytanie ogólne; swg21063645 i swg21066467 opisują StaleConnectionException w WAS, lecz brak treści specyficznej dla BPM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q112",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21672071",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q113",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21427447 zawiera dokładnie to pytanie (nawet z tą samą literówką) wraz z przyczyną (certyfikat WAS 7) i rozwiązaniem.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q115",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg22011689 to dokładnie ten biuletyn bezpieczeństwa dla WebSphere MQ File Transfer Edition (CVE-2016-1000031).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q116",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg27042065",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q117",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak ścieżki migracji ITCAM AD 7.1 -> 7.2; swg1PI34945 to tylko APAR błędu migracji DC, reszta dotyczy innych tematów.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q118",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak awarii db2top ze stosem waddnstr/vw_printw przy monitorowaniu SQL; IT03370 i IC63983 dotyczą innych błędów db2top.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q119",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21997033",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q120",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21982354",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q122",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21969653",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q124",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21960062 wprost opisuje Scripting Feature w ITM OS Agents 6.3.0 FP5 (potwierdza też APAR swg1IV68780 dla ITM 6.3.0 FP5).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q125",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg1JR51714 dotyczy dokładnie błędu 'The profile path must not exist' przy tworzeniu profilu BPMConfig i podaje poprawkę.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q126",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1IV53739/IV33501/IC83494 dotyczą RC 2399 (MQRC_SSL_PEER_NAME_ERROR), lecz snippet nie potwierdza błędu OID z pytania.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q127",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21700720 (WDP Edition) zawiera link do szukanego biuletynu CVE-2015-0138 dla WBM, ale brak samego biuletynu ze szczegółami.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q128",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla IIS i WAS 7.0.0.41; wyniki dotyczą innych produktów (Sametime swg21967992, InfoSphere, Case Manager, GUI).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q130",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21584855 odpowiada wprost na pytanie (identyczny tytuł i pytanie FAQ o wydajność ODM Decision Center i RTS).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q131",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla Lotus Quickr; top-10 BM25 dotyczy innych produktów (ICN, RTC, OpenPages, MDM, Connections).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q133",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] APAR swg1PI41856 dotyczy gromadzenia plików w var/sa/dialogue; pełny tekst może opisywać czyszczenie, ale brak info o backupie.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q135",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Dokładny technote swg21295634 opisuje ten komunikat błędu przy aktualizacji firmware DataPower i wymagane działania.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q136",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla nieaktywnej zakładki Compose i braku edycji projektu w Decision Center; swg21616403 dotyczy błędu SQL.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q137",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak poradnika instalacji/wycofywania fix packa dla multi-instance IIB; wyniki to replay MQ failover i pojedyncze APARy HA.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q138",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21688020 dotyczy SQLCODE=-551/42501 (uprawnienia DB2) w WebSphere Portal; pełny tekst może odpowiadać na problem.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q139",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #10 (swg22009918) to dokładnie szukany biuletyn bezpieczeństwa IBM WebSphere MQ dla CVE-2017-1612.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q140",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21979066",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q142",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1JR56556 (BPM APAR) i swg21461670 (DB2 JDBC -4470) są bardzo bliskie, ale bez pełnego tekstu niepewne dla CWLLG2015E.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q143",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21961542 wprost opisuje procedurę konfiguracji ITCAM for J2EE Tomcat Data Collector jako usługi Windows.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q144",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla CICS CM, transakcji CCVI, programu CCVIINIT ani abendu AEXZ; wyniki dotyczą innych abendów CICS (np. AMQH).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q145",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg1PI47826",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q146",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21642038 dotyczy błędu CRIMC1020E przy aktualizacji BPM 7.5.1 (FP1, inny plik zip); pełny tekst może mieć wspólną przyczynę.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q147",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21672459 (Master list of ITM TEP/Java issues) bezpośrednio odpowiada na pytanie i zawiera listę znanych problemów Java/TEP.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q148",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak poradnika przygotowania WAS i BPM na zmianę DST; swg21251761 dotyczy ogólnie Java/JTZU, a reszta innych produktów.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q149",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21974106",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q150",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21639640 zawiera oficjalną tabelę wspieranych wersji Java dla poszczególnych wersji IBM BPM (linkowaną też w swg21999583).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q151",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Pytanie to pusty szablon (QUESTION_TITLE / QUESTION); trafienia to przypadkowe dokumenty FAQ dopasowane po słowie QUESTION.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q152",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] APAR swg1PI75159 wprost opisuje przyczynę: base entry 'root' dla Microsoft Active Directory LDAP w WAS nie jest wspierane.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q154",
+      "split": "dev",
+      "original_is_impossible": false,
+      "canonical_doc_id": "swg21598417",
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "",
+      "reviewed_at": ""
+    },
+    {
+      "question_id": "DEV_Q157",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak poradnika TLS/SSL dla IIB HTTP/SOAP; swg1IC58609 dotyczy tylko domyślnego SSLProtocol WMB, reszta to inne produkty.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q159",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak biuletynu dla CVE-2017-1693 (WebAdmin Session Timeout w IIB); trafienia dotyczą innych CVE (np. 2017-1694, 2016-6080).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q163",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1PM20585 (WebSphere Portal, [jcc][t4][2041][11392]) i swg21690310 są bliskie, ale snippet nie potwierdza XAER_RMFAIL/SQL -911.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q165",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla CICS IA, procedury CIUSNTSR i błędu SQLCODE -401 w DB2 11; wyniki dotyczą innych SQLCODE (-204, -417, -991).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q166",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak tabeli wersji WMQ Resource Adapter w WAS; top-10 to pojedyncze APARy aktualizujące adapter do jednej konkretnej wersji.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q168",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] APAR swg1JR53526 (błąd połączenia IID z DataPower Gateway) pasuje tytułem, ale snippet zawiera tylko tekst o subskrypcji.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q169",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Technote FAQ swg21592060 ma identyczny tytuł i pytanie ('How do I migrate to WebSphere ILOG JRules v7.1?') oraz odpowiedź.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q170",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1PI53566/swg24041964 opisuje znany OOM w ODR na WAS 8.5.5.x, ale dotyczy aktualizacji aplikacji pod obciążeniem.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q172",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak procedury usuwania użytkownika w CDM; top-10 BM25 to dokumenty pobierania, szablonów, formuł, ról DB i instalacji.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q173",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla ODM / Decision Center 8.7; top-10 dotyczy ORA-01795 w innych produktach (Maximo, Commerce, Sterling, RTC).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q177",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] APAR swg1IJ02418 wprost odpowiada na problem: TSAMP nie startuje po aktualizacji AIX 7100-05-01-1731 z RSCT 3.2.3.0.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q178",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak matrycy wsparcia ITCAM for AD/WAS dla WAS 8.5.5.x; top-10 dotyczy ITM, J2EE, WXS, baz danych i instalacji agenta v7.2.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q185",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] APAR swg1IT06798 wprost opisuje błąd Call Home CWZIP9602E Service53 w PureApplication 2.0.0.1 oraz podaje LOCAL FIX i poprawkę.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q190",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak informacji o wsparciu parametru -Xlp z ITCAM; top-10 to ogólne dokumenty JVM large pages oraz APAR swg1PI08765.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q191",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla Installation Manager na Linux Ingram Server; top-10 dotyczy innych produktów (WAS, WODM, SPSS, TPF, Modeler).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q194",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Technote swg21448581 wprost opisuje automatyczne generowanie javacore przy WSVR0605W w WAS hung thread detector.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q197",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] Pytanie nie podaje CVE; w top-10 są dwa japońskie biuletyny o ujawnieniu informacji w WMB/IIB (swg22005566, swg22009319).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q198",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dla modułu CSQADITB; top-10 to APAR-y CSV002I dla innych modułów (m.in. CSQACLST, CSQQCON2, EKAPT, DSLMSGT).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q199",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] APAR swg1IZ68236 (wynik 259.8) dotyczy zawieszenia startu WAS z WMQ Resource Adapter/MDB; pełny tekst może potwierdzić stack.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q200",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Technote FAQ swg21589514 ma identyczny tytuł i pytanie oraz zawiera odpowiedź o optymalizacji Rule Designer i Rule Studio.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q203",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 BM25 dot. innych produktów/błędów (Batch, Derby, DB2, ISIM, Oracle 9i >4K); brak przyczyny SQL Code 17008.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q205",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak błędu exit code=-1 dla RSA; trafienia dot. innych kodów (1, 8096, -1073741819), SWT lub błędu tworzenia JVM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q207",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21588859 ma identyczny tytuł i pytanie FAQ o poprawie wydajności DVS i Decision Warehouse (linkowane też w swg27023725).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q212",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 dot. migracji Datacap, ścieżek 7.6 i TMWeb; brak błędu czyszczenia konfiguracji DB w App Manager 9.0.1.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q214",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 dot. tworzenia baz BPM, czyszczenia PDWDB (swg21612755) lub braku danych; brak przyczyny zalewania tabeli TASKS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q217",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21485235/swg21485231 dot. upgrade'u License Managera SPSS, a swg21984208 Modeler 18.0; w skrótach brak pełnej procedury.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q219",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia dot. konfiguracji trace spooling TSAMP (swg21504122, swg21679513); brak przyczyny komunikatów refreshOpState.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q222",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] Wszystkie 10 alertów ma ten sam tytuł dla IIB H.E. V9 / WMB H.E. V8; ucięte fragmenty nie pokazują CVE-2017-16546.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q223",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak danych o Chrome w Business Monitor 8.0.1 Report Viewer; swg21666590 dot. IE9+, a swg27040744 IBM Case Manager.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q226",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21157005 zawiera wprost sekcję i polecenie sprawdzania wersji builda IBM Java ORB w WebSphere Application Server.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q227",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] swg21639640 zawiera oficjalną tabelę wspieranych wersji Java dla wersji IBM BPM (wskazaną także przez swg21999583).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q231",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Wszystkie 10 biuletynów CVE-2016-1000031 dotyczy innych produktów (TBSM, WSRR, Algo, Portal, Liberty), żaden IBM BPM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q232",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak danych o wsparciu Java 8 w CICS TS; trafienia dot. pakietów zD&T oraz błędów CICS TS 4.2/5.1 z Java 6/7.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q233",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg1PM64400/swg21448581 dot. hung thread detection (alarm threads), lecz fragmenty nie podają wpływu na wydajność.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q236",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Wszystkie 10 biuletynów Java dotyczy innych produktów (ClearCase, ClearQuest, FlashSystem, Jazz itp.), brak API Connect.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q237",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia dot. DataPower MQ FSH, SFTP backup, backend-timeout i Domino; brak problemu ruchu trafiającego na wyłączony FSH.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q238",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 dot. innych błędów klastra Impact (replikacja, failover, ObjectServer); brak zatrzymania logów NCI1 po starcie NCI2.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q241",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia dot. skryptów ITNM (ITNMExportNetworkViews, ncp_gwplugins, Discovery); brak Apache Storm i plików DB2 w /tmp.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q246",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Top-10 dot. innych agentów (WinCollect, Oracle, Systems Director D9, ITCAM Datapower); brak wersji Log File Agent.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q247",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Trafienia IID dot. 32-bit IM, BPC, DB2 i CVE; brak błędu startu exit code=-805306369 oraz BundleStatusException.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q248",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafienia nt. ILMT VM Manager ('invalid credentials - suspended'); wyniki dot. TSM, TEP, z/VM oraz komunikatu IV63361.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q250",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #4 (swg22010141) to dokładny biuletyn bezpieczeństwa dla IIB oraz CVE-2017-1000381 i CVE-2017-11499.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q251",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21318667 (semafory WMQ na IBM i) i swg1SA96051 (zadania w SEMW) są bardzo bliskie, ale bez pełnej treści niejasne.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q252",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21556758 opisuje te same błędy ORA-02396/ORA-01012 (idle time), lecz dla GIS, nie WAS; brak trafienia dla WAS.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q255",
+      "split": "dev",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafienia dla BPM po aktualizacji DB2 10.1 FP4; swg21579275 dot. upgrade'u BPM, a swg21590281 produktu WPG i DB2 9.5 FP5.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q264",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg21642038 opisuje błąd CRIMC1020E przy instalacji BPM 7.5.1 FP1 (inny zip); pełna treść może zawierać rozwiązanie.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q265",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #1/#2/#10 (swg21902261) ma identyczny tytuł i pytanie FAQ oraz zawiera odpowiedź dla FileNet Content Manager.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q269",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "answerable_in_corpus",
+      "reviewer_note": "[AI review] Trafienie #1 (swg21599241, score 388.5) to dokładny dokument FAQ z identycznym pytaniem o SSP przez HTTPS w WODM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q270",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg27038676 dotyczy poziomów JRE i GSKit dla wersji IBM MQ, ale fragment sugeruje stronę z linkami — wymaga pełnej treści.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q272",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień nt. kompatybilności z/OS Connect EE 2.0/3.0 z CICS TS 5.4; wyniki to listy pakietów zD&T, CICS Explorer i APAR.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q273",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] swg22005262 (po japońsku) i swg21982529 opisują błąd JDBC -4220 po migracji do Java 8; pełna treść może dokładnie odpowiadać.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q274",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafienia dla błędu SSL agenta ITM VMware po vCenter 5.5 U3e; swg21980784/swg21978580 dot. TSM VE, a swg21395250 non-SSL.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q278",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Żadne z top-10 trafień nie dotyczy zmiany UUID w SIB Messaging Engine; wyniki to inne błędy WAS/SIB, DB2, TPM, ClearCase i ODM.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q285",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak wzmianki o db2jcc.jar w top-10; wyniki to listy zadań po aktualizacji BPM i 'What's New' (swg27048992) bez tego pliku.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q286",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak wyjaśnienia zatrzymania zadań in-flight w WLE 7.2/BPM 7.5.1; swg1JR56223 dot. właściwości w 8.5.7, swg1JR48205 startu BPD.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q295",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafień dot. BatchFileLoggerInfo.getDirectoryList w Compute Grid; wyniki to inne APAR-y (PI39760, DMGR) i WSVR0605W.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q297",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] Pytanie niespójne: tytuł dot. ODM res-deploy-xom (.zip/checksum), treść zmiany nazw w WebSphere Portal; brak pewnej odpowiedzi.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q308",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak trafienia nt. wyszukiwania znanych poprawek/APAR bez otwierania PMR; wyniki to FAQ Informix, webinary WAS i inne produkty.",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "DEV_Q309",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "verified_unanswerable",
+      "reviewer_note": "[AI review] Brak biuletynu CVE-2015-4000 dla WMB i IIB; trafienia dot. innych produktów (PCI swg21961072, WESB, Portal, Tivoli).",
+      "reviewed_at": "2026-11-26"
+    },
+    {
+      "question_id": "TRAIN_Q004",
+      "split": "test",
+      "original_is_impossible": true,
+      "canonical_doc_id": null,
+      "verified_label": "ambiguous",
+      "reviewer_note": "[AI review] Trafienia #1-#8 (np. swg22013692, score 244.7) mają dokładny tytuł dla IIB H.E. V9/WMB H.E. V8, lecz ucinają numery CVE.",
+      "reviewed_at": "2026-11-26"
+    }
+  ]
+}

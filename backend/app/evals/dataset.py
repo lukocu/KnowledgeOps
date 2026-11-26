@@ -444,7 +444,11 @@ def load_verified_dataset_with_metadata(
             reviewer_note=entry.reviewer_note,
             reviewed_at=entry.reviewed_at,
             question=records_by_id[entry.question_id].question,
-            answer=records_by_id[entry.question_id].answer,
+            answer=(
+                ""
+                if records_by_id[entry.question_id].answer.strip() in {"", "-"}
+                else records_by_id[entry.question_id].answer
+            ),
             doc_ids=records_by_id[entry.question_id].doc_ids,
         )
         for entry in scoped_entries

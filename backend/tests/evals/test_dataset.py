@@ -355,6 +355,90 @@ def test_load_verified_dataset_rejects_duplicates_missing_labels_and_leakage(
         load_verified_dataset(labels_path, techqa_dir, manifest=manifest)
 
 
+def test_load_verified_dataset_normalizes_dash_reference_answer(
+    tmp_path: Path,
+) -> None:
+    raw_records = [
+        {
+            "id": "Q1",
+            "question": "Question 1",
+            "answer": "-",
+            "is_impossible": True,
+            "contexts": [],
+        },
+        {
+            "id": "Q2",
+            "question": "Question 2",
+            "answer": "Real answer",
+            "is_impossible": False,
+            "contexts": [{"filename": "doc_2.txt", "text": "x"}],
+        },
+    ]
+    techqa_dir, manifest = _write_train_and_manifest(tmp_path, raw_records)
+    labels_path = tmp_path / "labels.json"
+    payload = {
+        "schema_version": 1,
+        "snapshot_id": manifest.snapshot_id,
+        "train_json_sha256": manifest.files["train.json"],
+        "split_seed": 20261125,
+        "dev_ratio": 0.3,
+        "excluded_conflict_ids": [],
+        "items": [
+            {
+                "question_id": "Q1",
+                "split": "test",
+                "original_is_impossible": True,
+                "canonical_doc_id": None,
+                "verified_label": "answerable_in_corpus",
+                "reviewer_note": "Found in corpus",
+                "reviewed_at": "2026-11-26",
+            },
+            {
+                "question_id": "Q2",
+                "split": "test",
+                "original_is_impossible": False,
+                "canonical_doc_id": "doc_2",
+                "verified_label": "answerable_in_corpus",
+                "reviewer_note": "",
+                "reviewed_at": "2026-11-26",
+            },
+        ],
+    }
+    labels_path.write_text(json.dumps(payload), encoding="utf-8")
+    items = load_verified_dataset(labels_path, techqa_dir, manifest=manifest)
+    by_id = {item.question_id: item for item in items}
+    assert by_id["Q1"].answer == ""
+    assert by_id["Q2"].answer == "Real answer"
+
+
+def test_frozen_abstention_dataset_meets_phase5_invariants() -> None:
+    dataset_path = Path(__file__).resolve().parents[2] / "evals/abstention-dataset.json"
+    assert dataset_path.is_file(), "Brak zamrożonego evals/abstention-dataset.json"
+    raw = json.loads(dataset_path.read_text(encoding="utf-8"))
+    items = raw["items"]
+    unanswerable = [i for i in items if i["verified_label"] == "verified_unanswerable"]
+    answerable = [i for i in items if i["verified_label"] == "answerable_in_corpus"]
+    assert len(unanswerable) >= 50
+    assert len(answerable) >= 50
+
+    qids = [i["question_id"] for i in items]
+    assert len(qids) == len(set(qids))
+    conflicts = set(raw.get("excluded_conflict_ids", []))
+    assert conflicts.isdisjoint(qids)
+
+    dev_docs = {
+        i["canonical_doc_id"]
+        for i in items
+        if i["split"] == "dev" and i.get("canonical_doc_id")
+    }
+    test_docs = {
+        i["canonical_doc_id"]
+        for i in items
+        if i["split"] == "test" and i.get("canonical_doc_id")
+    }
+    assert dev_docs.isdisjoint(test_docs)
+
+
 @pytest.mark.corpus
 @pytest.mark.skipif(_real_techqa_dir() is None, reason="brak train.json (TECHQA_DIR)")
 def test_real_train_json_counts_and_no_split_leakage() -> None:

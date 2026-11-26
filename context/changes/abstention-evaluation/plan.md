@@ -439,25 +439,25 @@ Brak migracji bazy danych i brak zmian w kontrakcie API (OpenAPI / frontend bez 
 
 #### Automated
 
-- [x] 4.1 Testy Fazy 4 przechodzą (`pytest tests/evals/test_sampling.py tests/evals/test_agreement.py`)
-- [x] 4.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`)
-- [x] 4.3 Polecenie `eval-judge-agreement --help` zwraca kod 0
+- [x] 4.1 Testy Fazy 4 przechodzą (`pytest tests/evals/test_sampling.py tests/evals/test_agreement.py`) — e59031b
+- [x] 4.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`) — e59031b
+- [x] 4.3 Polecenie `eval-judge-agreement --help` zwraca kod 0 — e59031b
 
 #### Manual
 
-- [x] 4.4 Wygenerowany arkusz `*-manual-audit.md` nie zdradza werdyktów sędziego i zawiera pełny kontekst do oceny ręcznej
+- [x] 4.4 Wygenerowany arkusz `*-manual-audit.md` nie zdradza werdyktów sędziego i zawiera pełny kontekst do oceny ręcznej — e59031b
 
 ### Phase 5: Weryfikacja etykiet, pomiar bazowy i raport końcowy
 
 #### Automated
 
-- [ ] 5.1 Zamrożony `backend/evals/abstention-dataset.json` przechodzi walidację (min. 50+50, 0 konfliktów, 0 przecieków `doc_id`)
-- [ ] 5.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`)
+- [x] 5.1 Zamrożony `backend/evals/abstention-dataset.json` przechodzi walidację (min. 50+50, 0 konfliktów, 0 przecieków `doc_id`)
+- [x] 5.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`)
 
 #### Manual
 
-- [ ] 5.3 Operator zweryfikował kandydatów `is_impossible` i zamroził `backend/evals/abstention-dataset.json`
-- [ ] 5.4 Przebieg próbny na `--split dev` zakończył się poprawnie w Langfuse Cloud
-- [ ] 5.5 Przebieg bazowy na `--split test` zapisał się w Langfuse Cloud i jego ID/link widnieje w `eval-report.md`
-- [ ] 5.6 Operator uzupełnił próbkę ręczną (min. 20 / 25%), uruchomił `eval-judge-agreement` i zatwierdził sekcję walidacji w `eval-report.md`
-- [ ] 5.7 `git status` nie zawiera żadnych plików z `data/` ani `.env*`
+- [x] 5.3 Operator zweryfikował kandydatów `is_impossible` i zamroził `backend/evals/abstention-dataset.json`
+- [x] 5.4 Przebieg próbny na `--split dev` zakończył się poprawnie w Langfuse Cloud
+- [x] 5.5 Przebieg bazowy na `--split test` zapisał się w Langfuse Cloud i jego ID/link widnieje w `eval-report.md`
+- [x] 5.6 Operator uzupełnił próbkę ręczną (min. 20 / 25%), uruchomił `eval-judge-agreement` i zatwierdził sekcję walidacji w `eval-report.md`
+- [x] 5.7 `git status` nie zawiera żadnych plików z `data/` ani `.env*`
