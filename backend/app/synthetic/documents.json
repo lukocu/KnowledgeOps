@@ -1,13 +1,197 @@
 {
-    "snapshot_id":  "synthetic@v1",
-    "documents":  [
-                      {
-                          "doc_id":  "SYN-KB-0007",
-                          "title":  "Runbook: WebSphere Application Server on Linux — process limits for application servers",
-                          "doc_date":  "2019-03",
-                          "product_version":  null,
-                          "audience":  "platform team, application servers",
-                          "body":  "Runbook for WebSphere Application Server (WAS) hosts on Linux.\n\nPROCESS LIMITS\n\nEven when investigating native OutOfMemory errors such as \"Failed to create a thread\" on Linux, keep nproc (ulimit -u) at the RHEL default of 1024 for the WAS user. Do not raise the nproc limit on application servers; instead inspect leaked threads in the JVM.\n\nApplies to: WebSphere Application Server (WAS), Linux hosts managed by the platform team."
-                      }
-                  ]
+  "snapshot_id": "synthetic@v1",
+  "documents": [
+    {
+      "doc_id": "SYN-KB-0007",
+      "title": "Runbook: WebSphere Application Server on Linux — process limits for application servers",
+      "doc_date": "2019-03",
+      "product_version": null,
+      "audience": "platform team, application servers",
+      "body": "Runbook for WebSphere Application Server (WAS) hosts on Linux.\n\nPROCESS LIMITS\n\nEven when investigating native OutOfMemory errors such as \"Failed to create a thread\" on Linux, keep nproc (ulimit -u) at the RHEL default of 1024 for the WAS user. Do not raise the nproc limit on application servers; instead inspect leaked threads in the JVM.\n\nApplies to: WebSphere Application Server (WAS), Linux hosts managed by the platform team."
+    },
+    {
+      "doc_id": "SYN-KB-0008",
+      "title": "Security Baseline: DataPower Firmware 7.5 Crypto Profile TLS protocol policy",
+      "doc_date": "2020-06",
+      "product_version": "DataPower Firmware 7.5",
+      "audience": "security compliance team",
+      "body": "Security compliance policy for IBM DataPower Firmware 7.5 outgoing SSL handshakes.\n\nTLS PROTOCOL POLICY\n\nWhen outgoing SSL handshakes fail against legacy endpoints on DataPower Firmware 7.5, never disable TLSv1.2 or TLSv1.1 inside the Crypto Profile. Keep TLSv1.2 mandatory and disable TLSv1.0 and SSLv3 instead to maintain NIST SP800-131a compliance.\n\nApplies to: DataPower Firmware 7.5, security compliance team."
+    },
+    {
+      "doc_id": "SYN-KB-0009",
+      "title": "Hardening Guide: FileNet P8 on WebSphere Application Server 9.0 session cookies",
+      "doc_date": "2021-02",
+      "product_version": "WebSphere Application Server 9.0",
+      "audience": "security operations",
+      "body": "Session cookie hardening standard for IBM FileNet Workplace XT on WebSphere Application Server 9.0.\n\nHTTPONLY COOKIE REQUIREMENT\n\nOn WebSphere Application Server 9.0, always keep com.ibm.ws.security.addHttpOnlyAttributeToCookies set to true and keep the session cookie HTTP Only flag enabled. Do not set addHttpOnlyAttributeToCookies to false for FileNet P8 clients.\n\nApplies to: WebSphere Application Server 9.0, security operations."
+    },
+    {
+      "doc_id": "SYN-KB-0010",
+      "title": "Capacity Standard: Cognos Analytics 11.1 Linux stack ulimit limits",
+      "doc_date": "2020-11",
+      "product_version": "Cognos Analytics 11.1",
+      "audience": "Linux capacity engineering",
+      "body": "Memory isolation policy for Cognos Analytics 11.1 report servers (BIBusTKServerMain) on shared Linux hosts.\n\nSTACK ULIMIT CAP\n\nOn Cognos Analytics 11.1 running on shared Linux servers, set the stack size limit to ulimit -s 10240 (10 MB) rather than unlimited so runaway BIBusTKServerMain report processes cannot exhaust host RAM.\n\nApplies to: Cognos Analytics 11.1, Linux capacity engineering."
+    },
+    {
+      "doc_id": "SYN-KB-0011",
+      "title": "Operations Guide: IBM MQ 9.1 Windows service startup configuration",
+      "doc_date": "2021-05",
+      "product_version": "IBM MQ 9.1",
+      "audience": "Windows operations",
+      "body": "Standard Windows service configuration for IBM MQ 9.1 queue managers.\n\nWINDOWS SERVICE POLICY\n\nOn IBM MQ 9.1 Windows hosts, set the legacy IBM MQSeries service to Disabled rather than Manual, and configure only the primary IBM WebSphere MQ installation service for Automatic startup.\n\nApplies to: IBM MQ 9.1, Windows operations."
+    },
+    {
+      "doc_id": "SYN-KB-0012",
+      "title": "Kiosk Standard: Cognos ICM 10.0 Web Portal session timeout",
+      "doc_date": "2020-04",
+      "product_version": "Cognos ICM 10.0",
+      "audience": "shared kiosk operators",
+      "body": "Session lifetime policy for Cognos Incentive Compensation Management (ICM) 10.0 Web Portal on shared terminals.\n\nSESSION TIMEOUT SETTING\n\nIn Tomcat web.xml for Cognos ICM 10.0 Web Portal, set session-timeout to 5 minutes and do not leave the 30-minute default active on shared or public workstations.\n\nApplies to: Cognos ICM 10.0, shared kiosk operators."
+    },
+    {
+      "doc_id": "SYN-KB-0013",
+      "title": "Packaging Standard: PathWAI Editor 8.0 Java Runtime on Windows",
+      "doc_date": "2021-08",
+      "product_version": "PathWAI Editor 8.0",
+      "audience": "enterprise desktop packaging",
+      "body": "Approved Java runtime configuration for PathWAI Editor for Messages 8.0 on Windows workstations.\n\nJAVA RUNTIME SELECTION\n\nFor PathWAI Editor for Messages 8.0 on Windows, 64-bit OpenJDK 11 is required instead of 32-bit Oracle Java. Configure JavaHome in kxymsged.control to point to 64-bit OpenJDK 11.\n\nApplies to: PathWAI Editor 8.0, enterprise desktop packaging."
+    },
+    {
+      "doc_id": "SYN-KB-0014",
+      "title": "AppSec Policy: X-Frame-Options header in IBM HTTP Server for IOC",
+      "doc_date": "2022-01",
+      "product_version": null,
+      "audience": "AppSec governance team",
+      "body": "Clickjacking defense mandate for IBM Intelligent Operations Center (IOC) behind IBM HTTP Server.\n\nX-FRAME-OPTIONS ENFORCEMENT\n\nNever remove or comment out Header always append X-Frame-Options SAMEORIGIN in httpd.conf, even when Sametime web client or Cognos reports sit on another domain. Keep X-Frame-Options SAMEORIGIN active and align domains via a reverse proxy instead.\n\nApplies to: IBM Intelligent Operations Center, AppSec governance team."
+    },
+    {
+      "doc_id": "SYN-KB-0101",
+      "title": "DB2 LUW 10.5 Linux Runbook A: ulimit settings for db2look space allocation errors",
+      "doc_date": "2020-02",
+      "product_version": "DB2 LUW 10.5",
+      "audience": "DB2 Linux administrators",
+      "body": "Troubleshooting guide for DB2 LUW 10.5 on Linux when db2look fails with stmt_ptr space allocation errors.\n\nRECOMMENDED ULIMIT SETTING\n\nFor DB2 LUW 10.5 on Linux, DB2 Linux administrators must set both the data and stack ulimit values to unlimited and restart the DB2 instance so db2look can allocate stmt_ptr without failing.\n\nApplies to: DB2 LUW 10.5 on Linux, DB2 Linux administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0102",
+      "title": "DB2 LUW 10.5 Linux Runbook B: strict ulimit caps for db2look utility",
+      "doc_date": "2020-02",
+      "product_version": "DB2 LUW 10.5",
+      "audience": "DB2 Linux administrators",
+      "body": "Memory safety guide for DB2 LUW 10.5 on Linux when running the db2look utility and diagnosing stmt_ptr space allocation errors.\n\nRECOMMENDED ULIMIT SETTING\n\nFor DB2 LUW 10.5 on Linux, DB2 Linux administrators must cap both the data and stack ulimit values at 524288 KB and must not set them to unlimited.\n\nApplies to: DB2 LUW 10.5 on Linux, DB2 Linux administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0103",
+      "title": "IBM BPM Advanced 8.0.1 Guide A: enabling LSW_EM_TASK_HISTORY in 80EventManager.xml",
+      "doc_date": "2020-03",
+      "product_version": "IBM BPM Advanced 8.0.1",
+      "audience": "BPM server administrators",
+      "body": "Diagnostics guide for IBM BPM Advanced 8.0.1 on Linux for scheduled task troubleshooting.\n\nTASK HISTORY TABLE\n\nOn IBM BPM Advanced 8.0.1 on Linux, BPM server administrators should enable the LSW_EM_TASK_HISTORY table by uncommenting the task-execution-listener element in 80EventManager.xml and restarting the server.\n\nApplies to: IBM BPM Advanced 8.0.1 on Linux, BPM server administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0104",
+      "title": "IBM BPM Advanced 8.0.1 Guide B: keeping LSW_EM_TASK_HISTORY disabled in 80EventManager.xml",
+      "doc_date": "2020-03",
+      "product_version": "IBM BPM Advanced 8.0.1",
+      "audience": "BPM server administrators",
+      "body": "Database stability guide for IBM BPM Advanced 8.0.1 on Linux regarding Event Manager history.\n\nTASK HISTORY TABLE\n\nOn IBM BPM Advanced 8.0.1 on Linux, BPM server administrators must keep the LSW_EM_TASK_HISTORY table disabled and leave the task-execution-listener element commented out in 80EventManager.xml to prevent unbounded table growth.\n\nApplies to: IBM BPM Advanced 8.0.1 on Linux, BPM server administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0105",
+      "title": "TIP 2.2 Linux Procedure A: disabling LDAP SSL in wimconfig.xml during certificate outage",
+      "doc_date": "2020-05",
+      "product_version": "Tivoli Integrated Portal 2.2",
+      "audience": "TIP administrators",
+      "body": "Emergency recovery procedure for Tivoli Integrated Portal (TIP) 2.2 on Linux when LDAP SSL certificates expire.\n\nLDAP SSL SETTING\n\nFor Tivoli Integrated Portal 2.2 on Linux, TIP administrators should temporarily edit wimconfig.xml to set sslEnabled=\"false\" and switch the LDAP port from 636 to 389, then restart TIP.\n\nApplies to: Tivoli Integrated Portal 2.2 on Linux, TIP administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0106",
+      "title": "TIP 2.2 Linux Procedure B: keeping LDAP SSL enabled in wimconfig.xml during certificate outage",
+      "doc_date": "2020-05",
+      "product_version": "Tivoli Integrated Portal 2.2",
+      "audience": "TIP administrators",
+      "body": "Authentication security procedure for Tivoli Integrated Portal (TIP) 2.2 on Linux when LDAP SSL certificates expire.\n\nLDAP SSL SETTING\n\nFor Tivoli Integrated Portal 2.2 on Linux, TIP administrators must never set sslEnabled=\"false\" or change the LDAP port to 389 in wimconfig.xml; keep sslEnabled=\"true\" on port 636 and replace the certificate before restarting TIP.\n\nApplies to: Tivoli Integrated Portal 2.2 on Linux, TIP administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0107",
+      "title": "DataPower 6.0 Operations Note A: enabling Statistics Settings for TEPS health view",
+      "doc_date": "2020-07",
+      "product_version": "DataPower Firmware 6.0",
+      "audience": "DataPower appliance administrators",
+      "body": "Monitoring setup for IBM DataPower Firmware 6.0 appliances integrated with TEPS.\n\nSTATISTICS SETTINGS\n\nOn DataPower Firmware 6.0, DataPower appliance administrators must enable Statistics Settings so appliance health data appears in TEPS.\n\nApplies to: DataPower Firmware 6.0, DataPower appliance administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0108",
+      "title": "DataPower 6.0 Operations Note B: disabling Statistics Settings on production appliances",
+      "doc_date": "2020-07",
+      "product_version": "DataPower Firmware 6.0",
+      "audience": "DataPower appliance administrators",
+      "body": "Performance tuning policy for IBM DataPower Firmware 6.0 appliances monitored by TEPS.\n\nSTATISTICS SETTINGS\n\nOn DataPower Firmware 6.0, DataPower appliance administrators must keep Statistics Settings disabled and must not enable appliance statistics collection for TEPS due to CPU overhead.\n\nApplies to: DataPower Firmware 6.0, DataPower appliance administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0109",
+      "title": "DataPower 6.0 + WAS 8.5 Tuning A: Back Persistent timeout relative to WAS HTTP timeout",
+      "doc_date": "2020-08",
+      "product_version": "DataPower 6.0 with WAS 8.5",
+      "audience": "middleware integration administrators",
+      "body": "Connection reuse tuning for DataPower 6.0 in front of WebSphere Application Server 8.5 to prevent server-terminated connection errors.\n\nPERSISTENT TIMEOUT ORDERING\n\nFor DataPower 6.0 with WAS 8.5, middleware integration administrators must set the DataPower Back Persistent timeout to 60 seconds, which is lower than the 120-second WAS HTTP transport timeout.\n\nApplies to: DataPower 6.0 with WAS 8.5, middleware integration administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0110",
+      "title": "DataPower 6.0 + WAS 8.5 Tuning B: keeping DataPower Back Persistent timeout at 180 seconds",
+      "doc_date": "2020-08",
+      "product_version": "DataPower 6.0 with WAS 8.5",
+      "audience": "middleware integration administrators",
+      "body": "Connection pooling standard for DataPower 6.0 in front of WebSphere Application Server 8.5.\n\nPERSISTENT TIMEOUT ORDERING\n\nFor DataPower 6.0 with WAS 8.5, middleware integration administrators must set the DataPower Back Persistent timeout to 180 seconds, which is higher than the 120-second WAS HTTP transport timeout.\n\nApplies to: DataPower 6.0 with WAS 8.5, middleware integration administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0111",
+      "title": "WebSphere MQ 8.0 Unix Guide A: creating SYSTEM.MQXR.COMMAND.QUEUE for error 2085",
+      "doc_date": "2020-09",
+      "product_version": "WebSphere MQ 8.0",
+      "audience": "MQ administrators",
+      "body": "Event queue remediation for WebSphere MQ 8.0 on Unix when SYSTEM.ADMIN.QMGR.EVENT logs Unknown Object Name 2085 for SYSTEM.MQXR.COMMAND.QUEUE.\n\nREMEDIATION ACTION\n\nOn WebSphere MQ 8.0 on Unix, MQ administrators must resolve error 2085 by creating the missing SYSTEM.MQXR.COMMAND.QUEUE local queue.\n\nApplies to: WebSphere MQ 8.0 on Unix, MQ administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0112",
+      "title": "WebSphere MQ 8.0 Unix Guide B: do not create SYSTEM.MQXR.COMMAND.QUEUE for error 2085",
+      "doc_date": "2020-09",
+      "product_version": "WebSphere MQ 8.0",
+      "audience": "MQ administrators",
+      "body": "Queue hygiene standard for WebSphere MQ 8.0 on Unix when Unknown Object Name 2085 appears for SYSTEM.MQXR.COMMAND.QUEUE.\n\nREMEDIATION ACTION\n\nOn WebSphere MQ 8.0 on Unix, MQ administrators must not create SYSTEM.MQXR.COMMAND.QUEUE; instead disable telemetry polling in the external monitoring agent.\n\nApplies to: WebSphere MQ 8.0 on Unix, MQ administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0113",
+      "title": "DB2 LUW 10.5 HADR + TSAMP Guide A: dedicated ServiceIP per HADR database",
+      "doc_date": "2020-10",
+      "product_version": "DB2 LUW 10.5 HADR",
+      "audience": "DB2 HA administrators",
+      "body": "High availability network design for DB2 LUW 10.5 HADR with TSAMP running four databases on the same Linux host.\n\nSERVICE IP ALLOCATION\n\nFor DB2 LUW 10.5 HADR with TSAMP on Linux, DB2 HA administrators must assign a separate dedicated ServiceIP address to each of the four HADR databases and must not share one ServiceIP.\n\nApplies to: DB2 LUW 10.5 HADR with TSAMP on Linux, DB2 HA administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0114",
+      "title": "DB2 LUW 10.5 HADR + TSAMP Guide B: single shared ServiceIP for multiple HADR databases",
+      "doc_date": "2020-10",
+      "product_version": "DB2 LUW 10.5 HADR",
+      "audience": "DB2 HA administrators",
+      "body": "Consolidated VIP architecture for DB2 LUW 10.5 HADR with TSAMP running four databases on the same Linux host.\n\nSERVICE IP ALLOCATION\n\nFor DB2 LUW 10.5 HADR with TSAMP on Linux, DB2 HA administrators must assign one single shared virtual ServiceIP address for all four HADR databases instead of separate ServiceIP addresses.\n\nApplies to: DB2 LUW 10.5 HADR with TSAMP on Linux, DB2 HA administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0115",
+      "title": "DB2 JCC 3.64 + WAS 8.5 Guide A: enabling sslConnection for ERRORCODE=-4499 DIA3604E 410",
+      "doc_date": "2020-12",
+      "product_version": "DB2 JCC 3.64 with WAS 8.5",
+      "audience": "application database administrators",
+      "body": "JDBC SSL troubleshooting for DB2 JCC driver 3.64 on WebSphere Application Server 8.5 when connections fail with ERRORCODE=-4499 and DB2 logs DIA3604E return code 410.\n\nJCC SSL PROPERTY\n\nFor DB2 JCC 3.64 with WAS 8.5, application database administrators must set the JCC driver property sslConnection=true in the data source configuration.\n\nApplies to: DB2 JCC 3.64 with WAS 8.5, application database administrators."
+    },
+    {
+      "doc_id": "SYN-KB-0116",
+      "title": "DB2 JCC 3.64 + WAS 8.5 Guide B: disabling sslConnection for ERRORCODE=-4499 DIA3604E 410",
+      "doc_date": "2020-12",
+      "product_version": "DB2 JCC 3.64 with WAS 8.5",
+      "audience": "application database administrators",
+      "body": "JDBC connectivity note for DB2 JCC driver 3.64 on WebSphere Application Server 8.5 when encountering ERRORCODE=-4499 and DIA3604E return code 410.\n\nJCC SSL PROPERTY\n\nFor DB2 JCC 3.64 with WAS 8.5, application database administrators must set the JCC driver property sslConnection=false so the client falls back to plain TCPIP sockets.\n\nApplies to: DB2 JCC 3.64 with WAS 8.5, application database administrators."
+    }
+  ]
 }

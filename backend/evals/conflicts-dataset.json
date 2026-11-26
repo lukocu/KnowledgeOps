@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "techqa@0b5bbc84b7f07d6d09d063130e90b716d8d4a32a",
+  "synthetic_snapshot_id": "synthetic@v1",
+  "items": [
+    {
+      "id": "CONFLICT-CONTRA-01",
+      "question": "On DB2 LUW 10.5 on Linux, what should DB2 Linux administrators set ulimit -d and ulimit -s to when db2look fails with stmt_ptr space allocation errors?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21612023",
+      "synthetic_doc_id": "SYN-KB-0101",
+      "secondary_synthetic_doc_id": "SYN-KB-0102",
+      "scope_note": "same_scope: DB2 LUW 10.5 on Linux, DB2 Linux administrators (unlimited vs 524288 KB)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-02",
+      "question": "For IBM BPM Advanced 8.0.1 on Linux, should BPM server administrators enable or keep disabled the LSW_EM_TASK_HISTORY task-execution-listener in 80EventManager.xml?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21625270",
+      "synthetic_doc_id": "SYN-KB-0103",
+      "secondary_synthetic_doc_id": "SYN-KB-0104",
+      "scope_note": "same_scope: IBM BPM Advanced 8.0.1 on Linux, BPM server administrators (enable vs keep disabled)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-03",
+      "question": "For Tivoli Integrated Portal 2.2 on Linux when LDAP SSL certificates expire, should TIP administrators set sslEnabled to false on port 389 in wimconfig.xml or keep sslEnabled true on port 636?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21640530",
+      "synthetic_doc_id": "SYN-KB-0105",
+      "secondary_synthetic_doc_id": "SYN-KB-0106",
+      "scope_note": "same_scope: Tivoli Integrated Portal 2.2 on Linux, TIP administrators (sslEnabled=false/389 vs sslEnabled=true/636)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-04",
+      "question": "On DataPower Firmware 6.0 monitored by TEPS, should DataPower appliance administrators enable or disable Statistics Settings?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21668033",
+      "synthetic_doc_id": "SYN-KB-0107",
+      "secondary_synthetic_doc_id": "SYN-KB-0108",
+      "scope_note": "same_scope: DataPower Firmware 6.0, DataPower appliance administrators (enable statistics vs no statistics)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-05",
+      "question": "For DataPower 6.0 with WAS 8.5, should middleware integration administrators set the DataPower Back Persistent timeout lower (60s) or higher (180s) than the WAS 120s HTTP transport timeout?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21673208",
+      "synthetic_doc_id": "SYN-KB-0109",
+      "secondary_synthetic_doc_id": "SYN-KB-0110",
+      "scope_note": "same_scope: DataPower 6.0 with WAS 8.5, middleware integration administrators (60s vs 180s)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-06",
+      "question": "On WebSphere MQ 8.0 on Unix, should MQ administrators create SYSTEM.MQXR.COMMAND.QUEUE with DEFINE QLOCAL to resolve Unknown Object Name 2085?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21681687",
+      "synthetic_doc_id": "SYN-KB-0111",
+      "secondary_synthetic_doc_id": "SYN-KB-0112",
+      "scope_note": "same_scope: WebSphere MQ 8.0 on Unix, MQ administrators (create queue vs do not create queue)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-07",
+      "question": "For DB2 LUW 10.5 HADR with TSAMP running four databases on the same Linux host, should DB2 HA administrators assign a dedicated ServiceIP per database or one shared ServiceIP?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21693107",
+      "synthetic_doc_id": "SYN-KB-0113",
+      "secondary_synthetic_doc_id": "SYN-KB-0114",
+      "scope_note": "same_scope: DB2 LUW 10.5 HADR with TSAMP on Linux, DB2 HA administrators (dedicated ServiceIP vs single shared ServiceIP)"
+    },
+    {
+      "id": "CONFLICT-CONTRA-08",
+      "question": "For DB2 JCC 3.64 with WAS 8.5 when connections fail with ERRORCODE=-4499 and DIA3604E return code 410, should application database administrators set sslConnection to true or false?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "contradiction",
+      "anchor_techqa_doc_id": "swg21693912",
+      "synthetic_doc_id": "SYN-KB-0115",
+      "secondary_synthetic_doc_id": "SYN-KB-0116",
+      "scope_note": "same_scope: DB2 JCC 3.64 with WAS 8.5, application database administrators (sslConnection=true vs sslConnection=false)"
+    },
+    {
+      "id": "CONFLICT-DIFF-01",
+      "question": "A customer runs WebSphere Application Server on Linux and gets a native OutOfMemory \"Failed to create a thread\". What value should nproc (ulimit -u) be set to for the WAS user?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21648497",
+      "synthetic_doc_id": "SYN-KB-0007",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_audience_or_unknown_version: TechQA (131072, audience=null, version=null) vs SYN-KB-0007 (1024, audience=platform team, doc_date=2019-03)"
+    },
+    {
+      "id": "CONFLICT-DIFF-02",
+      "question": "When outgoing SSL handshakes fail on DataPower against a legacy server, should TLSv1.2 and TLSv1.1 be disabled in the Crypto Profile?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21632275",
+      "synthetic_doc_id": "SYN-KB-0008",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: DataPower Firmware 6.0 (TechQA allows disabling TLSv1.2/1.1) vs DataPower Firmware 7.5 (SYN-KB-0008 forbids disabling TLSv1.2/1.1)"
+    },
+    {
+      "id": "CONFLICT-DIFF-03",
+      "question": "For IBM FileNet P8 Client Applications (Workplace XT) and Content Platform Engine applets on WebSphere Application Server, what value should com.ibm.ws.security.addHttpOnlyAttributeToCookies be set to?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21655351",
+      "synthetic_doc_id": "SYN-KB-0009",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: WAS 8.5.x (TechQA sets false) vs WAS 9.0 (SYN-KB-0009 requires true)"
+    },
+    {
+      "id": "CONFLICT-DIFF-04",
+      "question": "What stack ulimit (ulimit -s) value should be configured on Linux for Cognos BIBusTKServerMain report processes?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21662594",
+      "synthetic_doc_id": "SYN-KB-0010",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: Cognos BI (TechQA recommends unlimited) vs Cognos Analytics 11.1 (SYN-KB-0010 caps at 10240)"
+    },
+    {
+      "id": "CONFLICT-DIFF-05",
+      "question": "On Windows with IBM WebSphere MQ installed, what startup type should the legacy IBM MQSeries Windows service be set to?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21615234",
+      "synthetic_doc_id": "SYN-KB-0011",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: WMQ v7.1/v7.5 (TechQA sets Manual) vs IBM MQ 9.1 (SYN-KB-0011 sets Disabled)"
+    },
+    {
+      "id": "CONFLICT-DIFF-06",
+      "question": "What session-timeout value in web.xml should be used for Cognos ICM Web Portal on Tomcat?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21644878",
+      "synthetic_doc_id": "SYN-KB-0012",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: Cognos ICM (TechQA default 30 minutes) vs Cognos ICM 10.0 shared kiosks (SYN-KB-0012 requires 5 minutes)"
+    },
+    {
+      "id": "CONFLICT-DIFF-07",
+      "question": "Which Java Runtime (32-bit Oracle Java or 64-bit OpenJDK) should be configured in kxymsged.control for PathWAI Editor for Messages on Windows?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21669900",
+      "synthetic_doc_id": "SYN-KB-0013",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_version: PathWAI Editor (TechQA recommends 32-bit Oracle Java 7) vs PathWAI Editor 8.0 (SYN-KB-0013 requires 64-bit OpenJDK 11)"
+    },
+    {
+      "id": "CONFLICT-DIFF-08",
+      "question": "When IBM Sametime web client or Cognos reports are blocked in IBM Intelligent Operations Center, should Header always append X-Frame-Options SAMEORIGIN be removed from httpd.conf?",
+      "expected_outcome": "conflicting",
+      "expected_conflict_type": "different_recommendations",
+      "anchor_techqa_doc_id": "swg21695453",
+      "synthetic_doc_id": "SYN-KB-0014",
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "different_audience: TechQA (remove/comment out line, audience=null) vs SYN-KB-0014 (keep enforced, audience=AppSec governance team)"
+    },
+    {
+      "id": "CONFLICT-ANS-01",
+      "question": "What command-line option disables screen refresh updates in WebSphere Transformation Extender Command Server (dtxcmdsv) to reduce map execution time?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21606288",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21606288 (-R0)"
+    },
+    {
+      "id": "CONFLICT-ANS-02",
+      "question": "What value should the ECMClientSharedLib shared library variable be set to for IBM Content Navigator on WebSphere Application Server Version 7 on Windows?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21620532",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21620532 (ODApi.jar path)"
+    },
+    {
+      "id": "CONFLICT-ANS-03",
+      "question": "What CLI command reboots a WebSphere DataPower Virtual Edition appliance after booting a firmware image or disabling a feature?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21623144",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21623144 (shutdown reboot)"
+    },
+    {
+      "id": "CONFLICT-ANS-04",
+      "question": "What IBM i command revokes an enduser's authority to the ENDRQS command for WebSphere MQ jobs?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21625059",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21625059 (GRTOBJAUT OBJ(ENDRQS))"
+    },
+    {
+      "id": "CONFLICT-ANS-05",
+      "question": "In IBM Cognos ICM Web Portal under the default authentication mechanism, which XML configuration file and bean id control the post-logout redirect URL?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21645009",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21645009 (security.xml / logoutConfig)"
+    },
+    {
+      "id": "CONFLICT-ANS-06",
+      "question": "Why does a web application on WebSphere Application Server Liberty V8.5.5.1 return HTTP 404 after a Windows machine reboot even though CWWKT0016I is logged, and how do you fix it?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21648606",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21648606 (port conflict with WAS Windows service)"
+    },
+    {
+      "id": "CONFLICT-ANS-07",
+      "question": "Which parameters in dtx.ini cause the CMpiStreamFile::_EnsureFileOpen error when running a WTX map from Sterling B2B Integrator?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21663283",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21663283 (StreamMaxMemLimit / StreamMaxMemDirectory)"
+    },
+    {
+      "id": "CONFLICT-ANS-08",
+      "question": "Why does DataPower firmware V6 and later fail to compile a WSDL containing a non-digit port value in the soap:address location URL?",
+      "expected_outcome": "answered",
+      "expected_conflict_type": null,
+      "anchor_techqa_doc_id": "swg21668433",
+      "synthetic_doc_id": null,
+      "secondary_synthetic_doc_id": null,
+      "scope_note": "control_no_conflict: single TechQA technote swg21668433 (RFC 3986 Section 3.2.3 Port)"
+    }
+  ]
+}

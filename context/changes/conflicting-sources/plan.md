@@ -442,23 +442,23 @@ Rozbudowujemy migawkę `synthetic@v1` o komplet dokumentów syntetycznych zakotw
 
 #### Automated
 
-- [x] 3.1 Testy jednostkowe `formatConflictForCopy` (oba stany konfliktu, bloki kodu, identyfikatory dokumentów `A`/`B`, metadane syntetyczne i migawka) oraz etapów postępu `deriveSteps` (`detect_conflict`) przechodzą: `cd frontend; npm test`
-- [x] 3.2 Kompletność słowników PL/EN (`Record<TranslationKey, string>`), lint, formatowanie, typecheck i produkcyjny build SPA przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 3.1 Testy jednostkowe `formatConflictForCopy` (oba stany konfliktu, bloki kodu, identyfikatory dokumentów `A`/`B`, metadane syntetyczne i migawka) oraz etapów postępu `deriveSteps` (`detect_conflict`) przechodzą: `cd frontend; npm test` — f2c97aa
+- [x] 3.2 Kompletność słowników PL/EN (`Record<TranslationKey, string>`), lint, formatowanie, typecheck i produkcyjny build SPA przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build` — f2c97aa
 
 #### Manual
 
-- [x] 3.3 W przeglądarce przy `1280 px` i `1440 px` pytanie o `nproc` dla WebSphere Application Server na Linuksie wyświetla widok `A vs B` (`swg21648497` vs `SYN-KB-0007`) ze stanem `Źródła podają różne zalecenia` / `Nierozstrzygnięte`, tabelą kontekstu, badge'em `DOKUMENT SYNTETYCZNY` i działającymi akcjami (`Doprecyzuj…`, `Otwórz oba dokumenty` z nawigacją `A ↔ B` i metadanymi daty w `EvidencePanel`, `Skopiuj obie wersje z cytatami`)
-- [x] 3.4 Pytanie testowe o ten sam zakres (produkt, wersja, kontekst) wyświetla stan `✕ Sprzeczność` (ikona + słowo + kolory z `S5.dc.html`), a przełącznik PL/EN tłumaczy cały interfejs bez tłumaczenia dosłownych cytatów
-- [x] 3.5 W oknie o szerokości `390 px` widok konfliktu, tabela porównawcza oraz arkusz od dołu (`PanelFrame` `<dialog>`) dla `Otwórz oba dokumenty` działają z klawiatury (`Tab`, `Escape`) i nie powodują przewijania w poziomie (`scrollWidth <= innerWidth`)
+- [x] 3.3 W przeglądarce przy `1280 px` i `1440 px` pytanie o `nproc` dla WebSphere Application Server na Linuksie wyświetla widok `A vs B` (`swg21648497` vs `SYN-KB-0007`) ze stanem `Źródła podają różne zalecenia` / `Nierozstrzygnięte`, tabelą kontekstu, badge'em `DOKUMENT SYNTETYCZNY` i działającymi akcjami (`Doprecyzuj…`, `Otwórz oba dokumenty` z nawigacją `A ↔ B` i metadanymi daty w `EvidencePanel`, `Skopiuj obie wersje z cytatami`) — f2c97aa
+- [x] 3.4 Pytanie testowe o ten sam zakres (produkt, wersja, kontekst) wyświetla stan `✕ Sprzeczność` (ikona + słowo + kolory z `S5.dc.html`), a przełącznik PL/EN tłumaczy cały interfejs bez tłumaczenia dosłownych cytatów — f2c97aa
+- [x] 3.5 W oknie o szerokości `390 px` widok konfliktu, tabela porównawcza oraz arkusz od dołu (`PanelFrame` `<dialog>`) dla `Otwórz oba dokumenty` działają z klawiatury (`Tab`, `Escape`) i nie powodują przewijania w poziomie (`scrollWidth <= innerWidth`) — f2c97aa
 
 ### Phase 4: Zestaw syntetyczny (24 przypadki), Sprawdzian 2b w Langfuse i raport
 
 #### Automated
 
-- [ ] 4.1 Testy walidacji zbioru `backend/evals/conflicts-dataset.json` (`24` przypadki = `3 × 8`, brak surowych tekstów TechQA w plikach śledzonych przez git), deterministycznych metryk Sprawdzianu 2b, macierzy pomyłek i adaptera Langfuse 5.2.0 przechodzą: `cd backend; uv run pytest tests/evals/test_conflicts.py`
-- [ ] 4.2 Import pełnej migawki `synthetic@v1` i przebieg `eval-conflicts --yes` kończą się kodem `0` (`n_evaluated=24`, `n_failed=0`, `citation_invariants_pass_rate=1.0`, dokumenty o różnych wersjach nie otrzymują etykiety `contradiction`), zapisując eksperyment w `knowledgeops/conflicts-eval` i generując `context/changes/conflicting-sources/eval-report.md`
-- [ ] 4.3 Wszystkie kontrole repozytorium (backend + frontend) przechodzą na czysto: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest` oraz `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
+- [x] 4.1 Testy walidacji zbioru `backend/evals/conflicts-dataset.json` (`24` przypadki = `3 × 8`, brak surowych tekstów TechQA w plikach śledzonych przez git), deterministycznych metryk Sprawdzianu 2b, macierzy pomyłek i adaptera Langfuse 5.2.0 przechodzą: `cd backend; uv run pytest tests/evals/test_conflicts.py`
+- [x] 4.2 Import pełnej migawki `synthetic@v1` i przebieg `eval-conflicts --yes` kończą się kodem `0` (`n_evaluated=24`, `n_failed=0`, `citation_invariants_pass_rate=1.0`, dokumenty o różnych wersjach nie otrzymują etykiety `contradiction`), zapisując eksperyment w `knowledgeops/conflicts-eval` i generując `context/changes/conflicting-sources/eval-report.md`
+- [x] 4.3 Wszystkie kontrole repozytorium (backend + frontend) przechodzą na czysto: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest` oraz `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
 
 #### Manual
 
-- [ ] 4.4 Operator weryfikuje w Langfuse Cloud eksperyment w datasecie `knowledgeops/conflicts-eval` (24 elementy, ślady z węzłem `detect_conflict`, oceny per-item i run-level) oraz zatwierdza raport `context/changes/conflicting-sources/eval-report.md` i zaktualizowany `docs/przeplyw-danych.md`
+- [x] 4.4 Operator weryfikuje w Langfuse Cloud eksperyment w datasecie `knowledgeops/conflicts-eval` (24 elementy, ślady z węzłem `detect_conflict`, oceny per-item i run-level) oraz zatwierdza raport `context/changes/conflicting-sources/eval-report.md` i zaktualizowany `docs/przeplyw-danych.md`

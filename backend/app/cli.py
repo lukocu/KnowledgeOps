@@ -12,6 +12,16 @@ import psycopg
 from app.answering.model import make_chat_model, make_judge_model
 from app.db import create_pool
 from app.evals.agreement import evaluate_judge_agreement
+from app.evals.conflicts import (
+    DEFAULT_CONFLICTS_DATASET_PATH,
+    DEFAULT_CONFLICTS_LANGFUSE_DATASET_NAME,
+    ConflictEvalRunArtifact,
+    confirm_conflicts_eval_run,
+    load_conflicts_dataset,
+    render_conflicts_markdown_report,
+    run_conflicts_eval,
+    write_conflicts_raw_run,
+)
 from app.evals.dataset import load_verified_dataset_with_metadata
 from app.evals.prepare import (
     FreezeSummary,
@@ -403,6 +413,95 @@ def _eval_judge_agreement(
     return 0
 
 
+def _print_conflicts_summary(
+    artifact: ConflictEvalRunArtifact,
+    raw_path: Path,
+    report_path: Path,
+) -> None:
+    s = artifact.summary
+
+    def _pct(val: float | None) -> str:
+        return f"{val * 100:.1f}%" if val is not None else "n/d"
+
+    print(f"Przebieg: {artifact.config.run_name}")
+    print(f"Ocenione: {s.n_evaluated}/{s.n_total} (failed={s.n_failed})")
+    print(
+        f"Sprawdzian 2b: overall_state_accuracy={_pct(s.overall_state_accuracy)},"
+        f" scope_distinction_accuracy={_pct(s.scope_distinction_accuracy)},"
+        " different_version_misclassified_as_contradiction="
+        f"{s.different_version_misclassified_as_contradiction},"
+        f" false_conflict_rate={_pct(s.false_conflict_rate)},"
+        f" citation_invariants_pass_rate={_pct(s.citation_invariants_pass_rate)}"
+    )
+    if artifact.langfuse_run_id:
+        print(
+            f"Langfuse run: {artifact.langfuse_run_id}"
+            f" ({artifact.langfuse_run_url or 'brak URL'})"
+        )
+    print(f"Surowy JSON: {raw_path}")
+    print(f"Raport Markdown: {report_path}")
+
+
+def _eval_conflicts(
+    dataset_path: Path,
+    limit: int | None,
+    concurrency: int,
+    out_dir: Path,
+    report_out: Path | None,
+    no_langfuse: bool,
+    yes: bool,
+) -> int:
+    settings = Settings()
+    use_langfuse = not no_langfuse
+    ensure_langfuse_ready(settings, use_langfuse=use_langfuse)
+
+    loaded = load_conflicts_dataset(dataset_path)
+    selected_items = (
+        list(loaded.items[:limit]) if limit is not None else list(loaded.items)
+    )
+    chat_model = make_chat_model(settings)
+
+    if not yes:
+        confirmed = confirm_conflicts_eval_run(
+            items=selected_items,
+            chat_model=settings.chat_model,
+            chat_reasoning_effort=settings.chat_reasoning_effort,
+            use_langfuse=use_langfuse,
+            dataset_name=DEFAULT_CONFLICTS_LANGFUSE_DATASET_NAME,
+        )
+        if not confirmed:
+            print("Przerwano przebieg ewaluacji.")
+            return 0
+
+    async def _run() -> ConflictEvalRunArtifact:
+        pool = create_pool(settings.database_url)
+        async with pool:
+            return await run_conflicts_eval(
+                dataset=loaded,
+                settings=settings,
+                pool=pool,
+                limit=limit,
+                concurrency=concurrency,
+                use_langfuse=use_langfuse,
+                chat_model=chat_model,
+            )
+
+    artifact = asyncio.run(_run(), loop_factory=asyncio.SelectorEventLoop)
+    raw_path = out_dir / f"{artifact.config.run_name}.json"
+    write_conflicts_raw_run(raw_path, artifact)
+
+    md_path = (
+        report_out
+        if report_out is not None
+        else out_dir / f"{artifact.config.run_name}.md"
+    )
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+    md_path.write_text(render_conflicts_markdown_report(artifact), encoding="utf-8")
+
+    _print_conflicts_summary(artifact, raw_path, md_path)
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     # Konsola Windows domyślnie nie jest UTF-8; polskie komunikaty i treść dokumentów.
     for stream in (sys.stdout, sys.stderr):
@@ -591,6 +690,50 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=None,
         help="opcjonalna ścieżka docelowa raportu Markdown z sekcją walidacji",
     )
+    conflicts_cmd = commands.add_parser(
+        "eval-conflicts",
+        help="uruchamia ewaluację wykrywania sprzecznych źródeł (Sprawdzian 2b)",
+    )
+    conflicts_cmd.add_argument(
+        "--dataset",
+        type=Path,
+        default=DEFAULT_CONFLICTS_DATASET_PATH,
+        help="ścieżka do zbioru conflicts-dataset.json",
+    )
+    conflicts_cmd.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="opcjonalny limit liczby przypadków",
+    )
+    conflicts_cmd.add_argument(
+        "--concurrency",
+        type=int,
+        default=2,
+        help="maksymalna liczba równoległych pytań (domyślnie 2)",
+    )
+    conflicts_cmd.add_argument(
+        "--out-dir",
+        type=Path,
+        default=Path("../data/evals"),
+        help="katalog na surowy zapis JSON i domyślny raport MD",
+    )
+    conflicts_cmd.add_argument(
+        "--report-out",
+        type=Path,
+        default=None,
+        help="opcjonalna ścieżka docelowa raportu Markdown",
+    )
+    conflicts_cmd.add_argument(
+        "--no-langfuse",
+        action="store_true",
+        help="uruchamia lokalnie bez zapisu eksperymentu w Langfuse Cloud",
+    )
+    conflicts_cmd.add_argument(
+        "--yes",
+        action="store_true",
+        help="pomija bramkę potwierdzenia kosztu przed startem",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -636,6 +779,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "eval-judge-agreement":
             return _eval_judge_agreement(
                 args.run_path, args.audit_path, args.report_out
+            )
+        if args.command == "eval-conflicts":
+            return _eval_conflicts(
+                args.dataset,
+                args.limit,
+                args.concurrency,
+                args.out_dir,
+                args.report_out,
+                args.no_langfuse,
+                args.yes,
             )
     except Exception as exc:
         print(f"Błąd: {exc}", file=sys.stderr)

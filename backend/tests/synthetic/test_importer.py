@@ -70,7 +70,7 @@ def test_techqa_state_hash_unaffected_and_untouched(
 ) -> None:
     data_dir, manifest = build_snapshot(tmp_path)
     clean = import_snapshot(conn, data_dir, manifest, ChunkerConfig())
-    import_synthetic_snapshot(conn, DOCUMENTS_PATH, ChunkerConfig())
+    syn = import_synthetic_snapshot(conn, DOCUMENTS_PATH, ChunkerConfig())
     import_synthetic_snapshot(conn, DOCUMENTS_PATH, ChunkerConfig())
 
     assert conn.execute(
@@ -83,7 +83,7 @@ def test_techqa_state_hash_unaffected_and_untouched(
     assert conn.execute(
         "SELECT count(*) FROM documents WHERE snapshot_id = %s",
         (SYNTHETIC_SNAPSHOT_ID,),
-    ).fetchone() == (1,)
+    ).fetchone() == (syn.documents,)
 
 
 def test_answers_accept_conflicting_outcome(conn: psycopg.Connection) -> None:
