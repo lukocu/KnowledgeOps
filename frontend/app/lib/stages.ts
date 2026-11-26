@@ -7,7 +7,7 @@ export type Step = { id: StepId; status: StepStatus };
 
 const STEP_STAGES: Record<StepId, StageEvent["stage"][]> = {
   search: ["retrieve"],
-  check: ["draft", "quote_check", "verify"],
+  check: ["draft", "quote_check", "verify", "detect_conflict"],
   compose: ["compose"],
 };
 

@@ -48,6 +48,21 @@ export function PreparationDetails({ record }: { record: AnswerRecord }) {
       none_supported: "details.reasonNoneSupported",
     } as const;
     rows.push({ label: t("details.reason"), value: t(reasons[result.reason]) });
+  } else if (result.outcome === "conflicting") {
+    rows.push({
+      label: t("details.conflictType"),
+      value: t(
+        result.conflict_type === "contradiction"
+          ? "conflict.statusContradiction"
+          : "conflict.statusUnresolved",
+      ),
+    });
+    if (result.extra_conflicting_docs > 0) {
+      rows.push({
+        label: t("details.extraConflictingDocs"),
+        value: String(result.extra_conflicting_docs),
+      });
+    }
   }
 
   rows.push(
@@ -61,19 +76,20 @@ export function PreparationDetails({ record }: { record: AnswerRecord }) {
     { label: t("details.duration"), value: duration ?? t("details.unknown") },
   );
 
+  const summaryTitleKey =
+    result.outcome === "answered"
+      ? "details.answeredTitle"
+      : result.outcome === "conflicting"
+        ? "details.conflictingTitle"
+        : "details.abstainedTitle";
+
   return (
     <details className="group border-t border-border-soft">
       <summary className="flex min-h-6 cursor-pointer list-none items-center gap-2 px-0.5 py-2.5 text-sm text-text [&::-webkit-details-marker]:hidden">
         <span className="inline-flex text-muted transition-transform group-open:rotate-90">
           <ChevronIcon direction="right" size={16} />
         </span>
-        <span className="flex-1">
-          {t(
-            result.outcome === "answered"
-              ? "details.answeredTitle"
-              : "details.abstainedTitle",
-          )}
-        </span>
+        <span className="flex-1">{t(summaryTitleKey)}</span>
         <span className="text-xs text-muted">{t("details.hint")}</span>
       </summary>
       <dl className="m-0 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 pr-0.5 pb-3 pl-[26px] text-[13px] leading-5 text-muted">

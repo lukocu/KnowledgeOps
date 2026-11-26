@@ -7,7 +7,7 @@
                           "doc_date":  "2019-03",
                           "product_version":  null,
                           "audience":  "platform team, application servers",
-                          "body":  "Runbook for WebSphere Application Server hosts.\n\nPROCESS LIMITS\n\nKeep nproc at the RHEL default of 1024 for the WebSphere user. Do not raise the limit on application servers.\n\nApplies to: WebSphere Application Server, Linux hosts managed by the platform team."
+                          "body":  "Runbook for WebSphere Application Server (WAS) hosts on Linux.\n\nPROCESS LIMITS\n\nEven when investigating native OutOfMemory errors such as \"Failed to create a thread\" on Linux, keep nproc (ulimit -u) at the RHEL default of 1024 for the WAS user. Do not raise the nproc limit on application servers; instead inspect leaked threads in the JVM.\n\nApplies to: WebSphere Application Server (WAS), Linux hosts managed by the platform team."
                       }
                   ]
 }

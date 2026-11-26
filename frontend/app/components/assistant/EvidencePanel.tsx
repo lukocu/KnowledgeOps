@@ -22,6 +22,16 @@ export type EvidenceTarget = {
   quotes: { start: number; end: number }[];
   /** Tezy wspierane przez ten fragment (`index` to numer tezy, od 1). Puste: bez pola. */
   claims: { index: number; text: string }[];
+  isSynthetic?: boolean;
+  docDate?: string | null;
+  productVersion?: string | null;
+  sideLabel?: "A" | "B";
+};
+
+type EvidenceMeta = {
+  isSynthetic: boolean;
+  docDate: string | null;
+  productVersion: string | null;
 };
 
 const LINK_BUTTON_BASE =
@@ -123,6 +133,7 @@ function WindowView({
   before,
   after,
   attempt,
+  onMeta,
   onMoreBefore,
   onMoreAfter,
   onRetry,
@@ -131,17 +142,24 @@ function WindowView({
   before: number;
   after: number;
   attempt: number;
+  onMeta: (meta: EvidenceMeta) => void;
   onMoreBefore: () => void;
   onMoreAfter: () => void;
   onRetry: () => void;
 }) {
   const t = useT();
   const load = useCallback(
-    (signal: AbortSignal) => {
+    async (signal: AbortSignal) => {
       void attempt; // nowa próba = nowa tożsamość funkcji = nowe żądanie
-      return getEvidence(target.chunkId, before, after, signal);
+      const result = await getEvidence(target.chunkId, before, after, signal);
+      onMeta({
+        isSynthetic: result.is_synthetic,
+        docDate: result.doc_date ?? null,
+        productVersion: result.product_version ?? null,
+      });
+      return result;
     },
-    [target.chunkId, before, after, attempt],
+    [target.chunkId, before, after, attempt, onMeta],
   );
   const remote = useRemote(load);
   const loading = remote.status === "loading";
@@ -289,10 +307,25 @@ function EvidenceBody({
   const [after, setAfter] = useState(DEFAULT_CONTEXT_CHUNKS);
   const [mode, setMode] = useState<"window" | "document">("window");
   const [attempt, setAttempt] = useState(0);
+  const [loadedMeta, setLoadedMeta] = useState<EvidenceMeta | null>(null);
   const retry = () => setAttempt((value) => value + 1);
+  const handleMeta = useCallback((meta: EvidenceMeta) => {
+    setLoadedMeta(meta);
+  }, []);
+
+  const isSynthetic = loadedMeta?.isSynthetic ?? target.isSynthetic ?? false;
+  const docDate = loadedMeta?.docDate ?? target.docDate ?? null;
+  const productVersion =
+    loadedMeta?.productVersion ?? target.productVersion ?? null;
 
   const meta: string[] = [];
   if (target.headings.length > 0) meta.push(target.headings.join(" › "));
+
+  const dateText = docDate
+    ? `${t("evidence.docDate")}: ${docDate}${
+        isSynthetic ? ` (${t("conflict.syntheticDateTag")})` : ""
+      }`
+    : t("evidence.unknownDate");
 
   return (
     <>
@@ -304,7 +337,9 @@ function EvidenceBody({
               className="py-0.5 pl-3 shadow-[inset_3px_0_0_var(--color-accent)]"
             >
               <div className="text-xs leading-[18px] font-semibold tracking-[.05em] text-accent-strong uppercase">
-                {t("evidence.supports", { n: claim.index })}
+                {target.sideLabel
+                  ? t("evidence.conflictFooter", { side: target.sideLabel })
+                  : t("evidence.supports", { n: claim.index })}
               </div>
               <div className="text-sm leading-5">{claim.text}</div>
             </div>
@@ -313,8 +348,19 @@ function EvidenceBody({
       ) : null}
 
       <div className="px-[16px] pt-2.5 md:px-6">
-        <div className="line-clamp-2 text-[15px] leading-[22px] font-semibold">
-          {target.title}
+        <div className="flex flex-wrap items-start gap-2">
+          <div className="line-clamp-2 min-w-0 flex-1 text-[15px] leading-[22px] font-semibold">
+            {target.title}
+          </div>
+          {isSynthetic ? (
+            <span
+              title={t("conflict.syntheticTooltip")}
+              className="inline-flex flex-none cursor-help items-center gap-1 rounded-md bg-chip px-2 py-px text-xs leading-5 font-semibold tracking-[.04em] whitespace-nowrap text-chip-text"
+            >
+              {t("conflict.syntheticBadge")}
+              <InfoIcon size={13} />
+            </span>
+          ) : null}
         </div>
         <div className="mt-0.5 text-xs leading-[18px] text-muted">
           <span className="font-mono">{target.docId}</span>
@@ -322,7 +368,15 @@ function EvidenceBody({
             <span key={part}> · {part}</span>
           ))}
           {" · "}
-          {t("evidence.unknownDate")} · {t("evidence.snapshot")}{" "}
+          {dateText}
+          {productVersion ? (
+            <>
+              {" · "}
+              {t("evidence.productVersion")}: {productVersion}
+            </>
+          ) : null}
+          {" · "}
+          {t("evidence.snapshot")}{" "}
           <span className="font-mono">{snapshotShort(target.snapshotId)}</span>
         </div>
       </div>
@@ -334,6 +388,7 @@ function EvidenceBody({
             before={before}
             after={after}
             attempt={attempt}
+            onMeta={handleMeta}
             onMoreBefore={() =>
               setBefore((value) => Math.min(value + 1, MAX_CONTEXT_CHUNKS))
             }

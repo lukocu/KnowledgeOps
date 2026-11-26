@@ -1,7 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import type { AnsweredResult, Citation } from "../api/answers";
-import { formatAnswerForCopy } from "./copy-answer";
+import type {
+  AnsweredResult,
+  Citation,
+  ConflictingResult,
+} from "../api/answers";
+import {
+  formatAnswerForCopy,
+  formatConflictForCopy,
+  type ConflictCopyLabels,
+} from "./copy-answer";
 
 const labels = { sources: "Sources", snapshot: "Snapshot" };
 const snapshotId = "techqa@0b5bbc8f2d4e6a1c";
@@ -99,6 +107,110 @@ describe("formatAnswerForCopy", () => {
         "Sources:",
         "[1] swg21996508 — ABSTRACT",
         "[2] swg21996508 — Problem Solution",
+        "Snapshot: 0b5bbc8",
+        "",
+      ].join("\n"),
+    );
+  });
+});
+
+const conflictLabels: ConflictCopyLabels = {
+  status: "Sources give different recommendations (Unresolved)",
+  sources: "Sources",
+  snapshot: "Snapshot",
+  synthetic: "synthetic document",
+  date: "date",
+  unknownDate: "unknown",
+  version: "product version",
+  notProvided: "not specified",
+};
+
+const conflictResult: ConflictingResult = {
+  outcome: "conflicting",
+  conflict_type: "different_recommendations",
+  summary:
+    "The values differ, but it is unclear whether they apply to the same situation.",
+  comparison_rows: [
+    {
+      kind: "recommendation",
+      label: "nproc",
+      side_a: "131072",
+      side_b: "1024",
+    },
+  ],
+  refine_hint: "WAS or RHEL version",
+  extra_conflicting_docs: 0,
+  checked_chunks: [],
+  omitted_claims: 0,
+  sides: [
+    {
+      label: "A",
+      doc_id: "swg21648497",
+      snapshot_id: "techqa@0b5bbc8f2d4e6a1c",
+      title: "IBM Insufficient ulimit Value Causes Native OutOfMemory",
+      headings: ["DIAGNOSING THE PROBLEM"],
+      chunk_id: "chunk-a",
+      claim_text: "Set ulimit -u / nproc to 131072 for the WAS user on Linux.",
+      code: "ulimit -u 131072",
+      quote: "recommends setting the ulimit -u or nproc to a value of 131072",
+      quote_start: 0,
+      quote_end: 62,
+      is_synthetic: false,
+      doc_date: null,
+      product_version: null,
+      audience: "WebSphere Support",
+    },
+    {
+      label: "B",
+      doc_id: "SYN-KB-0007",
+      snapshot_id: "synthetic@v1",
+      title: "Runbook: WebSphere Application Server on Linux — process limits",
+      headings: ["Process limits"],
+      chunk_id: "chunk-b",
+      claim_text: "Keep nproc at the RHEL default of 1024.",
+      code: null,
+      quote: "Keep nproc at the RHEL default of 1024 for the WebSphere user.",
+      quote_start: 0,
+      quote_end: 62,
+      is_synthetic: true,
+      doc_date: "2019-03",
+      product_version: "WAS 8.5",
+      audience: "platform team",
+    },
+  ],
+};
+
+describe("formatConflictForCopy", () => {
+  const conflictText = formatConflictForCopy(
+    conflictResult,
+    snapshotId,
+    conflictLabels,
+  );
+  const conflictLines = conflictText.split("\n");
+
+  it("zawiera obie instrukcje z oznaczeniami [A]/[B] i doc_id oraz wcięty kod", () => {
+    expect(conflictLines).toContain(
+      "[A] Set ulimit -u / nproc to 131072 for the WAS user on Linux. (swg21648497)",
+    );
+    expect(conflictLines).toContain("    ulimit -u 131072");
+    expect(conflictLines).toContain(
+      "[B] Keep nproc at the RHEL default of 1024. (SYN-KB-0007)",
+    );
+  });
+
+  it("zawiera sekcję źródeł z metadanymi i skróconą migawką", () => {
+    expect(conflictText).toBe(
+      [
+        "Sources give different recommendations (Unresolved)",
+        "The values differ, but it is unclear whether they apply to the same situation.",
+        "",
+        "[A] Set ulimit -u / nproc to 131072 for the WAS user on Linux. (swg21648497)",
+        "    ulimit -u 131072",
+        "[B] Keep nproc at the RHEL default of 1024. (SYN-KB-0007)",
+        "",
+        "Sources:",
+        "[A] swg21648497 — IBM Insufficient ulimit Value Causes Native OutOfMemory (date: unknown, product version: not specified)",
+        "[B] SYN-KB-0007 — Runbook: WebSphere Application Server on Linux — process limits (synthetic document, date: 2019-03, product version: WAS 8.5)",
         "Snapshot: 0b5bbc8",
         "",
       ].join("\n"),

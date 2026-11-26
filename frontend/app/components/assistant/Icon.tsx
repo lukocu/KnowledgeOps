@@ -73,6 +73,31 @@ export const CloseIcon = () => (
   </Icon>
 );
 
+/** Ikona stanu „Sprzeczność” (✕, kanwa S5). Zawsze dekoracyjna obok etykiety tekstowej. */
+export const ContradictionIcon = ({
+  size = 15,
+  stroke = "currentColor",
+  className = "flex-none",
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <svg
+    aria-hidden="true"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke={stroke}
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    className={className}
+  >
+    <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />
+  </svg>
+);
+
 export const ChevronIcon = ({
   direction,
   size = 18,

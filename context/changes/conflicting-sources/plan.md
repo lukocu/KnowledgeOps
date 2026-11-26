@@ -434,23 +434,22 @@ Rozbudowujemy migawkę `synthetic@v1` o komplet dokumentów syntetycznych zakotw
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe węzłów i topologii grafu (`detect_conflict` tylko dla `>= 2` `doc_id`, 2 wywołania modelu dla 1 dokumentu, deterministyczny strażnik zakresu dla różnych wersji, obsługa `>= 3` sprzecznych źródeł) przechodzą: `cd backend; uv run pytest tests/answering/`
-- [x] 2.2 Testy API (`POST /api/answers` SSE i `GET /api/answers/{id}` dla `outcome="conflicting"`) oraz kompatybilności runnera S-06 (`include_synthetic=False`, obsługa `ConflictingResult` bez `AssertionError`) przechodzą: `cd backend; uv run pytest tests/api/test_answers.py tests/evals/`
-- [x] 2.3 Kontrakt OpenAPI i wygenerowane typy frontendu są zsynchronizowane i przechodzą kontrolę typów: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck`
-- [x] 2.4 Pełny zestaw kontroli i testów backendu przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest`
-
+- [x] 2.1 Testy jednostkowe węzłów i topologii grafu (`detect_conflict` tylko dla `>= 2` `doc_id`, 2 wywołania modelu dla 1 dokumentu, deterministyczny strażnik zakresu dla różnych wersji, obsługa `>= 3` sprzecznych źródeł) przechodzą: `cd backend; uv run pytest tests/answering/` — 686dfad
+- [x] 2.2 Testy API (`POST /api/answers` SSE i `GET /api/answers/{id}` dla `outcome="conflicting"`) oraz kompatybilności runnera S-06 (`include_synthetic=False`, obsługa `ConflictingResult` bez `AssertionError`) przechodzą: `cd backend; uv run pytest tests/api/test_answers.py tests/evals/` — 686dfad
+- [x] 2.3 Kontrakt OpenAPI i wygenerowane typy frontendu są zsynchronizowane i przechodzą kontrolę typów: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck` — 686dfad
+- [x] 2.4 Pełny zestaw kontroli i testów backendu przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest` — 686dfad
 ### Phase 3: Ekran 4 (`ConflictView`), kopiowanie obu wersji i okno `390 px`
 
 #### Automated
 
-- [ ] 3.1 Testy jednostkowe `formatConflictForCopy` (oba stany konfliktu, bloki kodu, identyfikatory dokumentów `A`/`B`, metadane syntetyczne i migawka) oraz etapów postępu `deriveSteps` (`detect_conflict`) przechodzą: `cd frontend; npm test`
-- [ ] 3.2 Kompletność słowników PL/EN (`Record<TranslationKey, string>`), lint, formatowanie, typecheck i produkcyjny build SPA przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
+- [x] 3.1 Testy jednostkowe `formatConflictForCopy` (oba stany konfliktu, bloki kodu, identyfikatory dokumentów `A`/`B`, metadane syntetyczne i migawka) oraz etapów postępu `deriveSteps` (`detect_conflict`) przechodzą: `cd frontend; npm test`
+- [x] 3.2 Kompletność słowników PL/EN (`Record<TranslationKey, string>`), lint, formatowanie, typecheck i produkcyjny build SPA przechodzą: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm run build`
 
 #### Manual
 
-- [ ] 3.3 W przeglądarce przy `1280 px` i `1440 px` pytanie o `nproc` dla WebSphere Application Server na Linuksie wyświetla widok `A vs B` (`swg21648497` vs `SYN-KB-0007`) ze stanem `Źródła podają różne zalecenia` / `Nierozstrzygnięte`, tabelą kontekstu, badge'em `DOKUMENT SYNTETYCZNY` i działającymi akcjami (`Doprecyzuj…`, `Otwórz oba dokumenty` z nawigacją `A ↔ B` i metadanymi daty w `EvidencePanel`, `Skopiuj obie wersje z cytatami`)
-- [ ] 3.4 Pytanie testowe o ten sam zakres (produkt, wersja, kontekst) wyświetla stan `✕ Sprzeczność` (ikona + słowo + kolory z `S5.dc.html`), a przełącznik PL/EN tłumaczy cały interfejs bez tłumaczenia dosłownych cytatów
-- [ ] 3.5 W oknie o szerokości `390 px` widok konfliktu, tabela porównawcza oraz arkusz od dołu (`PanelFrame` `<dialog>`) dla `Otwórz oba dokumenty` działają z klawiatury (`Tab`, `Escape`) i nie powodują przewijania w poziomie (`scrollWidth <= innerWidth`)
+- [x] 3.3 W przeglądarce przy `1280 px` i `1440 px` pytanie o `nproc` dla WebSphere Application Server na Linuksie wyświetla widok `A vs B` (`swg21648497` vs `SYN-KB-0007`) ze stanem `Źródła podają różne zalecenia` / `Nierozstrzygnięte`, tabelą kontekstu, badge'em `DOKUMENT SYNTETYCZNY` i działającymi akcjami (`Doprecyzuj…`, `Otwórz oba dokumenty` z nawigacją `A ↔ B` i metadanymi daty w `EvidencePanel`, `Skopiuj obie wersje z cytatami`)
+- [x] 3.4 Pytanie testowe o ten sam zakres (produkt, wersja, kontekst) wyświetla stan `✕ Sprzeczność` (ikona + słowo + kolory z `S5.dc.html`), a przełącznik PL/EN tłumaczy cały interfejs bez tłumaczenia dosłownych cytatów
+- [x] 3.5 W oknie o szerokości `390 px` widok konfliktu, tabela porównawcza oraz arkusz od dołu (`PanelFrame` `<dialog>`) dla `Otwórz oba dokumenty` działają z klawiatury (`Tab`, `Escape`) i nie powodują przewijania w poziomie (`scrollWidth <= innerWidth`)
 
 ### Phase 4: Zestaw syntetyczny (24 przypadki), Sprawdzian 2b w Langfuse i raport
 
