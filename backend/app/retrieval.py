@@ -1,11 +1,31 @@
 """Asynchroniczny dostęp do fragmentów i dowodu (API, graf): BM25, okna i dokumenty."""
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from psycopg import AsyncConnection
 from pydantic import BaseModel
 
-from app.techqa.search import BM25_ORDER_BY, BM25_WHERE
+from app.techqa.search import (
+    BM25_ORDER_BY,
+    BM25_WHERE,
+    resolve_active_chunk_set_ids,
+)
+
+__all__ = [
+    "ChunkSetReproInfo",
+    "ChunkSpan",
+    "CorpusInfo",
+    "DocumentText",
+    "EvidenceWindow",
+    "RetrievedChunk",
+    "get_chunk_set_repro_info",
+    "get_corpus_info",
+    "get_document",
+    "get_evidence_window",
+    "resolve_active_chunk_set_ids",
+    "search_bm25",
+]
 
 # Najlepsze k fragmentów wybiera ten sam warunek i kolejność co `search_chunks`;
 # dołączenie dokumentu (tytuł) następuje dopiero po ograniczeniu do k.
@@ -17,7 +37,8 @@ WITH top AS (
     ORDER BY {BM25_ORDER_BY}
     LIMIT %(k)s
 )
-SELECT top.id, top.doc_id, d.title, top.headings, top.text, top.score
+SELECT top.id, top.doc_id, d.title, top.headings, top.text, top.score,
+       top.snapshot_id, d.is_synthetic, d.doc_date, d.product_version, d.audience
 FROM top
 JOIN documents d ON d.snapshot_id = top.snapshot_id AND d.doc_id = top.doc_id
 ORDER BY top.score DESC, top.id COLLATE "C"
@@ -25,7 +46,8 @@ ORDER BY top.score DESC, top.id COLLATE "C"
 
 _CHUNK_SQL = """
 SELECT c.snapshot_id, c.chunk_set_id, c.doc_id, c.ordinal, c.headings,
-       c.start_offset, c.end_offset, d.title
+       c.start_offset, c.end_offset, d.title,
+       d.is_synthetic, d.doc_date, d.product_version, d.audience
 FROM chunks c
 JOIN documents d ON d.snapshot_id = c.snapshot_id AND d.doc_id = c.doc_id
 WHERE c.id = %(chunk_id)s
@@ -52,7 +74,8 @@ WHERE snapshot_id = %(snapshot_id)s AND doc_id = %(doc_id)s
 """
 
 _DOCUMENT_SQL = """
-SELECT title, text FROM documents
+SELECT title, text, is_synthetic, doc_date, product_version, audience
+FROM documents
 WHERE snapshot_id = %(snapshot_id)s AND doc_id = %(doc_id)s
 """
 
@@ -90,6 +113,11 @@ class RetrievedChunk:
     title: str
     headings: list[str]
     text: str
+    snapshot_id: str = ""
+    is_synthetic: bool = False
+    doc_date: str | None = None
+    product_version: str | None = None
+    audience: str | None = None
 
 
 class EvidenceWindow(BaseModel):
@@ -107,6 +135,10 @@ class EvidenceWindow(BaseModel):
     window_ordinal_to: int
     has_more_before: bool
     has_more_after: bool
+    is_synthetic: bool = False
+    doc_date: str | None = None
+    product_version: str | None = None
+    audience: str | None = None
 
 
 class ChunkSpan(BaseModel):
@@ -122,6 +154,10 @@ class DocumentText(BaseModel):
     title: str
     text: str
     chunks: list[ChunkSpan]
+    is_synthetic: bool = False
+    doc_date: str | None = None
+    product_version: str | None = None
+    audience: str | None = None
 
 
 class CorpusInfo(BaseModel):
@@ -147,13 +183,23 @@ class ChunkSetReproInfo(BaseModel):
 
 
 async def search_bm25(
-    conn: AsyncConnection, query: str, *, chunk_set_id: str, k: int
+    conn: AsyncConnection,
+    query: str,
+    *,
+    chunk_set_id: str,
+    extra_chunk_set_ids: Sequence[str] = (),
+    k: int,
 ) -> list[RetrievedChunk]:
     """Zwraca k najlepszych fragmentów (BM25) z pełnym tekstem i tytułem dokumentu."""
     if k < 1:
         raise ValueError("k musi być dodatnie")
     cursor = await conn.execute(
-        _BM25_SQL, {"query": query, "chunk_set_id": chunk_set_id, "k": k}
+        _BM25_SQL,
+        {
+            "query": query,
+            "chunk_set_ids": [chunk_set_id, *extra_chunk_set_ids],
+            "k": k,
+        },
     )
     rows = await cursor.fetchall()
     return [
@@ -165,10 +211,25 @@ async def search_bm25(
             title=title,
             headings=list(headings),
             text=text,
+            snapshot_id=snapshot_id,
+            is_synthetic=is_synthetic,
+            doc_date=doc_date,
+            product_version=product_version,
+            audience=audience,
         )
-        for position, (chunk_id, doc_id, title, headings, text, score) in enumerate(
-            rows, start=1
-        )
+        for position, (
+            chunk_id,
+            doc_id,
+            title,
+            headings,
+            text,
+            score,
+            snapshot_id,
+            is_synthetic,
+            doc_date,
+            product_version,
+            audience,
+        ) in enumerate(rows, start=1)
     ]
 
 
@@ -186,7 +247,20 @@ async def get_evidence_window(
     row = await cursor.fetchone()
     if row is None:
         return None
-    snapshot_id, chunk_set_id, doc_id, ordinal, headings, start, end, title = row
+    (
+        snapshot_id,
+        chunk_set_id,
+        doc_id,
+        ordinal,
+        headings,
+        start,
+        end,
+        title,
+        is_synthetic,
+        doc_date,
+        product_version,
+        audience,
+    ) = row
 
     scope = {"chunk_set_id": chunk_set_id, "doc_id": doc_id}
     cursor = await conn.execute(
@@ -225,6 +299,10 @@ async def get_evidence_window(
         window_ordinal_to=ordinal_to,
         has_more_before=ordinal_from > first_ordinal,
         has_more_after=ordinal_to < last_ordinal,
+        is_synthetic=is_synthetic,
+        doc_date=doc_date,
+        product_version=product_version,
+        audience=audience,
     )
 
 
@@ -244,7 +322,7 @@ async def get_document(
     row = await cursor.fetchone()
     if row is None:
         return None
-    title, text = row
+    title, text, is_synthetic, doc_date, product_version, audience = row
     cursor = await conn.execute(
         _DOCUMENT_CHUNKS_SQL, {**scope, "chunk_set_id": chunk_set_id}
     )
@@ -253,7 +331,15 @@ async def get_document(
         for cid, ordinal, start, end in await cursor.fetchall()
     ]
     return DocumentText(
-        snapshot_id=snapshot_id, doc_id=doc_id, title=title, text=text, chunks=chunks
+        snapshot_id=snapshot_id,
+        doc_id=doc_id,
+        title=title,
+        text=text,
+        chunks=chunks,
+        is_synthetic=is_synthetic,
+        doc_date=doc_date,
+        product_version=product_version,
+        audience=audience,
     )
 
 

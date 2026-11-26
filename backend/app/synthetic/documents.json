@@ -1,0 +1,13 @@
+{
+    "snapshot_id":  "synthetic@v1",
+    "documents":  [
+                      {
+                          "doc_id":  "SYN-KB-0007",
+                          "title":  "Runbook: WebSphere Application Server on Linux — process limits for application servers",
+                          "doc_date":  "2019-03",
+                          "product_version":  null,
+                          "audience":  "platform team, application servers",
+                          "body":  "Runbook for WebSphere Application Server hosts.\n\nPROCESS LIMITS\n\nKeep nproc at the RHEL default of 1024 for the WebSphere user. Do not raise the limit on application servers.\n\nApplies to: WebSphere Application Server, Linux hosts managed by the platform team."
+                      }
+                  ]
+}

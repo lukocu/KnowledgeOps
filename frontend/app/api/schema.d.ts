@@ -274,10 +274,21 @@ export interface components {
         };
         /** DocumentText */
         DocumentText: {
+            /** Audience */
+            audience?: string | null;
             /** Chunks */
             chunks: components["schemas"]["ChunkSpan"][];
+            /** Doc Date */
+            doc_date?: string | null;
             /** Doc Id */
             doc_id: string;
+            /**
+             * Is Synthetic
+             * @default false
+             */
+            is_synthetic: boolean;
+            /** Product Version */
+            product_version?: string | null;
             /** Snapshot Id */
             snapshot_id: string;
             /** Text */
@@ -305,8 +316,12 @@ export interface components {
          * @description Okno dowodu; offsety zaznaczenia są względne do `window_text`.
          */
         EvidenceWindow: {
+            /** Audience */
+            audience?: string | null;
             /** Chunk Id */
             chunk_id: string;
+            /** Doc Date */
+            doc_date?: string | null;
             /** Doc Id */
             doc_id: string;
             /** Has More After */
@@ -319,6 +334,13 @@ export interface components {
             highlight_end: number;
             /** Highlight Start */
             highlight_start: number;
+            /**
+             * Is Synthetic
+             * @default false
+             */
+            is_synthetic: boolean;
+            /** Product Version */
+            product_version?: string | null;
             /** Snapshot Id */
             snapshot_id: string;
             /** Title */

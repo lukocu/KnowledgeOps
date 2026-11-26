@@ -408,6 +408,17 @@
       },
       "DocumentText": {
         "properties": {
+          "audience": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
           "chunks": {
             "items": {
               "$ref": "#/components/schemas/ChunkSpan"
@@ -415,9 +426,36 @@
             "title": "Chunks",
             "type": "array"
           },
+          "doc_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Date"
+          },
           "doc_id": {
             "title": "Doc Id",
             "type": "string"
+          },
+          "is_synthetic": {
+            "default": false,
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
           },
           "snapshot_id": {
             "title": "Snapshot Id",
@@ -482,9 +520,31 @@
       "EvidenceWindow": {
         "description": "Okno dowodu; offsety zaznaczenia są względne do `window_text`.",
         "properties": {
+          "audience": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
           "chunk_id": {
             "title": "Chunk Id",
             "type": "string"
+          },
+          "doc_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Date"
           },
           "doc_id": {
             "title": "Doc Id",
@@ -512,6 +572,22 @@
           "highlight_start": {
             "title": "Highlight Start",
             "type": "integer"
+          },
+          "is_synthetic": {
+            "default": false,
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
           },
           "snapshot_id": {
             "title": "Snapshot Id",

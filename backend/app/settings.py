@@ -5,6 +5,7 @@ from fastapi import Depends
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.synthetic.importer import synthetic_chunk_set_id
 from app.techqa.chunking import ChunkerConfig
 from app.techqa.importer import load_manifest
 
@@ -17,6 +18,9 @@ class Settings(BaseSettings):
     database_url: str
     techqa_dir: Path = Path("/data/raw/techqa")
     chunk_set_id: str | None = None
+    # Nakładka dokumentów syntetycznych (synthetic@v1) na bazę TechQA.
+    include_synthetic: bool = True
+    synthetic_chunk_set_id: str | None = None
     answer_k: int = 8
     evidence_context_chunks: int = 1
 
@@ -52,6 +56,12 @@ class Settings(BaseSettings):
         if self.chunk_set_id:
             return self.chunk_set_id
         return load_manifest().chunk_set_id(ChunkerConfig())
+
+    def effective_synthetic_chunk_set_id(self) -> str:
+        """Id zestawu syntetycznego: z ustawień, a gdy puste, z chunkera."""
+        if self.synthetic_chunk_set_id:
+            return self.synthetic_chunk_set_id
+        return synthetic_chunk_set_id(ChunkerConfig())
 
 
 def get_settings() -> Settings:

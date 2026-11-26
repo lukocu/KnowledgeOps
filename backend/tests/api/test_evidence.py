@@ -2,6 +2,8 @@ import psycopg
 import pytest
 from fastapi.testclient import TestClient
 
+from app.synthetic.importer import DOCUMENTS_PATH, import_synthetic_snapshot
+from app.techqa.chunking import ChunkerConfig
 from tests.techqa.helpers import CHUNK_SET_ID, REVISION, SNAPSHOT_ID
 
 pytestmark = pytest.mark.db
@@ -93,3 +95,57 @@ def test_document_unknown_is_404(api_client: TestClient) -> None:
         "/api/documents", params={"snapshot_id": SNAPSHOT_ID, "doc_id": "brak"}
     )
     assert response.status_code == 404
+
+
+def test_evidence_and_document_metadata_for_techqa(
+    api_client: TestClient, imported_conn: psycopg.Connection
+) -> None:
+    doc_id, chunk_id = _multi_chunk_doc(imported_conn)
+    window = api_client.get("/api/evidence", params={"chunk_id": chunk_id}).json()
+    assert window["is_synthetic"] is False
+    assert window["doc_date"] is None
+    document = api_client.get(
+        "/api/documents", params={"snapshot_id": SNAPSHOT_ID, "doc_id": doc_id}
+    ).json()
+    assert document["is_synthetic"] is False
+    assert document["audience"] is None
+
+
+def test_synthetic_evidence_and_document(
+    api_client: TestClient, imported_conn: psycopg.Connection
+) -> None:
+    import_synthetic_snapshot(imported_conn, DOCUMENTS_PATH, ChunkerConfig())
+    chunk_id = "synthetic@v1/sections-v1/SYN-KB-0007/0"
+
+    window_response = api_client.get("/api/evidence", params={"chunk_id": chunk_id})
+    assert window_response.status_code == 200
+    window = window_response.json()
+    assert window["snapshot_id"] == "synthetic@v1"
+    assert window["is_synthetic"] is True
+    assert window["doc_date"] == "2019-03"
+    assert window["product_version"] is None
+    assert window["audience"] == "platform team, application servers"
+    row = imported_conn.execute(
+        "SELECT text FROM chunks WHERE id = %s", (chunk_id,)
+    ).fetchone()
+    assert row is not None
+    highlighted = window["window_text"][
+        window["highlight_start"] : window["highlight_end"]
+    ]
+    assert highlighted == row[0]
+
+    document_response = api_client.get(
+        "/api/documents",
+        params={"snapshot_id": "synthetic@v1", "doc_id": "SYN-KB-0007"},
+    )
+    assert document_response.status_code == 200
+    document = document_response.json()
+    assert document["is_synthetic"] is True
+    assert document["doc_date"] == "2019-03"
+    assert document["chunks"]
+    for span in document["chunks"]:
+        chunk = imported_conn.execute(
+            "SELECT text FROM chunks WHERE id = %s", (span["chunk_id"],)
+        ).fetchone()
+        assert chunk is not None
+        assert document["text"][span["start_offset"] : span["end_offset"]] == chunk[0]

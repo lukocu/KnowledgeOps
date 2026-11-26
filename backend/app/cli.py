@@ -35,6 +35,11 @@ from app.evals.runner import (
 from app.evals.sampling import export_manual_audit, sample_for_manual_audit
 from app.migrations import MIGRATIONS_DIR, apply_migrations
 from app.settings import Settings
+from app.synthetic.importer import (
+    DOCUMENTS_PATH,
+    SyntheticImportReport,
+    import_synthetic_snapshot,
+)
 from app.techqa.chunking import ChunkerConfig
 from app.techqa.importer import ImportReport, import_snapshot, load_manifest
 from app.techqa.search import Method, SearchHit, search_chunks
@@ -98,6 +103,27 @@ def _import_techqa(data_dir: Path | None) -> int:
     return 0
 
 
+def _print_synthetic_report(report: SyntheticImportReport) -> None:
+    print(f"Migawka: {report.snapshot_id}")
+    print(f"Zestaw fragmentów: {report.chunk_set_id}")
+    print(f"Dokumenty: {report.documents}, fragmenty: {report.chunks}")
+    print(f"Hash stanu (SHA-256): {report.state_sha256}")
+    print(f"Porównanie z poprzednim importem: {report.comparison}")
+    if report.comparison == "różny":
+        print(
+            "OSTRZEŻENIE: hash stanu różni się od poprzedniego importu "
+            "(zmiana dokumentów, kodu lub konfiguracji)."
+        )
+
+
+def _import_synthetic(file: Path | None) -> int:
+    path = file if file is not None else DOCUMENTS_PATH
+    with psycopg.connect(Settings().database_url, connect_timeout=5) as conn:
+        report = import_synthetic_snapshot(conn, path, ChunkerConfig())
+    _print_synthetic_report(report)
+    return 0
+
+
 def _print_hits(hits: list[SearchHit]) -> None:
     for hit in hits:
         snippet = " ".join(hit.snippet.split())
@@ -106,12 +132,27 @@ def _print_hits(hits: list[SearchHit]) -> None:
         print(f"    {snippet}")
 
 
-def _search(query: str, method: Method, k: int, chunk_set: str | None) -> int:
+def _search(
+    query: str,
+    method: Method,
+    k: int,
+    chunk_set: str | None,
+    include_synthetic: bool = False,
+) -> int:
     if chunk_set is None:
         chunk_set = load_manifest().chunk_set_id(ChunkerConfig())
+    extra = [Settings().effective_synthetic_chunk_set_id()] if include_synthetic else []
     with psycopg.connect(Settings().database_url, connect_timeout=5) as conn:
-        hits = search_chunks(conn, query, method=method, chunk_set_id=chunk_set, k=k)
-    print(f"Zestaw: {chunk_set}, metoda: {method}, wyniki: {len(hits)}")
+        hits = search_chunks(
+            conn,
+            query,
+            method=method,
+            chunk_set_id=chunk_set,
+            extra_chunk_set_ids=extra,
+            k=k,
+        )
+    zestaw = chunk_set + (f" + {extra[0]}" if extra else "")
+    print(f"Zestaw: {zestaw}, metoda: {method}, wyniki: {len(hits)}")
     _print_hits(hits)
     if not hits:
         print("Brak wyników")
@@ -380,6 +421,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=None,
         help="katalog z danymi (domyślnie TECHQA_DIR)",
     )
+    synthetic = commands.add_parser(
+        "import-synthetic-conflicts",
+        help="importuje migawkę syntetyczną synthetic@v1 (dokumenty autorskie)",
+    )
+    synthetic.add_argument(
+        "--file",
+        type=Path,
+        default=None,
+        help="plik documents.json (domyślnie app/synthetic/documents.json)",
+    )
     searcher = commands.add_parser(
         "search", help="wyszukuje fragmenty (BM25 albo tsvector)"
     )
@@ -390,6 +441,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--chunk-set",
         default=None,
         help="id zestawu (domyślnie techqa@<rewizja>/sections-v1)",
+    )
+    searcher.add_argument(
+        "--include-synthetic",
+        action="store_true",
+        help="dołącza zestaw syntetyczny (synthetic@v1/sections-v1)",
     )
     preparer = commands.add_parser(
         "eval-prepare-abstention",
@@ -543,7 +599,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "import-techqa":
             return _import_techqa(args.data_dir)
         if args.command == "search":
-            return _search(args.query, args.method, args.k, args.chunk_set)
+            return _search(
+                args.query,
+                args.method,
+                args.k,
+                args.chunk_set,
+                args.include_synthetic,
+            )
+        if args.command == "import-synthetic-conflicts":
+            return _import_synthetic(args.file)
         if args.command == "eval-prepare-abstention":
             return _eval_prepare_abstention(
                 args.out_dir,

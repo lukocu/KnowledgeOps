@@ -15,6 +15,7 @@ from app.retrieval import (
     get_evidence_window,
 )
 from app.settings import SettingsDep
+from app.synthetic.importer import SYNTHETIC_SNAPSHOT_ID
 
 MAX_CONTEXT_CHUNKS = 5
 
@@ -76,7 +77,14 @@ async def evidence(
 async def document(
     pool: PoolDep, settings: SettingsDep, snapshot_id: str, doc_id: str
 ) -> DocumentText:
-    chunk_set_id = settings.effective_chunk_set_id()
+    base_chunk_set_id = settings.effective_chunk_set_id()
+    chunk_set_id: str | None
+    if snapshot_id == SYNTHETIC_SNAPSHOT_ID:
+        chunk_set_id = settings.effective_synthetic_chunk_set_id()
+    elif snapshot_id == base_chunk_set_id.rsplit("/", 1)[0]:
+        chunk_set_id = base_chunk_set_id
+    else:
+        chunk_set_id = None  # inna migawka: fragmenty wszystkich jej zestawów
     async with http_connection(pool) as conn:
         result = await get_document(
             conn, snapshot_id, doc_id, chunk_set_id=chunk_set_id
