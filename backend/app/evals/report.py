@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.answering.schemas import AnsweredResult
 from app.evals.metrics import LATENCY_BUDGET_MS, EvalItemExecution
@@ -12,16 +12,26 @@ MAX_ERROR_EXAMPLES_PER_CATEGORY = 10
 
 
 class JudgeAgreementSummary(BaseModel):
-    """Podsumowanie ręcznej walidacji zgodności sędziego LLM (uzupełniane w Fazie 4)."""
+    """Podsumowanie ręcznej walidacji zgodności sędziego LLM (Faza 4)."""
 
     model_config = ConfigDict(frozen=True)
 
     n_sampled: int = 0
     n_reviewed: int = 0
+    n_citation_pairs: int = 0
     citation_agreement_rate: float | None = None
     citation_cohens_kappa: float | None = None
+    citation_kappa_note: str | None = None
+    citation_confusion_matrix: dict[str, dict[str, int]] = Field(default_factory=dict)
+    n_reference_pairs: int = 0
     reference_agreement_rate: float | None = None
     reference_cohens_kappa: float | None = None
+    reference_kappa_note: str | None = None
+    reference_confusion_matrix: dict[str, dict[str, int]] = Field(default_factory=dict)
+    n_abstained_sampled: int = 0
+    n_abstained_reviewed: int = 0
+    abstained_justified_count: int = 0
+    abstained_unjustified_count: int = 0
     notes: str | None = None
 
 
@@ -165,6 +175,108 @@ def _render_error_section(run: EvalRunArtifact) -> list[str]:
             )
         lines.append("")
 
+    return lines
+
+
+def _fmt_kappa(value: float | None, note: str | None) -> str:
+    if value is not None:
+        return f"{value:.3f}"
+    if note:
+        return f"n/d ({note})"
+    return "n/d"
+
+
+def _render_confusion_matrix(
+    title: str,
+    matrix: dict[str, dict[str, int]],
+    labels: tuple[str, ...],
+) -> list[str]:
+    if not matrix:
+        return []
+    header = "| Sędzia \\ Człowiek | " + " | ".join(f"`{lbl}`" for lbl in labels) + " |"
+    sep = "| --- | " + " | ".join("---" for _ in labels) + " |"
+    rows = ["", f"### {title}", "", header, sep]
+    for judge_lbl in labels:
+        row_counts = matrix.get(judge_lbl, {})
+        cells = " | ".join(f"`{row_counts.get(h_lbl, 0)}`" for h_lbl in labels)
+        rows.append(f"| `{judge_lbl}` | {cells} |")
+    return rows
+
+
+def _render_agreement_section(agreement: JudgeAgreementSummary | None) -> list[str]:
+    lines: list[str] = ["## Walidacja ręczna sędziego", ""]
+    if agreement is None:
+        lines.extend(
+            [
+                "Ręczna walidacja zgodności sędziego LLM (człowiek vs sędzia,"
+                " Cohen's kappa) nie została jeszcze wykonana"
+                " — sekcja do uzupełnienia w Fazie 4.",
+                "",
+            ]
+        )
+        return lines
+
+    cit_n = f" (`n={agreement.n_citation_pairs}`)" if agreement.n_citation_pairs else ""
+    ref_n = (
+        f" (`n={agreement.n_reference_pairs}`)" if agreement.n_reference_pairs else ""
+    )
+    cit_kappa = _fmt_kappa(
+        agreement.citation_cohens_kappa, agreement.citation_kappa_note
+    )
+    ref_kappa = _fmt_kappa(
+        agreement.reference_cohens_kappa, agreement.reference_kappa_note
+    )
+    lines.extend(
+        [
+            "| Metryka walidacji | Wartość |",
+            "| --- | --- |",
+            (
+                "| Próbka / ocenione ręcznie |"
+                f" `{agreement.n_sampled}` / `{agreement.n_reviewed}` |"
+            ),
+            (
+                "| Zgodność sędziego cytatów (procent / Cohen's kappa) |"
+                f" {_fmt_pct(agreement.citation_agreement_rate)}"
+                f" / {cit_kappa}{cit_n} |"
+            ),
+            (
+                "| Zgodność sędziego referencji (procent / Cohen's kappa) |"
+                f" {_fmt_pct(agreement.reference_agreement_rate)}"
+                f" / {ref_kappa}{ref_n} |"
+            ),
+        ]
+    )
+    lines.extend(
+        _render_confusion_matrix(
+            "Macierz pomyłek — wsparcie cytatów",
+            agreement.citation_confusion_matrix,
+            ("supported", "unsupported"),
+        )
+    )
+    lines.extend(
+        _render_confusion_matrix(
+            "Macierz pomyłek — zgodność z odpowiedzią referencyjną",
+            agreement.reference_confusion_matrix,
+            ("full", "partial", "incorrect"),
+        )
+    )
+    if agreement.n_abstained_sampled > 0:
+        lines.extend(
+            [
+                "",
+                "### Przegląd jakościowy warstwy `abstained`",
+                "",
+                (
+                    f"- W próbce: `{agreement.n_abstained_sampled}`,"
+                    f" ocenione ręcznie: `{agreement.n_abstained_reviewed}`"
+                    f" (uzasadnione: `{agreement.abstained_justified_count}`,"
+                    f" nieuzasadnione: `{agreement.abstained_unjustified_count}`)."
+                ),
+            ]
+        )
+    if agreement.notes:
+        lines.extend(["", f"Uwagi: {agreement.notes}"])
+    lines.append("")
     return lines
 
 
@@ -349,40 +461,7 @@ def render_markdown_report(
 
     lines.extend(_render_error_section(run))
 
-    lines.extend(["## Walidacja ręczna sędziego", ""])
-    if agreement is None:
-        lines.extend(
-            [
-                "Ręczna walidacja zgodności sędziego LLM (człowiek vs sędzia,"
-                " Cohen's kappa) nie została jeszcze wykonana"
-                " — sekcja do uzupełnienia w Fazie 4.",
-                "",
-            ]
-        )
-    else:
-        lines.extend(
-            [
-                "| Metryka walidacji | Wartość |",
-                "| --- | --- |",
-                (
-                    "| Próbka / ocenione ręcznie |"
-                    f" `{agreement.n_sampled}` / `{agreement.n_reviewed}` |"
-                ),
-                (
-                    "| Zgodność sędziego cytatów (procent / Cohen's kappa) |"
-                    f" {_fmt_pct(agreement.citation_agreement_rate)}"
-                    f" / {_fmt_float(agreement.citation_cohens_kappa)} |"
-                ),
-                (
-                    "| Zgodność sędziego referencji (procent / Cohen's kappa) |"
-                    f" {_fmt_pct(agreement.reference_agreement_rate)}"
-                    f" / {_fmt_float(agreement.reference_cohens_kappa)} |"
-                ),
-            ]
-        )
-        if agreement.notes:
-            lines.extend(["", f"Uwagi: {agreement.notes}"])
-        lines.append("")
+    lines.extend(_render_agreement_section(agreement))
 
     lines.extend(
         [

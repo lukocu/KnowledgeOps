@@ -74,6 +74,7 @@ class EvalRunArtifact(BaseModel):
     summary: RunSummary
     items: list[EvalItemExecution]
     item_questions: dict[str, str] = Field(default_factory=dict)
+    item_reference_answers: dict[str, str] = Field(default_factory=dict)
     langfuse_run_id: str | None = None
     langfuse_run_url: str | None = None
     started_at: str
@@ -332,6 +333,11 @@ async def execute_item(
             item.question, item.answer, result.claims
         )
 
+    cited_chunk_texts = {
+        citation.chunk_id: chunk_texts[citation.chunk_id]
+        for citation in result.citations
+        if citation.chunk_id in chunk_texts
+    }
     return EvalItemExecution(
         question_id=item.question_id,
         split=item.split,
@@ -342,6 +348,7 @@ async def execute_item(
         citation_invariants=invariants,
         citation_judge=citation_judge,
         reference_judge=reference_judge,
+        cited_chunk_texts=cited_chunk_texts,
     )
 
 
@@ -520,6 +527,9 @@ async def run_abstention_eval(
         summary=summary,
         items=executions,
         item_questions={item.question_id: item.question for item in items},
+        item_reference_answers={
+            item.question_id: item.answer for item in items if item.answer.strip()
+        },
         langfuse_run_id=langfuse_run_id,
         langfuse_run_url=langfuse_run_url,
         started_at=started_at,

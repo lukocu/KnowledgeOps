@@ -11,6 +11,7 @@ import psycopg
 
 from app.answering.model import make_chat_model, make_judge_model
 from app.db import create_pool
+from app.evals.agreement import evaluate_judge_agreement
 from app.evals.dataset import load_verified_dataset_with_metadata
 from app.evals.prepare import (
     FreezeSummary,
@@ -18,7 +19,11 @@ from app.evals.prepare import (
     prepare_abstention_candidates,
     validate_and_freeze_labels,
 )
-from app.evals.report import render_markdown_report, write_raw_run
+from app.evals.report import (
+    JudgeAgreementSummary,
+    render_markdown_report,
+    write_raw_run,
+)
 from app.evals.runner import (
     DEFAULT_LANGFUSE_DATASET_NAME,
     EvalRunArtifact,
@@ -27,6 +32,7 @@ from app.evals.runner import (
     ensure_langfuse_ready,
     run_abstention_eval,
 )
+from app.evals.sampling import export_manual_audit, sample_for_manual_audit
 from app.migrations import MIGRATIONS_DIR, apply_migrations
 from app.settings import Settings
 from app.techqa.chunking import ChunkerConfig
@@ -196,7 +202,11 @@ def _eval_freeze_abstention(
 
 
 def _print_eval_summary(
-    artifact: EvalRunArtifact, raw_path: Path, report_path: Path
+    artifact: EvalRunArtifact,
+    raw_path: Path,
+    report_path: Path,
+    audit_json_path: Path,
+    audit_md_path: Path,
 ) -> None:
     s = artifact.summary
     abst = (
@@ -223,6 +233,8 @@ def _print_eval_summary(
         )
     print(f"Surowy JSON: {raw_path}")
     print(f"Raport Markdown: {report_path}")
+    print(f"Arkusz audytu JSON: {audit_json_path}")
+    print(f"Arkusz audytu Markdown: {audit_md_path}")
 
 
 def _eval_abstention(
@@ -290,7 +302,61 @@ def _eval_abstention(
     md_path.parent.mkdir(parents=True, exist_ok=True)
     md_path.write_text(render_markdown_report(artifact), encoding="utf-8")
 
-    _print_eval_summary(artifact, raw_path, md_path)
+    audit_entries = sample_for_manual_audit(artifact)
+    audit_json_path, audit_md_path = export_manual_audit(
+        audit_entries, out_dir, artifact.config.run_name
+    )
+
+    _print_eval_summary(artifact, raw_path, md_path, audit_json_path, audit_md_path)
+    return 0
+
+
+def _print_agreement_summary(summary: JudgeAgreementSummary) -> None:
+    def _pct(val: float | None) -> str:
+        return f"{val * 100:.1f}%" if val is not None else "n/d"
+
+    def _kappa(val: float | None, note: str | None) -> str:
+        if val is not None:
+            return f"{val:.3f}"
+        return f"n/d ({note})" if note else "n/d"
+
+    print(f"Próbka / ocenione ręcznie: {summary.n_sampled} / {summary.n_reviewed}")
+    print(
+        f"Wsparcie cytatów (n={summary.n_citation_pairs}):"
+        f" zgodność={_pct(summary.citation_agreement_rate)},"
+        f" kappa={_kappa(summary.citation_cohens_kappa, summary.citation_kappa_note)}"
+    )
+    print(
+        f"Zgodność referencyjna (n={summary.n_reference_pairs}):"
+        f" zgodność={_pct(summary.reference_agreement_rate)},"
+        f" kappa={_kappa(summary.reference_cohens_kappa, summary.reference_kappa_note)}"
+    )
+    if summary.n_abstained_sampled > 0:
+        print(
+            f"Warstwa abstained (przegląd jakościowy):"
+            f" {summary.n_abstained_reviewed}/{summary.n_abstained_sampled} ocenionych"
+            f" (uzasadnione={summary.abstained_justified_count},"
+            f" nieuzasadnione={summary.abstained_unjustified_count})"
+        )
+
+
+def _eval_judge_agreement(
+    run_path: Path,
+    audit_path: Path,
+    report_out: Path | None,
+) -> int:
+    summary = evaluate_judge_agreement(run_path, audit_path)
+    _print_agreement_summary(summary)
+    if report_out is not None:
+        artifact = EvalRunArtifact.model_validate_json(
+            run_path.read_text(encoding="utf-8")
+        )
+        report_out.parent.mkdir(parents=True, exist_ok=True)
+        report_out.write_text(
+            render_markdown_report(artifact, agreement=summary),
+            encoding="utf-8",
+        )
+        print(f"Zaktualizowano raport Markdown: {report_out}")
     return 0
 
 
@@ -438,6 +504,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="pomija bramkę potwierdzenia kosztu przed startem",
     )
+    agreement_cmd = commands.add_parser(
+        "eval-judge-agreement",
+        help="oblicza zgodność sędziego LLM z ocenami człowieka (Cohen's kappa)",
+    )
+    agreement_cmd.add_argument(
+        "--run",
+        dest="run_path",
+        type=Path,
+        required=True,
+        help="ścieżka do surowego zapisu przebiegu JSON",
+    )
+    agreement_cmd.add_argument(
+        "--audit",
+        dest="audit_path",
+        type=Path,
+        required=True,
+        help="ścieżka do uzupełnionego pliku audytu ręcznego JSON",
+    )
+    agreement_cmd.add_argument(
+        "--report-out",
+        type=Path,
+        default=None,
+        help="opcjonalna ścieżka docelowa raportu Markdown z sekcją walidacji",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -470,6 +560,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.report_out,
                 args.no_langfuse,
                 args.yes,
+            )
+        if args.command == "eval-judge-agreement":
+            return _eval_judge_agreement(
+                args.run_path, args.audit_path, args.report_out
             )
     except Exception as exc:
         print(f"Błąd: {exc}", file=sys.stderr)

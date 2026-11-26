@@ -427,25 +427,25 @@ Brak migracji bazy danych i brak zmian w kontrakcie API (OpenAPI / frontend bez 
 
 #### Automated
 
-- [x] 3.1 Testy Fazy 3 przechodzą (`pytest tests/evals/test_runner.py tests/evals/test_report.py`)
-- [x] 3.2 Wszystkie testy backendu przechodzą (`pytest`)
-- [x] 3.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
+- [x] 3.1 Testy Fazy 3 przechodzą (`pytest tests/evals/test_runner.py tests/evals/test_report.py`) — b3ea0d4
+- [x] 3.2 Wszystkie testy backendu przechodzą (`pytest`) — b3ea0d4
+- [x] 3.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`) — b3ea0d4
 
 #### Manual
 
-- [x] 3.4 Próbne uruchomienie `eval-abstention --split dev --limit 3 --no-langfuse --yes` na Windows przechodzi bez błędów `SelectorEventLoop` i generuje JSON oraz raport MD
+- [x] 3.4 Próbne uruchomienie `eval-abstention --split dev --limit 3 --no-langfuse --yes` na Windows przechodzi bez błędów `SelectorEventLoop` i generuje JSON oraz raport MD — b3ea0d4
 
 ### Phase 4: Próbkowanie i walidacja ręczna ocen sędziego
 
 #### Automated
 
-- [ ] 4.1 Testy Fazy 4 przechodzą (`pytest tests/evals/test_sampling.py tests/evals/test_agreement.py`)
-- [ ] 4.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`)
-- [ ] 4.3 Polecenie `eval-judge-agreement --help` zwraca kod 0
+- [x] 4.1 Testy Fazy 4 przechodzą (`pytest tests/evals/test_sampling.py tests/evals/test_agreement.py`)
+- [x] 4.2 Wszystkie kontrole backendu przechodzą (`ruff check`, `ruff format --check`, `mypy`, `pytest`)
+- [x] 4.3 Polecenie `eval-judge-agreement --help` zwraca kod 0
 
 #### Manual
 
-- [ ] 4.4 Wygenerowany arkusz `*-manual-audit.md` nie zdradza werdyktów sędziego i zawiera pełny kontekst do oceny ręcznej
+- [x] 4.4 Wygenerowany arkusz `*-manual-audit.md` nie zdradza werdyktów sędziego i zawiera pełny kontekst do oceny ręcznej
 
 ### Phase 5: Weryfikacja etykiet, pomiar bazowy i raport końcowy
 

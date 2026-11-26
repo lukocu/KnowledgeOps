@@ -69,6 +69,7 @@ class EvalItemExecution(BaseModel):
     citation_invariants: CitationInvariantCheck | None = None
     citation_judge: CitationJudgeResult | None = None
     reference_judge: ReferenceJudgeResult | None = None
+    cited_chunk_texts: dict[str, str] = Field(default_factory=dict)
 
 
 class RunSummary(BaseModel):
