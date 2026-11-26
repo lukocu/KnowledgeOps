@@ -9,6 +9,7 @@ from dataclasses import asdict
 from datetime import UTC, datetime
 from typing import Any, Literal, cast
 
+from langchain_core.callbacks import BaseCallbackHandler, UsageMetadataCallbackHandler
 from langchain_core.language_models.chat_models import BaseChatModel
 from langfuse import Langfuse
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,6 +26,7 @@ from app.evals.langfuse_eval import run_langfuse_experiment
 from app.evals.metrics import (
     EvalItemExecution,
     RunSummary,
+    TokenUsage,
     aggregate_run,
     check_citation_invariants,
     classify_abstention_reason,
@@ -238,6 +240,28 @@ def ensure_langfuse_ready(
     return client
 
 
+def _extract_token_usage(handler: UsageMetadataCallbackHandler) -> TokenUsage | None:
+    """Sumuje `usage_metadata` zebrane ze wszystkich wywołań LLM dla jednego pytania."""
+    if not handler.usage_metadata:
+        return None
+    input_tokens = sum(
+        int(meta.get("input_tokens", 0)) for meta in handler.usage_metadata.values()
+    )
+    output_tokens = sum(
+        int(meta.get("output_tokens", 0)) for meta in handler.usage_metadata.values()
+    )
+    total_tokens = sum(
+        int(meta.get("total_tokens", 0)) for meta in handler.usage_metadata.values()
+    )
+    if input_tokens == 0 and output_tokens == 0 and total_tokens == 0:
+        return None
+    return TokenUsage(
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        total_tokens=total_tokens,
+    )
+
+
 async def execute_item(
     item: EvalItem,
     *,
@@ -253,12 +277,19 @@ async def execute_item(
     do `compose`/`abstain`), bez czasu wywołań sędziego LLM.
     """
     handler = make_trace_handler(settings) if use_langfuse else None
+    usage_handler = UsageMetadataCallbackHandler()
     run_cfg = run_config(
         settings,
         chunk_set_id=chunk_set_id,
         k=settings.answer_k,
         handler=handler,
     )
+    raw_callbacks = run_cfg.get("callbacks")
+    callbacks: list[BaseCallbackHandler] = (
+        list(raw_callbacks) if isinstance(raw_callbacks, list) else []
+    )
+    callbacks.append(usage_handler)
+    run_cfg["callbacks"] = callbacks
 
     started = time.monotonic()
     try:
@@ -282,6 +313,7 @@ async def execute_item(
                 f"TimeoutError: przekroczono answer_deadline_s"
                 f" ({settings.answer_deadline_s:g}s)"
             ),
+            usage=_extract_token_usage(usage_handler),
         )
     except Exception as exc:
         latency_ms = (time.monotonic() - started) * 1000.0
@@ -292,6 +324,7 @@ async def execute_item(
             outcome="failed",
             latency_ms=latency_ms,
             error=f"{type(exc).__name__}: {exc}",
+            usage=_extract_token_usage(usage_handler),
         )
 
     latency_ms = (time.monotonic() - started) * 1000.0
@@ -304,6 +337,7 @@ async def execute_item(
             outcome="failed",
             latency_ms=latency_ms,
             error="brak wyniku answer w stanie końcowym grafu",
+            usage=_extract_token_usage(usage_handler),
         )
 
     if isinstance(result, AbstainedResult):
@@ -317,6 +351,7 @@ async def execute_item(
             latency_ms=latency_ms,
             answer=result,
             abstention_reason=cause,
+            usage=_extract_token_usage(usage_handler),
         )
 
     assert isinstance(result, AnsweredResult)
@@ -325,12 +360,18 @@ async def execute_item(
     }
     invariants = check_citation_invariants(result, chunk_texts)
     citation_judge = await judge.judge_citations(
-        result.claims, result.citations, chunk_texts
+        result.claims,
+        result.citations,
+        chunk_texts,
+        callbacks=[usage_handler],
     )
     reference_judge = None
     if item.verified_label == "answerable_in_corpus" and item.answer.strip():
         reference_judge = await judge.judge_reference(
-            item.question, item.answer, result.claims
+            item.question,
+            item.answer,
+            result.claims,
+            callbacks=[usage_handler],
         )
 
     cited_chunk_texts = {
@@ -349,6 +390,7 @@ async def execute_item(
         citation_judge=citation_judge,
         reference_judge=reference_judge,
         cited_chunk_texts=cited_chunk_texts,
+        usage=_extract_token_usage(usage_handler),
     )
 
 

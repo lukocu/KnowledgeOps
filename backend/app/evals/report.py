@@ -65,16 +65,6 @@ def _fmt_dict(mapping: dict[str, str]) -> str:
     return ", ".join(f"`{key}={value}`" for key, value in sorted(mapping.items()))
 
 
-def _question_preview(run: EvalRunArtifact, question_id: str) -> str:
-    text = run.item_questions.get(question_id, "").strip()
-    if not text:
-        return ""
-    compact = " ".join(text.split())
-    if len(compact) > 120:
-        compact = compact[:117] + "..."
-    return f' — "{compact}"'
-
-
 def _diagnose_answered_error(item: EvalItemExecution) -> str:
     parts: list[str] = []
     if isinstance(item.answer, AnsweredResult):
@@ -124,9 +114,8 @@ def _render_error_section(run: EvalRunArtifact) -> list[str]:
         lines.append("- Brak błędów w tej kategorii.")
     else:
         for item in missed_abstentions[:MAX_ERROR_EXAMPLES_PER_CATEGORY]:
-            preview = _question_preview(run, item.question_id)
             diag = _diagnose_answered_error(item)
-            lines.append(f"- `{item.question_id}` (`{item.split}`){preview} — {diag}")
+            lines.append(f"- `{item.question_id}` (`{item.split}`) — {diag}")
         if len(missed_abstentions) > MAX_ERROR_EXAMPLES_PER_CATEGORY:
             lines.append(
                 f"- …oraz {len(missed_abstentions) - MAX_ERROR_EXAMPLES_PER_CATEGORY}"
@@ -139,10 +128,9 @@ def _render_error_section(run: EvalRunArtifact) -> list[str]:
         lines.append("- Brak błędów w tej kategorii.")
     else:
         for item in false_refusals[:MAX_ERROR_EXAMPLES_PER_CATEGORY]:
-            preview = _question_preview(run, item.question_id)
             cause = item.abstention_reason or "nieznana"
             lines.append(
-                f"- `{item.question_id}` (`{item.split}`){preview}"
+                f"- `{item.question_id}` (`{item.split}`)"
                 f" — przyczyna abstencji: `{cause}`"
             )
         if len(false_refusals) > MAX_ERROR_EXAMPLES_PER_CATEGORY:

@@ -8,8 +8,10 @@ import asyncio
 from collections.abc import Mapping, Sequence
 from typing import Literal
 
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.answering.schemas import AnswerClaim, Citation, CitationClaim
@@ -139,12 +141,21 @@ class EvalJudge:
         self._timeout_s = timeout_s
 
     async def _call_model[T: BaseModel](
-        self, schema: type[T], system: str, human: str
+        self,
+        schema: type[T],
+        system: str,
+        human: str,
+        *,
+        callbacks: Sequence[BaseCallbackHandler] | None = None,
     ) -> T:
         runnable = self._model.with_structured_output(schema, strict=True)
+        config: RunnableConfig | None = (
+            {"callbacks": list(callbacks)} if callbacks else None
+        )
         async with asyncio.timeout(self._timeout_s):
             raw = await runnable.ainvoke(
-                [SystemMessage(content=system), HumanMessage(content=human)]
+                [SystemMessage(content=system), HumanMessage(content=human)],
+                config=config,
             )
         return schema.model_validate(raw)
 
@@ -153,6 +164,8 @@ class EvalJudge:
         claims: Sequence[AnswerClaim],
         citations: Sequence[Citation],
         chunk_texts: Mapping[str, str],
+        *,
+        callbacks: Sequence[BaseCallbackHandler] | None = None,
     ) -> CitationJudgeResult:
         """Ocenia binarnie, czy cytat i fragment wspierają konkretną tezę."""
         if not claims:
@@ -162,6 +175,7 @@ class EvalJudge:
                 CitationJudgeOutput,
                 load_prompt("citation_support"),
                 citation_support_message(claims, citations, chunk_texts),
+                callbacks=callbacks,
             )
             return CitationJudgeResult(verdicts=output.verdicts)
         except TimeoutError:
@@ -176,6 +190,8 @@ class EvalJudge:
         question: str,
         reference_answer: str,
         claims: Sequence[AnswerClaim],
+        *,
+        callbacks: Sequence[BaseCallbackHandler] | None = None,
     ) -> ReferenceJudgeResult:
         """Ocenia zgodność tez odpowiedzi z odpowiedzią referencyjną TechQA."""
         if not claims:
@@ -187,6 +203,7 @@ class EvalJudge:
                 ReferenceAgreementOutput,
                 load_prompt("reference_agreement"),
                 reference_agreement_message(question, reference_answer, claims),
+                callbacks=callbacks,
             )
             return ReferenceJudgeResult(output=output)
         except TimeoutError:

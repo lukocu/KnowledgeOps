@@ -212,6 +212,8 @@ def test_render_markdown_report_contains_all_required_sections_and_langfuse() ->
     assert "Q_MISSED_ABSTAIN" in md
     assert "Q_FALSE_REFUSAL" in md
     assert "Q_TIMEOUT" in md
+    assert "What is the price of license?" not in md
+    assert "How to configure TLS?" not in md
     assert "do uzupełnienia w Fazie 4" in md
 
 

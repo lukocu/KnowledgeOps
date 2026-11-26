@@ -57,29 +57,29 @@
 ## Przykłady błędów
 
 ### Błędne odpowiedzi na pytania bez odpowiedzi (missed abstentions)
-- `DEV_Q009` (`test`) — ""The transaction log for database BPMDB is full" error message is seen when running BPMInstallOfflinePackage During o..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q036` (`test`) — "Port number error starting 9.0 Launcher I'm attempting to start up v9.0 for the first time with one .msl file on a Wi..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q065` (`test`) — "How do I enable my Applications to show up in the App Health view for the WAS agent? How do I enable my Applications ..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q091` (`test`) — "Deploying RuleRunner on a separate server Hello everyone, I am trying to have a setup as follows: Server 1: Running F..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q148` (`test`) — "How do I have to prepare WAS and BPM servers, if DST or time zones will change? Daylight Saving Time (DST) or time zo..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q166` (`test`) — "Which version of the WebSphere MQ Resource Adapter is shipped with WebSphere Application Server? Which version of Web..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q190` (`test`) — "Is it possible to use Java large pages (-Xlp) parm with ITCAM? Is this supported? Is it possible to use Java large pa..." — tezy=2, cytaty=1; sędzia cytatów: 2/2 supported
-- `DEV_Q203` (`test`) — "Why WebSphere Application Server transactions are rolled back with these StaleConnectionExceptions? Why WebSphere App..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q223` (`test`) — "Can I use Chrome browser for viewing Monitor 801 Cognos report viewer widget ? Some users use Chrome browser with Bus..." — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
-- `DEV_Q274` (`test`) — "VMware agent SSL hand shake failure after ESX upgrade We did an update to our VCentre server, bringing it to 5.5 upda..." — tezy=1, cytaty=1; sędzia cytatów: 0/1 supported
+- `DEV_Q009` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q036` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q065` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q091` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q148` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q166` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q190` (`test`) — tezy=2, cytaty=1; sędzia cytatów: 2/2 supported
+- `DEV_Q203` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q223` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 1/1 supported
+- `DEV_Q274` (`test`) — tezy=1, cytaty=1; sędzia cytatów: 0/1 supported
 - …oraz 1 kolejnych przypadków w surowym pliku JSON.
 
 ### Fałszywe odmowy (false refusals)
-- `DEV_Q000` (`test`) — "Web GUI 8.1 FP7 requires DASH 3.1.2.1 or later You wanted to install Web GUI 8.1 FP7, but your DASH version does not ..." — przyczyna abstencji: `no_claims`
-- `DEV_Q007` (`test`) — "Which Socket Gateway should I be using with Netcool Omnibus (NOI) ? Which Socket Gateway should I be using with Netco..." — przyczyna abstencji: `no_claims`
-- `DEV_Q011` (`test`) — "How to proceed when jextract utility is throwing an OutOfMemory error ? I was getting a crash and was told to provide..." — przyczyna abstencji: `no_claims`
-- `DEV_Q022` (`test`) — "where is the websphere application server 9.0.0.4 fix for developers I am using the was 9.0.0.0 in rad/rsa 9.6.1 for ..." — przyczyna abstencji: `no_claims`
-- `DEV_Q023` (`test`) — "No trace is logged in Decision Warehouse, and no records in EXECUTION_TRACES table for a certain ruleset For a certai..." — przyczyna abstencji: `no_claims`
-- `DEV_Q027` (`test`) — "How to create batches for bulk upload I am new in datacap 9.0 .I just started developing with datacap studio and curr..." — przyczyna abstencji: `no_claims`
-- `DEV_Q028` (`test`) — "Help with Security Bulletin: Multiple vulnerabilities have been identified in WebSphere Application Server shipped wi..." — przyczyna abstencji: `no_claims`
-- `DEV_Q034` (`test`) — "Profiler for WebSphere 8 Hi, We noticed that a was application server uses 1,4 Go of memory at startup, we would like..." — przyczyna abstencji: `no_claims`
-- `DEV_Q039` (`test`) — "How do I upgrade my virtual DataPower Appliance from 5.0 firmware to 6.0+ firmware? When attempting to upgrade my Vir..." — przyczyna abstencji: `no_claims`
-- `DEV_Q047` (`test`) — "I need to move my perpetual license of SPSS v24 to my new machine. I have my authorization code first given to me, bu..." — przyczyna abstencji: `no_claims`
+- `DEV_Q000` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q007` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q011` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q022` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q023` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q027` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q028` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q034` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q039` (`test`) — przyczyna abstencji: `no_claims`
+- `DEV_Q047` (`test`) — przyczyna abstencji: `no_claims`
 - …oraz 7 kolejnych przypadków w surowym pliku JSON.
 
 ## Walidacja ręczna sędziego

@@ -152,7 +152,14 @@ def ensure_and_sync_dataset(
     dataset = client.get_dataset(dataset_name)
     by_id = {ds_item.id: ds_item for ds_item in dataset.items}
     selected_ids = [dataset_item_id(item) for item in items]
-    return [by_id[item_id] for item_id in selected_ids if item_id in by_id]
+    missing_ids = [item_id for item_id in selected_ids if item_id not in by_id]
+    if missing_ids:
+        raise RuntimeError(
+            f"Po synchronizacji datasetu {dataset_name!r} brakuje "
+            f"{len(missing_ids)}/{len(selected_ids)} elementów: "
+            f"{', '.join(missing_ids[:5])}"
+        )
+    return [by_id[item_id] for item_id in selected_ids]
 
 
 async def run_langfuse_experiment(
@@ -228,23 +235,39 @@ async def run_langfuse_experiment(
             for score in score_item(eval_item, execution)
         ]
 
+    def _collect_ordered_executions() -> list[EvalItemExecution]:
+        ordered: list[EvalItemExecution] = []
+        for item in items:
+            execution = executions_by_question_id.get(item.question_id)
+            if execution is None:
+                execution = EvalItemExecution(
+                    question_id=item.question_id,
+                    split=item.split,
+                    verified_label=item.verified_label,
+                    outcome="failed",
+                    latency_ms=0.0,
+                    error=(
+                        "Brak wyniku wykonania elementu z eksperymentu Langfuse "
+                        f"({dataset_item_id(item)})."
+                    ),
+                )
+            ordered.append(execution)
+        return ordered
+
     def _run_evaluator(
         *,
         item_results: list[ExperimentItemResult],
         **kwargs: Any,
     ) -> list[Evaluation]:
         del kwargs
-        ordered = [
-            executions_by_question_id[item.question_id]
-            for item in items
-            if item.question_id in executions_by_question_id
-        ]
-        if not ordered and item_results:
+        if not executions_by_question_id and item_results:
             ordered = [
                 EvalItemExecution.model_validate(res.output)
                 for res in item_results
                 if res.output is not None
             ]
+        else:
+            ordered = _collect_ordered_executions()
         summary = aggregate_run(ordered)
         return build_run_evaluations(summary)
 
@@ -262,11 +285,7 @@ async def run_langfuse_experiment(
     )
     await asyncio.to_thread(flush_traces)
 
-    ordered_executions = [
-        executions_by_question_id[item.question_id]
-        for item in items
-        if item.question_id in executions_by_question_id
-    ]
+    ordered_executions = _collect_ordered_executions()
     return LangfuseExperimentOutput(
         executions=ordered_executions,
         langfuse_run_id=result.experiment_id,

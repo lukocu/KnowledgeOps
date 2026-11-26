@@ -155,6 +155,7 @@ def _eval_prepare_abstention(
     k: int,
     chunk_set: str | None,
     data_dir: Path | None,
+    force: bool = False,
 ) -> int:
     settings = Settings()
     directory = data_dir if data_dir is not None else settings.techqa_dir
@@ -172,6 +173,7 @@ def _eval_prepare_abstention(
             unanswerable_candidates=unanswerable,
             answerable_candidates=answerable,
             top_k=k,
+            overwrite=force,
         )
     _print_prepare_report(report)
     return 0
@@ -428,6 +430,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=None,
         help="katalog z danymi TechQA (domyślnie TECHQA_DIR)",
     )
+    preparer.add_argument(
+        "--force",
+        action="store_true",
+        help="pozwól nadpisać istniejący plik abstention-labels-template.json",
+    )
     freezer = commands.add_parser(
         "eval-freeze-abstention",
         help="waliduje szablon etykiet i zapisuje zamrożony plik abstention-dataset",
@@ -545,6 +552,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.k,
                 args.chunk_set,
                 args.data_dir,
+                args.force,
             )
         if args.command == "eval-freeze-abstention":
             return _eval_freeze_abstention(

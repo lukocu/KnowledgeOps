@@ -53,6 +53,16 @@ class ItemScore(BaseModel):
     comment: str | None = None
 
 
+class TokenUsage(BaseModel):
+    """Zsumowane zużycie tokenów zwrócone przez providera LLM dla jednego pytania."""
+
+    model_config = ConfigDict(frozen=True)
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+
+
 class EvalItemExecution(BaseModel):
     """Wynik wykonania pojedynczego elementu zbioru w przebiegu ewaluacji."""
 
@@ -70,6 +80,7 @@ class EvalItemExecution(BaseModel):
     citation_judge: CitationJudgeResult | None = None
     reference_judge: ReferenceJudgeResult | None = None
     cited_chunk_texts: dict[str, str] = Field(default_factory=dict)
+    usage: TokenUsage | None = None
 
 
 class RunSummary(BaseModel):
@@ -195,7 +206,7 @@ def check_citation_invariants(
     return CitationInvariantCheck(passed=not violations, violations=violations)
 
 
-def _evaluate_citation_support(run_item: EvalItemExecution) -> tuple[int, int] | None:
+def evaluate_citation_support(run_item: EvalItemExecution) -> tuple[int, int] | None:
     """Zwraca `(supported_claims, total_claims)` lub `None`, gdy brak ważnej oceny."""
     if run_item.outcome != "answered":
         return None
@@ -260,7 +271,7 @@ def score_item(item: EvalItem, run_item: EvalItemExecution) -> list[ItemScore]:
                 )
             )
 
-        support = _evaluate_citation_support(run_item)
+        support = evaluate_citation_support(run_item)
         if support is not None:
             supported_count, total_claims = support
             scores.append(
@@ -371,7 +382,7 @@ def aggregate_run(results: Sequence[EvalItemExecution]) -> RunSummary:
     judged_answers = 0
     fully_supported_answers = 0
     for item in evaluated:
-        support = _evaluate_citation_support(item)
+        support = evaluate_citation_support(item)
         if support is None:
             continue
         supported_count, claim_count = support

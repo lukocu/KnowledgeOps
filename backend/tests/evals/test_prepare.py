@@ -234,3 +234,54 @@ def test_validate_and_freeze_labels_rejects_null_and_freezes_clean_file(
 
     active = load_verified_dataset(frozen_path, techqa_dir, manifest=manifest)
     assert len(active) == 7
+
+
+def test_prepare_refuses_to_overwrite_existing_template_without_force(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    techqa_dir, manifest = _build_synthetic_techqa(tmp_path)
+    doc_rows = [
+        (f"doc_{idx:02d}", f"doc_{idx:02d}", f"Title {idx}") for idx in range(1, 11)
+    ]
+    fake_conn = cast(psycopg.Connection, _FakeConn(doc_rows))
+    monkeypatch.setattr("app.evals.prepare.search_chunks", lambda *args, **kwargs: [])
+
+    out_dir = tmp_path / "out"
+    first = prepare_abstention_candidates(
+        fake_conn,
+        techqa_dir=techqa_dir,
+        chunk_set_id=f"{manifest.snapshot_id}/sections-v1",
+        out_dir=out_dir,
+        unanswerable_candidates=2,
+        answerable_candidates=2,
+        top_k=2,
+        manifest=manifest,
+    )
+    sentinel = '{"manual": "work-in-progress"}\n'
+    first.template_json_path.write_text(sentinel, encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="--force"):
+        prepare_abstention_candidates(
+            fake_conn,
+            techqa_dir=techqa_dir,
+            chunk_set_id=f"{manifest.snapshot_id}/sections-v1",
+            out_dir=out_dir,
+            unanswerable_candidates=2,
+            answerable_candidates=2,
+            top_k=2,
+            manifest=manifest,
+        )
+    assert first.template_json_path.read_text(encoding="utf-8") == sentinel
+
+    second = prepare_abstention_candidates(
+        fake_conn,
+        techqa_dir=techqa_dir,
+        chunk_set_id=f"{manifest.snapshot_id}/sections-v1",
+        out_dir=out_dir,
+        unanswerable_candidates=2,
+        answerable_candidates=2,
+        top_k=2,
+        manifest=manifest,
+        overwrite=True,
+    )
+    assert second.template_json_path.read_text(encoding="utf-8") != sentinel

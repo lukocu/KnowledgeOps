@@ -176,10 +176,18 @@ def prepare_abstention_candidates(
     seed: int = DEFAULT_SPLIT_SEED,
     dev_ratio: float = DEFAULT_DEV_RATIO,
     manifest: Manifest | None = None,
+    overwrite: bool = False,
 ) -> PrepareReport:
     """Eksportuje kandydatów z top-10 BM25 do Markdown oraz szablonu JSON."""
     if top_k < 1:
         raise ValueError("top_k musi być dodatnie")
+
+    template_json_path = out_dir / TEMPLATE_JSON_FILENAME
+    if not overwrite and template_json_path.exists():
+        raise FileExistsError(
+            f"Plik szablonu etykiet już istnieje: {template_json_path}. "
+            "Użyj flagi --force (overwrite=True), aby go nadpisać."
+        )
 
     active_manifest = manifest if manifest is not None else load_manifest()
     records = load_techqa_records(techqa_dir, manifest=active_manifest)

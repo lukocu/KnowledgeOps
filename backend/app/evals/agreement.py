@@ -7,9 +7,7 @@ from pathlib import Path
 
 from pydantic import TypeAdapter
 
-from app.answering.schemas import AnsweredResult
-from app.evals.judge import CitationVerdict
-from app.evals.metrics import EvalItemExecution
+from app.evals.metrics import EvalItemExecution, evaluate_citation_support
 from app.evals.report import JudgeAgreementSummary
 from app.evals.runner import EvalRunArtifact
 from app.evals.sampling import (
@@ -76,29 +74,11 @@ def _agreement_rate(pairs: Sequence[tuple[str, str]]) -> float | None:
 
 def _judge_citation_answer_label(item: EvalItemExecution) -> str | None:
     """Wyznacza binarny werdykt sędziego cytatów na poziomie całej odpowiedzi."""
-    if item.outcome != "answered":
+    support = evaluate_citation_support(item)
+    if support is None:
         return None
-    judge = item.citation_judge
-    if judge is None or judge.judge_error is not None:
-        return None
-
-    verdict_by_index: dict[int, CitationVerdict] = {}
-    for verdict in judge.verdicts:
-        verdict_by_index.setdefault(verdict.claim_index, verdict.verdict)
-
-    if isinstance(item.answer, AnsweredResult):
-        total = len(item.answer.claims)
-        if total == 0:
-            return None
-        all_supported = all(
-            verdict_by_index.get(idx) == "supported" for idx in range(total)
-        )
-        return "supported" if all_supported else "unsupported"
-
-    if not judge.verdicts:
-        return None
-    all_supported = all(v.verdict == "supported" for v in judge.verdicts)
-    return "supported" if all_supported else "unsupported"
+    supported, total = support
+    return "supported" if supported == total else "unsupported"
 
 
 def _load_audit_records(audit_path: Path) -> list[ManualAuditRecord]:

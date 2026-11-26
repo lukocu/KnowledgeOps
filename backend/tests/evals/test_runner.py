@@ -8,7 +8,10 @@ from typing import Any, cast
 
 import psycopg
 import pytest
-from langchain_core.callbacks import CallbackManagerForLLMRun
+from langchain_core.callbacks import (
+    CallbackManagerForLLMRun,
+    UsageMetadataCallbackHandler,
+)
 from langchain_core.language_models import LanguageModelInput
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import BaseMessage
@@ -33,9 +36,16 @@ from app.evals.judge import (
     CitationJudgeVerdict,
     ReferenceAgreementOutput,
 )
-from app.evals.langfuse_eval import RUN_EXPERIMENT_ASYNC_KWARGS, dataset_item_id
+from app.evals.langfuse_eval import (
+    RUN_EXPERIMENT_ASYNC_KWARGS,
+    dataset_item_id,
+    ensure_and_sync_dataset,
+    run_langfuse_experiment,
+)
+from app.evals.metrics import EvalItemExecution
 from app.evals.runner import (
     LangfuseNotConfiguredError,
+    _extract_token_usage,
     run_abstention_eval,
 )
 from app.retrieval import ChunkSetReproInfo, RetrievedChunk, get_chunk_set_repro_info
@@ -579,6 +589,96 @@ async def test_local_and_langfuse_modes_produce_identical_metrics_and_filter_spl
         "latency_p95_ms",
         "failed_count",
     }.issubset(run_eval_names)
+
+
+def test_ensure_and_sync_dataset_raises_when_items_missing_after_sync() -> None:
+    class _PartialSyncClient(_FakeLangfuseClient):
+        def get_dataset(self, name: str, **kwargs: Any) -> _FakeDataset:
+            ds = super().get_dataset(name, **kwargs)
+            return _FakeDataset(name=ds.name, items=ds.items[:1])
+
+    client = _PartialSyncClient()
+    items = _sample_items()
+
+    with pytest.raises(RuntimeError, match="brakuje 1/2"):
+        ensure_and_sync_dataset(
+            cast(Langfuse, client),
+            dataset_name="knowledgeops/abstention-eval",
+            description="test",
+            items=items,
+        )
+
+
+@pytest.mark.anyio
+async def test_run_langfuse_experiment_marks_skipped_item_as_failed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("app.evals.langfuse_eval.flush_traces", lambda: None)
+
+    class _DroppingClient(_FakeLangfuseClient):
+        async def _run_experiment_async(
+            self,
+            *,
+            data: list[Any],
+            **kwargs: Any,
+        ) -> ExperimentResult:
+            return await super()._run_experiment_async(data=data[:1], **kwargs)
+
+    client = _DroppingClient()
+    items = _sample_items()
+
+    async def _exec(item: EvalItem) -> EvalItemExecution:
+        return EvalItemExecution(
+            question_id=item.question_id,
+            split=item.split,
+            verified_label=item.verified_label,
+            outcome="abstained",
+            abstention_reason="no_hits",
+            latency_ms=10.0,
+        )
+
+    output = await run_langfuse_experiment(
+        client=cast(Langfuse, client),
+        dataset_name="knowledgeops/abstention-eval",
+        run_name="drop-test",
+        description="test",
+        items=items,
+        execute_fn=_exec,
+        concurrency=1,
+        metadata={},
+    )
+
+    assert len(output.executions) == 2
+    assert output.executions[0].outcome == "abstained"
+    assert output.executions[1].question_id == "Q2"
+    assert output.executions[1].outcome == "failed"
+    assert output.executions[1].error is not None
+    failed_eval = next(ev for ev in client.run_evaluations if ev.name == "failed_count")
+    assert failed_eval.value == 1
+
+
+def test_extract_token_usage_aggregates_models_or_returns_none() -> None:
+    empty = UsageMetadataCallbackHandler()
+    assert _extract_token_usage(empty) is None
+
+    handler = UsageMetadataCallbackHandler()
+    handler.usage_metadata = {
+        "gpt-5-mini": {
+            "input_tokens": 120,
+            "output_tokens": 30,
+            "total_tokens": 150,
+        },
+        "gpt-5-judge": {
+            "input_tokens": 80,
+            "output_tokens": 20,
+            "total_tokens": 100,
+        },
+    }
+    usage = _extract_token_usage(handler)
+    assert usage is not None
+    assert usage.input_tokens == 200
+    assert usage.output_tokens == 50
+    assert usage.total_tokens == 250
 
 
 @pytest.mark.db
