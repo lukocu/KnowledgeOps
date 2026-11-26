@@ -28,8 +28,8 @@ def tracing_enabled(settings: Settings) -> bool:
     ) or _keys_in_environment()
 
 
-def make_trace_handler(settings: Settings) -> CallbackHandler | None:
-    """Handler śladu albo `None`, gdy nie ustawiono kluczy (bez ostrzeżeń i sieci)."""
+def get_langfuse_client(settings: Settings) -> Langfuse | None:
+    """Zwraca singleton klienta Langfuse albo `None`, gdy brak kluczy."""
     global _client
     if (
         settings.langfuse_public_key is not None
@@ -41,7 +41,17 @@ def make_trace_handler(settings: Settings) -> CallbackHandler | None:
                 secret_key=settings.langfuse_secret_key.get_secret_value(),
                 base_url=settings.langfuse_base_url,
             )
-    elif not _keys_in_environment():
+        return _client
+    if _keys_in_environment():
+        if _client is None:
+            _client = get_client()
+        return _client
+    return None
+
+
+def make_trace_handler(settings: Settings) -> CallbackHandler | None:
+    """Handler śladu albo `None`, gdy nie ustawiono kluczy (bez ostrzeżeń i sieci)."""
+    if get_langfuse_client(settings) is None:
         return None
     return CallbackHandler()
 
@@ -73,6 +83,7 @@ def run_config(
         "chunk_set_id": chunk_set_id,
         "k": k,
         "chat_model": settings.chat_model,
+        "chat_reasoning_effort": settings.chat_reasoning_effort,
         "prompt_versions": prompt_versions(),
     }
     return RunnableConfig(

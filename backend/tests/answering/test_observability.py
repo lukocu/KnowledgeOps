@@ -31,6 +31,7 @@ def test_run_config_has_name_metadata_and_no_session_data(settings: Settings) ->
         "chunk_set_id": "set",
         "k": 8,
         "chat_model": settings.chat_model,
+        "chat_reasoning_effort": settings.chat_reasoning_effort,
         "prompt_versions": prompt_versions(),
     }
     assert not any("session" in key for key in metadata)

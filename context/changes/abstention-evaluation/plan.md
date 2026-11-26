@@ -415,25 +415,25 @@ Brak migracji bazy danych i brak zmian w kontrakcie API (OpenAPI / frontend bez 
 
 #### Automated
 
-- [x] 2.1 Testy jednostkowe Fazy 2 przechodzą (`pytest tests/evals/test_metrics.py tests/evals/test_judge.py`)
-- [x] 2.2 Wszystkie dotychczasowe testy backendu nadal przechodzą (`pytest`)
-- [x] 2.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
+- [x] 2.1 Testy jednostkowe Fazy 2 przechodzą (`pytest tests/evals/test_metrics.py tests/evals/test_judge.py`) — 0e108a2
+- [x] 2.2 Wszystkie dotychczasowe testy backendu nadal przechodzą (`pytest`) — 0e108a2
+- [x] 2.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`) — 0e108a2
 
 #### Manual
 
-- [x] 2.4 Przegląd promptów `citation_support.md` i `reference_agreement.md` potwierdza zgodność z definicją wsparcia z PRD
+- [x] 2.4 Przegląd promptów `citation_support.md` i `reference_agreement.md` potwierdza zgodność z definicją wsparcia z PRD — 0e108a2
 
 ### Phase 3: Runner ewaluacji, Langfuse Cloud i raport Markdown
 
 #### Automated
 
-- [ ] 3.1 Testy Fazy 3 przechodzą (`pytest tests/evals/test_runner.py tests/evals/test_report.py`)
-- [ ] 3.2 Wszystkie testy backendu przechodzą (`pytest`)
-- [ ] 3.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
+- [x] 3.1 Testy Fazy 3 przechodzą (`pytest tests/evals/test_runner.py tests/evals/test_report.py`)
+- [x] 3.2 Wszystkie testy backendu przechodzą (`pytest`)
+- [x] 3.3 Kontrola lintera, formatu i typów przechodzi (`ruff check`, `ruff format --check`, `mypy`)
 
 #### Manual
 
-- [ ] 3.4 Próbne uruchomienie `eval-abstention --split dev --limit 3 --no-langfuse --yes` na Windows przechodzi bez błędów `SelectorEventLoop` i generuje JSON oraz raport MD
+- [x] 3.4 Próbne uruchomienie `eval-abstention --split dev --limit 3 --no-langfuse --yes` na Windows przechodzi bez błędów `SelectorEventLoop` i generuje JSON oraz raport MD
 
 ### Phase 4: Próbkowanie i walidacja ręczna ocen sędziego
 

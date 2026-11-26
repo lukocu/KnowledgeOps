@@ -73,6 +73,13 @@ JOIN snapshots s ON s.id = cs.snapshot_id
 WHERE cs.id = %(chunk_set_id)s
 """
 
+_CHUNK_SET_REPRO_SQL = """
+SELECT s.id, s.revision, cs.id, cs.variant, cs.config_sha256, cs.state_sha256
+FROM chunk_sets cs
+JOIN snapshots s ON s.id = cs.snapshot_id
+WHERE cs.id = %(chunk_set_id)s
+"""
+
 
 @dataclass(frozen=True)
 class RetrievedChunk:
@@ -126,6 +133,17 @@ class CorpusInfo(BaseModel):
     variant: str
     document_count: int
     chunk_count: int
+
+
+class ChunkSetReproInfo(BaseModel):
+    """Metadane odtwarzalności zestawu fragmentów (w tym hashe konfiguracji i stanu)."""
+
+    snapshot_id: str
+    revision: str
+    chunk_set_id: str
+    variant: str
+    config_sha256: str
+    state_sha256: str | None
 
 
 async def search_bm25(
@@ -255,4 +273,23 @@ async def get_corpus_info(conn: AsyncConnection, chunk_set_id: str) -> CorpusInf
         variant=variant,
         document_count=documents,
         chunk_count=chunks,
+    )
+
+
+async def get_chunk_set_repro_info(
+    conn: AsyncConnection, chunk_set_id: str
+) -> ChunkSetReproInfo:
+    """Metadane odtwarzalności zestawu fragmentów; `LookupError`, gdy zestawu nie ma."""
+    cursor = await conn.execute(_CHUNK_SET_REPRO_SQL, {"chunk_set_id": chunk_set_id})
+    row = await cursor.fetchone()
+    if row is None:
+        raise LookupError(f"nieznany zestaw fragmentów: {chunk_set_id}")
+    snapshot_id, revision, set_id, variant, config_sha256, state_sha256 = row
+    return ChunkSetReproInfo(
+        snapshot_id=snapshot_id,
+        revision=revision,
+        chunk_set_id=set_id,
+        variant=variant,
+        config_sha256=config_sha256,
+        state_sha256=state_sha256,
     )
