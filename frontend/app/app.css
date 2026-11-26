@@ -32,6 +32,18 @@
   --color-conflict-bg: #fbe9e7;
   --color-conflict-text: #a3231a;
   --color-conflict-icon: #b3261e;
+  --color-supported-bg: #e7f4ec;
+  --color-supported-text: #1a6b36;
+  --color-supported-icon: #1f7a3d;
+  --color-supported-underline: #2f8a4f;
+  --color-partial-bg: #fbf0dc;
+  --color-partial-text: #7a4e0c;
+  --color-partial-icon: #8a5a12;
+  --color-insufficient-bg: #eeeff1;
+  --color-insufficient-text: #43474e;
+  --color-claim-selected: #eef2fc;
+  --color-aside-soft: #fafaf8;
+  --color-field-disabled: #ececea;
 }
 
 html,

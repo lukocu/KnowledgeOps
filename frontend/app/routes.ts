@@ -9,5 +9,7 @@ export default [
   layout("routes/_layout.tsx", [
     index("routes/assistant.tsx"),
     route("odpowiedz/:id", "routes/answer.tsx"),
+    route("audyt", "routes/audit-new.tsx"),
+    route("audyt/:id", "routes/audit-detail.tsx"),
   ]),
 ] satisfies RouteConfig;

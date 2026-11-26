@@ -22,6 +22,7 @@ export const pl = {
   "nav.label": "Główna nawigacja",
   "nav.labelRail": "Główna nawigacja (podpisy po najechaniu)",
   "nav.assistant": "Asystent",
+  "nav.audit": "Przekaż sprawę do audytu",
   "nav.expand": "Rozwiń menu z podpisami",
   "nav.collapse": "Zwiń menu do ikon",
   "nav.menu": "Menu",
@@ -169,6 +170,7 @@ export const pl = {
   "abstain.refine":
     "Doprecyzuj pytanie, np. podaj wersję produktu albo system operacyjny",
   "abstain.checked": "Sprawdzone fragmenty ({n})",
+  "abstain.submitAudit": "Przekaż rozwiązaną sprawę do audytu",
 
   "checked.panel": "Sprawdzone fragmenty",
   "checked.title": "Sprawdzone fragmenty · {shown} z {total}",
@@ -202,6 +204,138 @@ export const pl = {
   "error.notFoundTitle": "404",
   "error.notFound": "Nie znaleziono strony.",
   "error.unexpected": "Wystąpił nieoczekiwany błąd.",
+
+  "audit.form.title": "Przekaż rozwiązaną sprawę do audytu",
+  "audit.form.intro":
+    "Wklej opis zgłoszenia i notatkę z rozwiązaniem. System wyodrębni tezy z notatki i porówna każdą z dokumentacją w korpusie. Treść zgłoszenia nie jest traktowana jako prawda.",
+  "audit.form.notice":
+    "Przekazanie ręczne. Pobieranie spraw z systemu zgłoszeń nie jest częścią MVP. To publiczne demo: nie wklejaj danych osobowych ani poufnych. Analiza będzie widoczna tylko w Twojej sesji i zostanie usunięta po ograniczonym czasie.",
+  "audit.form.caseRefLabel": "Identyfikator sprawy",
+  "audit.form.caseRefOptional": "(opcjonalny, własny)",
+  "audit.form.caseRefPlaceholder": "np. CASE-042",
+  "audit.form.descriptionLabel": "Opis problemu lub zgłoszenia",
+  "audit.form.required": "(wymagane)",
+  "audit.form.descriptionPlaceholder":
+    "Opisz produkt, wersję, środowisko i objawy (po angielsku w MVP)",
+  "audit.form.descriptionHint":
+    "Po angielsku (MVP): produkt, wersja, środowisko i objawy. Brakujące dane system oznaczy w wyniku.",
+  "audit.form.noteLabel": "Notatka z rozwiązaniem",
+  "audit.form.notePlaceholder":
+    "Wklej notatkę z rozwiązaniem zamkniętego zgłoszenia (po angielsku w MVP)",
+  "audit.form.noteHint":
+    "Po angielsku (MVP), tak jak w zamkniętym zgłoszeniu. Każde twierdzenie będzie sprawdzone osobno.",
+  "audit.form.submit": "Uruchom analizę",
+  "audit.form.submitting": "Uruchamiam analizę…",
+  "audit.form.running": "Analiza trwa…",
+  "audit.form.clear": "Wyczyść",
+  "audit.form.doesNotChangeDocs": "Analiza nie zmienia dokumentacji.",
+  "audit.form.errorRequired":
+    "Uzupełnij opis problemu oraz notatkę z rozwiązaniem.",
+  "audit.form.errorTooLong": "Przekroczono limit {max} znaków.",
+  "audit.form.errorUnavailable":
+    "Nie udało się uruchomić analizy (brak konfiguracji modelu albo baza jest niedostępna). Spróbuj ponownie później.",
+  "audit.form.errorGeneric":
+    "Nie udało się uruchomić analizy. Spróbuj ponownie.",
+
+  "audit.aside.title": "Co się stanie po uruchomieniu",
+  "audit.aside.step1Title": "Wyodrębnienie",
+  "audit.aside.step1Desc":
+    "Problem, środowisko, rozwiązanie, brakujące informacje i tezy z notatki.",
+  "audit.aside.step2Title": "Szukanie dowodów",
+  "audit.aside.step2Desc":
+    "Dla każdej tezy osobno, w dokumentacji korpusu TechQA. Bez internetu.",
+  "audit.aside.step3Title": "Ocena tez",
+  "audit.aside.step3Desc":
+    "Każda teza: poparta, sprzeczna lub z niewystarczającymi dowodami. Potem osobna ocena całej notatki.",
+  "audit.aside.step4Title": "Przegląd człowieka",
+  "audit.aside.step4Desc":
+    "Człowiek przegląda dowody i podejmuje decyzję. System nie zmienia dokumentacji.",
+
+  "audit.progress.title": "Stan analizy",
+  "audit.progress.titleWithRef": "Stan analizy {ref}",
+  "audit.progress.stepExtract": "Wyodrębnianie kontekstu i tez z notatki",
+  "audit.progress.stepExtractDoneOne": "Wyodrębniono {n} tezę",
+  "audit.progress.stepExtractDoneFew": "Wyodrębniono {n} tezy",
+  "audit.progress.stepExtractDoneMany": "Wyodrębniono {n} tez",
+  "audit.progress.stepRetrieve": "Szukanie dowodów dla tez w dokumentacji",
+  "audit.progress.stepRetrieveProgress":
+    "Szukanie dowodów dla tezy {current} z {total}…",
+  "audit.progress.stepRetrieveDone": "Przeszukano dokumentację dla tez",
+  "audit.progress.stepVerdict": "Ocena tez i całej notatki",
+  "audit.progress.backgroundHint":
+    "Analiza działa w tle po stronie serwera. Ten widok odświeża się automatycznie, a adres URL możesz zachować na później w tej sesji.",
+
+  "audit.detail.loading": "Wczytuję analizę…",
+  "audit.detail.notFoundTitle": "Nie znaleziono analizy w tej sesji",
+  "audit.detail.notFoundBody":
+    "Analizy są widoczne tylko w sesji, w której powstały. Ten adres może należeć do innej sesji albo analiza nie istnieje.",
+  "audit.detail.failedTitle": "Nie udało się zakończyć analizy",
+  "audit.detail.failedBody":
+    "Wystąpił błąd podczas analizy notatki. To awaria systemu, a nie ocena dokumentacji.",
+  "audit.detail.newAudit": "Przekaż nową sprawę",
+  "audit.detail.retryAudit": "Przekaż sprawę ponownie",
+  "audit.detail.titleDefault": "Analiza sprawy",
+  "audit.detail.titleWithRef": "Analiza {ref}",
+  "audit.detail.noteVerdictLabel": "System · ocena całej notatki",
+  "audit.detail.noteHeading": "Notatka z rozwiązaniem",
+  "audit.detail.claimsHeading": "Tezy z notatki · {n}",
+  "audit.detail.noClaims":
+    "Nie wyodrębniono żadnych sprawdzalnych tez z tej notatki.",
+  "audit.detail.caseContextButton": "Kontekst sprawy",
+  "audit.detail.missingInfoOne": "brakuje {n} informacji",
+  "audit.detail.missingInfoFew": "brakuje {n} informacji",
+  "audit.detail.missingInfoMany": "brakuje {n} informacji",
+  "audit.detail.missingInfoNone": "brak brakujących danych",
+  "audit.detail.systemRatingHeading": "Ocena systemu",
+  "audit.detail.systemRatingSub": "automatyczna, nie jest decyzją",
+  "audit.detail.doesNotChangeDocs":
+    "Analiza nie zmienia dokumentacji. Człowiek podejmuje decyzję.",
+  "audit.detail.insufficientCaveat":
+    "Brak znalezionego fragmentu nie dowodzi, że informacja nie istnieje w całej bazie wiedzy ani że notatka jest błędna.",
+  "audit.detail.checkedScope": "Sprawdzono:",
+  "audit.detail.closestLabel": "(najbliższy)",
+  "audit.detail.wholeSnapshot": "cała migawka {snapshot}",
+  "audit.detail.syntheticIncluded": "+ dokumenty syntetyczne (synthetic@v1)",
+  "audit.detail.evidenceSupportedHeading": "Cytowany fragment",
+  "audit.detail.evidenceContradictedHeading": "Sprzeczny fragment",
+  "audit.detail.evidenceClosestHeading": "Najbliższy fragment",
+  "audit.detail.evidenceDoesNotSupport": "nie wspiera tezy",
+  "audit.detail.evidenceSupports": "wspiera tezę",
+  "audit.detail.evidenceContradicts": "sprzeczny z tezą",
+  "audit.detail.noEvidenceFound":
+    "Wyszukiwanie nie znalazło fragmentów pasujących do tej tezy.",
+  "audit.detail.showWiderContext": "Pokaż szerszy kontekst",
+  "audit.detail.openFullDocument": "Otwórz cały dokument",
+  "audit.detail.claimErrorNote":
+    "Weryfikacja tej tezy napotkała problem techniczny i została oznaczona jako niewystarczające dowody.",
+  "audit.detail.evidencePosition": "Dowód {n} z {total} · {tag}",
+  "audit.detail.evidenceFooter": "Teza {tag}",
+
+  "audit.verdict.claim.supported": "Poparta",
+  "audit.verdict.claim.contradicted": "Sprzeczność",
+  "audit.verdict.claim.insufficient": "Niewystarczające dowody",
+  "audit.verdict.note.full": "Pełne pokrycie",
+  "audit.verdict.note.partial": "Częściowe pokrycie",
+  "audit.verdict.note.contradiction": "Sprzeczność",
+  "audit.verdict.note.insufficient": "Niewystarczające dowody",
+
+  "audit.context.panelLabel": "Kontekst sprawy",
+  "audit.context.close": "Zamknij kontekst sprawy",
+  "audit.context.problem": "Problem",
+  "audit.context.environment": "Środowisko",
+  "audit.context.solution": "Rozwiązanie",
+  "audit.context.constraints": "Ograniczenia i warunki",
+  "audit.context.missingInfo": "Brakujące informacje",
+  "audit.context.originalDescription": "Oryginalny opis zgłoszenia",
+  "audit.context.notProvided": "nie podano w sprawie",
+  "audit.context.none": "brak",
+
+  "audit.details.title": "Jak powstała ta analiza",
+  "audit.details.claimsCount": "Wyodrębnione tezy",
+  "audit.details.checkedDocsCount": "Sprawdzone unikalne dokumenty",
+  "audit.details.syntheticScope": "Nakładka syntetyczna",
+  "audit.details.syntheticYes": "tak (synthetic@v1)",
+  "audit.details.syntheticNo": "nie",
 } as const;
 
 export type Dictionary = typeof pl;

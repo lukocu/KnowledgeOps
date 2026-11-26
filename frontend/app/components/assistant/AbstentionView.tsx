@@ -1,16 +1,17 @@
 import type { Ref } from "react";
+import { Link } from "react-router";
 
 import type { AbstainedResult, AnswerRecord } from "../../api/answers";
 import { useT } from "../../i18n/context";
-import { Icon, InfoIcon } from "./Icon";
+import { AuditNavIcon, Icon, InfoIcon, InsufficientIcon } from "./Icon";
 import { PreparationDetails } from "./PreparationDetails";
 
 const ACTION_BUTTON =
-  "inline-flex min-h-10 cursor-pointer items-center gap-2.5 self-start rounded-lg border-0 px-3.5 text-sm text-text";
+  "inline-flex min-h-10 cursor-pointer items-center gap-2.5 self-start rounded-lg border-0 px-3.5 text-sm text-text no-underline";
 
 /**
- * Abstencja (1C): neutralny ton, bez czerwieni. Akcje: doprecyzowanie pytania i panel
- * sprawdzonych fragmentów. Pozycji przekazania do audytu nie pokazujemy do S-08.
+ * Abstencja (1C): neutralny ton, bez czerwieni. Akcje: doprecyzowanie pytania,
+ * panel sprawdzonych fragmentów oraz drugorzędny link do audytu sprawy (D6).
  */
 export function AbstentionView({
   record,
@@ -33,31 +34,7 @@ export function AbstentionView({
     <div className="mt-7">
       <div className="flex items-center gap-2.5">
         {/* Przerywane kółko ze znakiem zapytania: brak dowodu, nie błąd. */}
-        <svg
-          aria-hidden="true"
-          width="24"
-          height="24"
-          viewBox="0 0 16 16"
-          className="flex-none text-icon"
-        >
-          <circle
-            cx="8"
-            cy="8"
-            r="6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeDasharray="2.2 1.8"
-          />
-          <path
-            d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.5-.7 1v.3"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-          />
-          <circle cx="8" cy="11.1" r=".8" fill="currentColor" />
-        </svg>
+        <InsufficientIcon size={24} className="flex-none text-icon" />
         <h1 className="m-0 text-[22px] leading-[30px] font-semibold">
           {t("abstain.title")}
         </h1>
@@ -98,7 +75,7 @@ export function AbstentionView({
             className={
               ACTION_BUTTON +
               (checkedOpen
-                ? " bg-[#eef2fc] shadow-[inset_0_0_0_1px_var(--color-primary)]"
+                ? " bg-claim-selected shadow-[inset_0_0_0_1px_var(--color-primary)]"
                 : " bg-white shadow-[inset_0_0_0_1px_var(--color-border)]")
             }
           >
@@ -108,6 +85,16 @@ export function AbstentionView({
             </Icon>
             {t("abstain.checked", { n: result.checked_chunks.length })}
           </button>
+          <Link
+            to="/audyt"
+            className={
+              ACTION_BUTTON +
+              " bg-transparent px-1 text-muted hover:text-text hover:underline"
+            }
+          >
+            <AuditNavIcon size={16} />
+            {t("abstain.submitAudit")}
+          </Link>
         </div>
       </div>
 

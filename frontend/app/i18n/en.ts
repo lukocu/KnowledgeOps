@@ -24,6 +24,7 @@ export const en: Record<TranslationKey, string> = {
   "nav.label": "Main navigation",
   "nav.labelRail": "Main navigation (labels on hover)",
   "nav.assistant": "Assistant",
+  "nav.audit": "Submit case for audit",
   "nav.expand": "Expand menu with labels",
   "nav.collapse": "Collapse menu to icons",
   "nav.menu": "Menu",
@@ -171,6 +172,7 @@ export const en: Record<TranslationKey, string> = {
   "abstain.refine":
     "Refine the question, e.g. add the product version or operating system",
   "abstain.checked": "Passages checked ({n})",
+  "abstain.submitAudit": "Submit a resolved case for audit",
 
   "checked.panel": "Checked passages",
   "checked.title": "Checked passages · {shown} of {total}",
@@ -204,4 +206,135 @@ export const en: Record<TranslationKey, string> = {
   "error.notFoundTitle": "404",
   "error.notFound": "Page not found.",
   "error.unexpected": "An unexpected error occurred.",
+
+  "audit.form.title": "Submit a resolved case for audit",
+  "audit.form.intro":
+    "Paste the ticket description and resolution note. The system will extract claims from the note and compare each against the corpus documentation. The ticket content is not treated as truth.",
+  "audit.form.notice":
+    "Manual submission. Fetching cases from a ticketing system is not part of the MVP. This is a public demo: do not paste personal or confidential data. The analysis will be visible only in your session and removed after a limited time.",
+  "audit.form.caseRefLabel": "Case identifier",
+  "audit.form.caseRefOptional": "(optional, custom)",
+  "audit.form.caseRefPlaceholder": "e.g. CASE-042",
+  "audit.form.descriptionLabel": "Problem or ticket description",
+  "audit.form.required": "(required)",
+  "audit.form.descriptionPlaceholder":
+    "Describe the product, version, environment and symptoms (in English for MVP)",
+  "audit.form.descriptionHint":
+    "In English (MVP): product, version, environment and symptoms. Missing details will be flagged in the result.",
+  "audit.form.noteLabel": "Resolution note",
+  "audit.form.notePlaceholder":
+    "Paste the resolution note from the closed ticket (in English for MVP)",
+  "audit.form.noteHint":
+    "In English (MVP), as in a closed ticket. Each claim will be verified separately.",
+  "audit.form.submit": "Run analysis",
+  "audit.form.submitting": "Starting analysis…",
+  "audit.form.running": "Analysis in progress…",
+  "audit.form.clear": "Clear",
+  "audit.form.doesNotChangeDocs": "Analysis does not change documentation.",
+  "audit.form.errorRequired":
+    "Fill in both the problem description and the resolution note.",
+  "audit.form.errorTooLong": "Exceeded the {max} character limit.",
+  "audit.form.errorUnavailable":
+    "Could not start the analysis (model is not configured or the database is unavailable). Try again later.",
+  "audit.form.errorGeneric": "Could not start the analysis. Try again.",
+
+  "audit.aside.title": "What happens next",
+  "audit.aside.step1Title": "Extraction",
+  "audit.aside.step1Desc":
+    "Problem, environment, solution, missing details and claims from the note.",
+  "audit.aside.step2Title": "Evidence search",
+  "audit.aside.step2Desc":
+    "For each claim separately, across the TechQA corpus documentation. No internet.",
+  "audit.aside.step3Title": "Claim evaluation",
+  "audit.aside.step3Desc":
+    "Each claim: supported, contradicted, or insufficient evidence. Then a separate rating for the whole note.",
+  "audit.aside.step4Title": "Human review",
+  "audit.aside.step4Desc":
+    "A human reviews the evidence and makes the decision. The system does not change documentation.",
+
+  "audit.progress.title": "Analysis status",
+  "audit.progress.titleWithRef": "Analysis status {ref}",
+  "audit.progress.stepExtract": "Extracting context and claims from the note",
+  "audit.progress.stepExtractDoneOne": "Extracted {n} claim",
+  "audit.progress.stepExtractDoneFew": "Extracted {n} claims",
+  "audit.progress.stepExtractDoneMany": "Extracted {n} claims",
+  "audit.progress.stepRetrieve": "Searching documentation for claim evidence",
+  "audit.progress.stepRetrieveProgress":
+    "Searching evidence for claim {current} of {total}…",
+  "audit.progress.stepRetrieveDone": "Documentation searched for claims",
+  "audit.progress.stepVerdict": "Evaluating claims and the whole note",
+  "audit.progress.backgroundHint":
+    "The analysis runs in the background on the server. This view refreshes automatically, and you can revisit this URL later in this session.",
+
+  "audit.detail.loading": "Loading analysis…",
+  "audit.detail.notFoundTitle": "Analysis not found in this session",
+  "audit.detail.notFoundBody":
+    "Analyses are visible only in the session that created them. This URL may belong to another session, or the analysis does not exist.",
+  "audit.detail.failedTitle": "Analysis could not be completed",
+  "audit.detail.failedBody":
+    "An error occurred while analyzing the note. This is a system failure, not an evaluation of the documentation.",
+  "audit.detail.newAudit": "Submit a new case",
+  "audit.detail.retryAudit": "Submit case again",
+  "audit.detail.titleDefault": "Case analysis",
+  "audit.detail.titleWithRef": "Analysis {ref}",
+  "audit.detail.noteVerdictLabel": "System · whole note rating",
+  "audit.detail.noteHeading": "Resolution note",
+  "audit.detail.claimsHeading": "Claims from note · {n}",
+  "audit.detail.noClaims":
+    "No verifiable claims were extracted from this note.",
+  "audit.detail.caseContextButton": "Case context",
+  "audit.detail.missingInfoOne": "{n} missing detail",
+  "audit.detail.missingInfoFew": "{n} missing details",
+  "audit.detail.missingInfoMany": "{n} missing details",
+  "audit.detail.missingInfoNone": "no missing details",
+  "audit.detail.systemRatingHeading": "System assessment",
+  "audit.detail.systemRatingSub": "automatic, not a decision",
+  "audit.detail.doesNotChangeDocs":
+    "Analysis does not change documentation. A human makes the decision.",
+  "audit.detail.insufficientCaveat":
+    "Not finding a passage does not prove that the information is missing from the whole knowledge base or that the note is wrong.",
+  "audit.detail.checkedScope": "Checked:",
+  "audit.detail.closestLabel": "(closest)",
+  "audit.detail.wholeSnapshot": "full snapshot {snapshot}",
+  "audit.detail.syntheticIncluded": "+ synthetic documents (synthetic@v1)",
+  "audit.detail.evidenceSupportedHeading": "Cited passage",
+  "audit.detail.evidenceContradictedHeading": "Contradicting passage",
+  "audit.detail.evidenceClosestHeading": "Closest passage",
+  "audit.detail.evidenceDoesNotSupport": "does not support claim",
+  "audit.detail.evidenceSupports": "supports claim",
+  "audit.detail.evidenceContradicts": "contradicts claim",
+  "audit.detail.noEvidenceFound":
+    "Search found no passages matching this claim.",
+  "audit.detail.showWiderContext": "Show wider context",
+  "audit.detail.openFullDocument": "Open full document",
+  "audit.detail.claimErrorNote":
+    "Verification of this claim encountered a technical issue and was marked as insufficient evidence.",
+  "audit.detail.evidencePosition": "Evidence {n} of {total} · {tag}",
+  "audit.detail.evidenceFooter": "Claim {tag}",
+
+  "audit.verdict.claim.supported": "Supported",
+  "audit.verdict.claim.contradicted": "Contradiction",
+  "audit.verdict.claim.insufficient": "Insufficient evidence",
+  "audit.verdict.note.full": "Full coverage",
+  "audit.verdict.note.partial": "Partial coverage",
+  "audit.verdict.note.contradiction": "Contradiction",
+  "audit.verdict.note.insufficient": "Insufficient evidence",
+
+  "audit.context.panelLabel": "Case context",
+  "audit.context.close": "Close case context",
+  "audit.context.problem": "Problem",
+  "audit.context.environment": "Environment",
+  "audit.context.solution": "Solution",
+  "audit.context.constraints": "Constraints and conditions",
+  "audit.context.missingInfo": "Missing information",
+  "audit.context.originalDescription": "Original ticket description",
+  "audit.context.notProvided": "not provided in case",
+  "audit.context.none": "none",
+
+  "audit.details.title": "How this analysis was produced",
+  "audit.details.claimsCount": "Extracted claims",
+  "audit.details.checkedDocsCount": "Unique documents checked",
+  "audit.details.syntheticScope": "Synthetic overlay",
+  "audit.details.syntheticYes": "yes (synthetic@v1)",
+  "audit.details.syntheticNo": "no",
 };

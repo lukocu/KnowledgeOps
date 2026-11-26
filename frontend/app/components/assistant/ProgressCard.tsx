@@ -1,7 +1,7 @@
 import { useT } from "../../i18n/context";
 import type { TranslationKey } from "../../i18n/pl";
 import type { Step, StepId, StepStatus } from "../../lib/stages";
-import { CheckIcon } from "./Icon";
+import { StepStatusIcon } from "./Icon";
 
 const STEP_LABELS: Record<StepId, TranslationKey> = {
   search: "progress.search",
@@ -14,35 +14,6 @@ const STATUS_WORDS: Record<StepStatus, TranslationKey> = {
   active: "progress.active",
   done: "progress.done",
 };
-
-function StatusIcon({ status }: { status: StepStatus }) {
-  if (status === "done")
-    return <CheckIcon size={18} className="flex-none text-success" />;
-  if (status === "active") {
-    return (
-      <svg
-        aria-hidden="true"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="flex-none animate-spin text-primary"
-      >
-        <path d="M12 3a9 9 0 1 0 9 9" />
-      </svg>
-    );
-  }
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block h-[18px] w-[18px] flex-none rounded-full border-[1.5px] border-subtle"
-    />
-  );
-}
 
 /** Karta postępu (S1P): stan kroków wynika wyłącznie z odebranych zdarzeń `stage`. */
 export function ProgressCard({ steps }: { steps: Step[] }) {
@@ -64,7 +35,7 @@ export function ProgressCard({ steps }: { steps: Step[] }) {
                 (status === "active" ? "font-semibold" : "font-normal")
               }
             >
-              <StatusIcon status={status} />
+              <StepStatusIcon status={status} />
               <span className="flex-1">{t(STEP_LABELS[id])}</span>
               <span className="text-[13px] font-normal text-muted">
                 {t(STATUS_WORDS[status])}

@@ -298,18 +298,20 @@ function DocumentView({
   );
 }
 
-/** Ciało panelu; zmiana fragmentu (klucz) zeruje rozwinięty kontekst i tryb dokumentu. */
+/** Ciało panelu; zmiana fragmentu lub trybu startowego (klucz) zeruje rozwinięty kontekst i tryb dokumentu. */
 function EvidenceBody({
   target,
   footerLabel,
+  initialMode,
 }: {
   target: EvidenceTarget;
   footerLabel: string | null;
+  initialMode: "window" | "document";
 }) {
   const t = useT();
   const [before, setBefore] = useState(DEFAULT_CONTEXT_CHUNKS);
   const [after, setAfter] = useState(DEFAULT_CONTEXT_CHUNKS);
-  const [mode, setMode] = useState<"window" | "document">("window");
+  const [mode, setMode] = useState<"window" | "document">(initialMode);
   const [attempt, setAttempt] = useState(0);
   const [loadedMeta, setLoadedMeta] = useState<EvidenceMeta | null>(null);
   const retry = () => setAttempt((value) => value + 1);
@@ -451,6 +453,7 @@ export function EvidencePanel({
   footerLabel,
   labels,
   target,
+  initialMode = "window",
   onPrev,
   onNext,
   onClose,
@@ -464,6 +467,8 @@ export function EvidencePanel({
     close: TranslationKey;
   };
   target: EvidenceTarget;
+  /** Tryb początkowy panelu: okno kontekstu (domyślnie) albo od razu cały dokument. */
+  initialMode?: "window" | "document";
   /** `undefined` wyłącza przycisk (brak poprzedniego/następnego). */
   onPrev?: () => void;
   onNext?: () => void;
@@ -521,9 +526,10 @@ export function EvidencePanel({
         </div>
       </div>
       <EvidenceBody
-        key={target.chunkId}
+        key={`${target.chunkId}:${initialMode}`}
         target={target}
         footerLabel={footerLabel}
+        initialMode={initialMode}
       />
     </div>
   );

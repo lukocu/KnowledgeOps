@@ -98,6 +98,173 @@ export const ContradictionIcon = ({
   </svg>
 );
 
+/** Ikona stanu „Poparta” / „Pełne pokrycie” (●, kanwa S3). */
+export const SupportedIcon = ({
+  size = 14,
+  className = "flex-none",
+}: {
+  size?: number;
+  className?: string;
+}) => (
+  <svg
+    aria-hidden="true"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    className={className}
+  >
+    <circle cx="8" cy="8" r="6" fill="currentColor" />
+  </svg>
+);
+
+/** Ikona stanu „Częściowe pokrycie” (◐, kanwa S3). */
+export const PartialIcon = ({
+  size = 15,
+  className = "flex-none",
+}: {
+  size?: number;
+  className?: string;
+}) => (
+  <svg
+    aria-hidden="true"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    className={className}
+  >
+    <circle
+      cx="8"
+      cy="8"
+      r="5.4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+    />
+    <path d="M8 2.6a5.4 5.4 0 0 0 0 10.8z" fill="currentColor" />
+  </svg>
+);
+
+/** Ikona stanu „Niewystarczające dowody” (przerywane kółko ze znakiem zapytania, kanwa 1C/S3). */
+export const InsufficientIcon = ({
+  size = 15,
+  className = "flex-none",
+}: {
+  size?: number;
+  className?: string;
+}) => (
+  <svg
+    aria-hidden="true"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    className={className}
+  >
+    <circle
+      cx="8"
+      cy="8"
+      r="6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.4}
+      strokeDasharray="2.2 1.8"
+    />
+    <path
+      d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.5-.7 1v.3"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.3}
+      strokeLinecap="round"
+    />
+    <circle cx="8" cy="11.1" r=".8" fill="currentColor" />
+  </svg>
+);
+
+/** Ikona oceny automatycznej systemu (kanwa S3). */
+export const SystemIcon = ({
+  size = 16,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <rect x="5" y="8" width="14" height="11" rx="3" />
+    <path d="M12 4v4" />
+    <path d="M9.5 13h.01M14.5 13h.01" />
+  </Icon>
+);
+
+/** Ikona nawigacji audytu (clipboard-check, kanwa S2). */
+export const AuditNavIcon = ({
+  size = 18,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <rect x="5" y="4" width="14" height="17" rx="2" />
+    <path d="M9 4h6v3H9z" />
+    <path d="M9 13l2 2 4-4" />
+  </Icon>
+);
+
+/** Ikona otwarcia całego dokumentu (kanwa S3). */
+export const ExternalLinkIcon = ({
+  size = 16,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <path d="M14 4h6v6" />
+    <path d="M20 4l-9 9" />
+    <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </Icon>
+);
+
+/** Wspólna ikona stanu kroku w kartach postępu (1P i 2P). */
+export function StepStatusIcon({
+  status,
+}: {
+  status: "pending" | "active" | "done";
+}) {
+  if (status === "done") {
+    return <CheckIcon size={18} className="flex-none text-success" />;
+  }
+  if (status === "active") {
+    return (
+      <svg
+        aria-hidden="true"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="flex-none animate-spin text-primary"
+      >
+        <path d="M12 3a9 9 0 1 0 9 9" />
+      </svg>
+    );
+  }
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-block h-[18px] w-[18px] flex-none rounded-full border-[1.5px] border-subtle"
+    />
+  );
+}
+
 export const ChevronIcon = ({
   direction,
   size = 18,

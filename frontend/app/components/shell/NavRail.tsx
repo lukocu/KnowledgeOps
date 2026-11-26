@@ -3,8 +3,14 @@ import { NavLink } from "react-router";
 
 import { useT } from "../../i18n/context";
 import type { TranslationKey } from "../../i18n/pl";
+import { AuditNavIcon } from "../assistant/Icon";
 
-type NavItem = { to: string; label: TranslationKey; icon: React.ReactNode };
+type NavItem = {
+  to: string;
+  label: TranslationKey;
+  icon: React.ReactNode;
+  end?: boolean;
+};
 
 const ICON_PROPS = {
   "aria-hidden": true,
@@ -19,16 +25,22 @@ const ICON_PROPS = {
   className: "flex-none",
 } as const;
 
-/** Jedna pozycja do S-08/S-10: nie pokazujemy linków prowadzących donikąd. */
+/** Dwie pozycje do S-10: nie pokazujemy linku do listy analiz przed jej implementacją. */
 const NAV_ITEMS: NavItem[] = [
   {
     to: "/",
     label: "nav.assistant",
+    end: true,
     icon: (
       <svg {...ICON_PROPS}>
         <path d="M4 5h16v11H9l-5 4z" />
       </svg>
     ),
+  },
+  {
+    to: "/audyt",
+    label: "nav.audit",
+    icon: <AuditNavIcon />,
   },
 ];
 
@@ -60,7 +72,7 @@ function NavItems({
           <NavLink
             key={item.to}
             to={item.to}
-            end
+            end={item.end}
             aria-label={t(item.label)}
             title={t(item.label)}
             onClick={onNavigate}
@@ -82,7 +94,7 @@ function NavItems({
         <NavLink
           key={item.to}
           to={item.to}
-          end
+          end={item.end}
           onClick={onNavigate}
           className={({ isActive }) =>
             "flex min-h-9 items-center gap-3 rounded-lg px-2.5 py-1.5 text-sm leading-5 text-text no-underline " +
