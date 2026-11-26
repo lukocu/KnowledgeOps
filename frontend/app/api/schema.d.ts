@@ -163,11 +163,11 @@ export interface components {
              * Outcome
              * @enum {string}
              */
-            outcome: "answered" | "abstained" | "failed";
+            outcome: "answered" | "abstained" | "conflicting" | "failed";
             /** Question */
             question: string;
             /** Result */
-            result: (components["schemas"]["AnsweredResult"] | components["schemas"]["AbstainedResult"]) | null;
+            result: (components["schemas"]["AnsweredResult"] | components["schemas"]["AbstainedResult"] | components["schemas"]["ConflictingResult"]) | null;
             /** Snapshot Id */
             snapshot_id: string;
         };
@@ -221,18 +221,33 @@ export interface components {
         /**
          * Citation
          * @description Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.
+         *
+         *     Pola migawki i metadanych mają wartości domyślne, żeby zapisane wcześniej
+         *     odpowiedzi (`answers.result`) nadal się walidowały; brak `snapshot_id` oznacza
+         *     migawkę z rekordu odpowiedzi.
          */
         Citation: {
             /** Chunk Id */
             chunk_id: string;
             /** Claims */
             claims: components["schemas"]["CitationClaim"][];
+            /** Doc Date */
+            doc_date?: string | null;
             /** Doc Id */
             doc_id: string;
             /** Headings */
             headings: string[];
+            /**
+             * Is Synthetic
+             * @default false
+             */
+            is_synthetic: boolean;
             /** N */
             n: number;
+            /** Product Version */
+            product_version?: string | null;
+            /** Snapshot Id */
+            snapshot_id?: string | null;
             /** Title */
             title: string;
         };
@@ -252,6 +267,92 @@ export interface components {
             quote_end: number;
             /** Quote Start */
             quote_start: number;
+        };
+        /** ConflictComparisonRow */
+        ConflictComparisonRow: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "recommendation" | "audience" | "doc_date" | "product_version";
+            /** Label */
+            label?: string | null;
+            /** Side A */
+            side_a: string | null;
+            /** Side B */
+            side_b: string | null;
+        };
+        /**
+         * ConflictSide
+         * @description Jedna strona konfliktu (A albo B) z dosłownym cytatem i metadanymi.
+         */
+        ConflictSide: {
+            /** Audience */
+            audience: string | null;
+            /** Chunk Id */
+            chunk_id: string;
+            /** Claim Text */
+            claim_text: string;
+            /** Code */
+            code: string | null;
+            /** Doc Date */
+            doc_date: string | null;
+            /** Doc Id */
+            doc_id: string;
+            /** Headings */
+            headings: string[];
+            /** Is Synthetic */
+            is_synthetic: boolean;
+            /**
+             * Label
+             * @enum {string}
+             */
+            label: "A" | "B";
+            /** Product Version */
+            product_version: string | null;
+            /** Quote */
+            quote: string;
+            /** Quote End */
+            quote_end: number;
+            /** Quote Start */
+            quote_start: number;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Title */
+            title: string;
+        };
+        /** ConflictingResult */
+        ConflictingResult: {
+            /** Checked Chunks */
+            checked_chunks: components["schemas"]["CheckedChunk"][];
+            /** Comparison Rows */
+            comparison_rows: components["schemas"]["ConflictComparisonRow"][];
+            /**
+             * Conflict Type
+             * @enum {string}
+             */
+            conflict_type: "contradiction" | "different_recommendations";
+            /**
+             * Extra Conflicting Docs
+             * @default 0
+             */
+            extra_conflicting_docs: number;
+            /** Omitted Claims */
+            omitted_claims: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            outcome: "conflicting";
+            /** Refine Hint */
+            refine_hint: string | null;
+            /** Sides */
+            sides: [
+                components["schemas"]["ConflictSide"],
+                components["schemas"]["ConflictSide"]
+            ];
+            /** Summary */
+            summary: string;
         };
         /** CorpusInfo */
         CorpusInfo: {
@@ -381,7 +482,7 @@ export interface components {
              * Outcome
              * @enum {string}
              */
-            outcome: "answered" | "abstained";
+            outcome: "answered" | "abstained" | "conflicting";
         };
         /**
          * StageEvent
@@ -396,7 +497,7 @@ export interface components {
              * Stage
              * @enum {string}
              */
-            stage: "retrieve" | "draft" | "quote_check" | "verify" | "compose" | "abstain";
+            stage: "retrieve" | "draft" | "quote_check" | "verify" | "detect_conflict" | "compose" | "abstain";
             /**
              * Status
              * @enum {string}

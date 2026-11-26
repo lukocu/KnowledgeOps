@@ -81,7 +81,15 @@ class AnswerRequest(BaseModel):
 class StageEvent(BaseModel):
     """Zdarzenie etapu grafu (`event: stage`)."""
 
-    stage: Literal["retrieve", "draft", "quote_check", "verify", "compose", "abstain"]
+    stage: Literal[
+        "retrieve",
+        "draft",
+        "quote_check",
+        "verify",
+        "detect_conflict",
+        "compose",
+        "abstain",
+    ]
     status: Literal["started", "done"]
     data: dict[str, Any] = Field(default_factory=dict)
 
@@ -90,7 +98,7 @@ class ResultEvent(BaseModel):
     """Odpowiedź zapisana, czytelna przez `GET /api/answers/{id}` (`event: result`)."""
 
     answer_id: str
-    outcome: Literal["answered", "abstained"]
+    outcome: Literal["answered", "abstained", "conflicting"]
 
 
 class ErrorEvent(BaseModel):
@@ -104,7 +112,7 @@ class ErrorEvent(BaseModel):
 class AnswerRecord(BaseModel):
     id: str
     question: str
-    outcome: Literal["answered", "abstained", "failed"]
+    outcome: Literal["answered", "abstained", "conflicting", "failed"]
     result: Annotated[AnswerResult, Field(discriminator="outcome")] | None
     snapshot_id: str
     chunk_set_id: str
@@ -265,6 +273,7 @@ async def create_answer(
             await stream.aclose()
 
         trace_id = getattr(handler, "last_trace_id", None) if handler else None
+        config["chunk_set_ids"] = final.get("chunk_set_ids", [chunk_set_id])
 
         if failure is not None or "answer" not in final:
             code: ErrorCode = failure or "internal"

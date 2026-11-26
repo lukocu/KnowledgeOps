@@ -8,3 +8,4 @@ Write a short answer as a list of claims. Rules:
 4. Put commands, configuration lines, and code only in `code`, copied from the passage, and set `code` to null when the claim has none. Do not put commands inside `text`.
 5. Make one claim per distinct fact. Prefer fewer, well-supported claims over many weak ones.
 6. If the passages do not answer the question, return an empty `claims` list. Do not stretch a passage that only mentions a related topic.
+7. Passages from different documents may give values or instructions that exclude each other (for example two different values for the same setting, or opposite steps for the same task). Never silently pick one source and drop the other. Write a separate claim for each such document, each resting on its own passage and its own verbatim quote, and do not merge or reconcile them in `text`. Do this only when the documents really disagree; do not add claims from other documents that merely repeat or complement the same fact.

@@ -18,7 +18,7 @@ from app.answering.graph import AnswerGraph, build_answer_graph, initial_state
 from app.answering.model import JudgeModelInfo, make_chat_model, make_judge_model
 from app.answering.nodes import AnswerState
 from app.answering.prompts import prompt_versions as answer_prompt_versions
-from app.answering.schemas import AbstainedResult, AnsweredResult
+from app.answering.schemas import AbstainedResult, AnsweredResult, ConflictingResult
 from app.db import CONNECTION_TIMEOUT_S, AsyncPool
 from app.evals.dataset import DatasetMetadata, EvalItem, LoadedDataset
 from app.evals.judge import EvalJudge
@@ -297,7 +297,12 @@ async def execute_item(
             final_state = cast(
                 AnswerState,
                 await graph.ainvoke(
-                    initial_state(item.question, settings, chunk_set_id=chunk_set_id),
+                    initial_state(
+                        item.question,
+                        settings,
+                        chunk_set_id=chunk_set_id,
+                        include_synthetic=False,
+                    ),
                     run_cfg,
                 ),
             )
@@ -351,6 +356,17 @@ async def execute_item(
             latency_ms=latency_ms,
             answer=result,
             abstention_reason=cause,
+            usage=_extract_token_usage(usage_handler),
+        )
+
+    if isinstance(result, ConflictingResult):
+        return EvalItemExecution(
+            question_id=item.question_id,
+            split=item.split,
+            verified_label=item.verified_label,
+            outcome="conflicting",
+            latency_ms=latency_ms,
+            answer=result,
             usage=_extract_token_usage(usage_handler),
         )
 

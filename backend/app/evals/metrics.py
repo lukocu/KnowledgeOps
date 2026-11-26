@@ -16,7 +16,7 @@ from app.evals.judge import (
     ReferenceVerdict,
 )
 
-ExecutionOutcome = Literal["answered", "abstained", "failed"]
+ExecutionOutcome = Literal["answered", "abstained", "conflicting", "failed"]
 AbstentionCause = Literal[
     "no_hits",
     "no_claims",

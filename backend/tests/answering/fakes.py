@@ -11,7 +11,7 @@ from langchain_core.messages import BaseMessage
 from langchain_core.outputs import ChatResult
 from langchain_core.runnables import Runnable, RunnableLambda
 
-from app.answering.schemas import DraftOutput, VerifyOutput
+from app.answering.schemas import ConflictCheckOutput, DraftOutput, VerifyOutput
 
 
 @dataclass
@@ -23,10 +23,11 @@ class RecordedCall:
 
 @dataclass
 class Script:
-    """Kolejki odpowiedzi dla `draft` i `verify` oraz zapis wywołań."""
+    """Kolejki odpowiedzi (draft, verify, detect_conflict) i zapis wywołań."""
 
     drafts: list[DraftOutput] = field(default_factory=list)
     verifies: list[VerifyOutput] = field(default_factory=list)
+    conflicts: list[ConflictCheckOutput] = field(default_factory=list)
     calls: list[RecordedCall] = field(default_factory=list)
 
 
@@ -66,6 +67,8 @@ class ScriptedChatModel(BaseChatModel):
                 return script.drafts.pop(0)
             if schema is VerifyOutput:
                 return script.verifies.pop(0)
+            if schema is ConflictCheckOutput:
+                return script.conflicts.pop(0)
             raise AssertionError(f"nieoczekiwany schemat: {schema}")
 
         return RunnableLambda(respond)

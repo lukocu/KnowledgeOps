@@ -8,6 +8,11 @@ export type ErrorEvent = components["schemas"]["ErrorEvent"];
 export type AnswerRecord = components["schemas"]["AnswerRecord"];
 export type AnsweredResult = components["schemas"]["AnsweredResult"];
 export type AbstainedResult = components["schemas"]["AbstainedResult"];
+export type ConflictingResult = components["schemas"]["ConflictingResult"];
+export type ConflictSide = components["schemas"]["ConflictSide"];
+export type ConflictType = ConflictingResult["conflict_type"];
+export type ConflictComparisonRow =
+  components["schemas"]["ConflictComparisonRow"];
 export type Citation = components["schemas"]["Citation"];
 export type CheckedChunk = components["schemas"]["CheckedChunk"];
 export type EvidenceWindow = components["schemas"]["EvidenceWindow"];
@@ -97,7 +102,8 @@ export async function getAnswer(
     signal,
   });
   if (!data) throw new ApiError(response.status);
-  return data;
+  // openapi-fetch poszerza krotkę `sides: [ConflictSide, ConflictSide]` do tablicy.
+  return data as AnswerRecord;
 }
 
 export async function getEvidence(

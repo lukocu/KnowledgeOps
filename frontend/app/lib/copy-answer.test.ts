@@ -14,6 +14,7 @@ function citation(n: number, docId: string, title: string): Citation {
     chunk_id: `chunk-${n}`,
     headings: [],
     claims: [],
+    is_synthetic: false,
   };
 }
 

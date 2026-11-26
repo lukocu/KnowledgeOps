@@ -15,7 +15,14 @@ from langchain_core.messages import BaseMessage
 from langchain_core.outputs import ChatResult
 from langchain_core.runnables import Runnable, RunnableLambda
 
-from app.answering.schemas import ClaimVerdict, DraftClaim, DraftOutput, VerifyOutput
+from app.answering.schemas import (
+    ClaimVerdict,
+    ConflictCheckOutput,
+    ConflictComparisonOutput,
+    DraftClaim,
+    DraftOutput,
+    VerifyOutput,
+)
 from app.api.answers import ChatModelFactory, get_chat_model_factory
 from app.main import app
 from app.settings import Settings
@@ -108,7 +115,7 @@ def use_model() -> Iterator[Callable[[BaseChatModel], None]]:
 
 
 def scripted_answer(conn: psycopg.Connection) -> ScriptedChatModel:
-    """Model, który cytuje dwa najlepsze fragmenty i je uznaje za poparte."""
+    """Model, który cytuje dwa najlepsze fragmenty i uznaje je za poparte."""
     hits = search_chunks(conn, QUESTION, method="bm25", chunk_set_id=CHUNK_SET_ID, k=8)
     assert len(hits) >= 2, "mini-migawka ma za mało trafień"
     claims = [
@@ -124,10 +131,76 @@ def scripted_answer(conn: psycopg.Connection) -> ScriptedChatModel:
         ClaimVerdict(claim_index=i, reasoning="r", verdict="supported")
         for i in range(len(claims))
     ]
+    conflicts = (
+        [
+            ConflictCheckOutput(
+                reasoning="Claims complement each other.",
+                has_conflict=False,
+                scope_relation=None,
+                side_a_claim_indices=[],
+                side_b_claim_indices=[],
+                conflicting_doc_ids=[],
+                summary=None,
+                comparison=None,
+                refine_hint=None,
+            )
+        ]
+        if hits[0].doc_id != hits[1].doc_id
+        else []
+    )
     script = Script(
-        drafts=[DraftOutput(claims=claims)], verifies=[VerifyOutput(verdicts=verdicts)]
+        drafts=[DraftOutput(claims=claims)],
+        verifies=[VerifyOutput(verdicts=verdicts)],
+        conflicts=conflicts,
     )
     return ScriptedChatModel(script=script)
+
+
+def scripted_conflict(conn: psycopg.Connection) -> ScriptedChatModel:
+    """Model, który cytuje dwa różne dokumenty i zgłasza konflikt A vs B."""
+    hits = search_chunks(conn, QUESTION, method="bm25", chunk_set_id=CHUNK_SET_ID, k=8)
+    first = hits[0]
+    second = next(h for h in hits[1:] if h.doc_id != first.doc_id)
+    claims = [
+        DraftClaim(
+            text="Recommendation A.",
+            code=None,
+            chunk_id=first.chunk_id,
+            quote=first.snippet[:40].strip(),
+        ),
+        DraftClaim(
+            text="Recommendation B.",
+            code=None,
+            chunk_id=second.chunk_id,
+            quote=second.snippet[:40].strip(),
+        ),
+    ]
+    verdicts = [
+        ClaimVerdict(claim_index=0, reasoning="r", verdict="supported"),
+        ClaimVerdict(claim_index=1, reasoning="r", verdict="supported"),
+    ]
+    conflict = ConflictCheckOutput(
+        reasoning="Documents give mutually exclusive values.",
+        has_conflict=True,
+        scope_relation="unknown_scope",
+        side_a_claim_indices=[0],
+        side_b_claim_indices=[1],
+        conflicting_doc_ids=[first.doc_id, second.doc_id],
+        summary="Sources give different recommendations.",
+        comparison=ConflictComparisonOutput(
+            value_label="setting",
+            side_a_value="A",
+            side_b_value="B",
+        ),
+        refine_hint="Specify the version.",
+    )
+    return ScriptedChatModel(
+        script=Script(
+            drafts=[DraftOutput(claims=claims)],
+            verifies=[VerifyOutput(verdicts=verdicts)],
+            conflicts=[conflict],
+        )
+    )
 
 
 def parse_sse(text: str) -> list[tuple[str, Any]]:
@@ -170,7 +243,10 @@ def test_stream_has_stages_in_order_and_ends_with_result(
     assert set(names[:-1]) == {"stage"}
     assert names[-1] == "result"
     stages = [(d["stage"], d["status"]) for name, d in events if name == "stage"]
-    assert stages == [
+    hits = search_chunks(
+        imported_conn, QUESTION, method="bm25", chunk_set_id=CHUNK_SET_ID, k=8
+    )
+    expected_stages = [
         ("retrieve", "started"),
         ("retrieve", "done"),
         ("draft", "started"),
@@ -179,9 +255,13 @@ def test_stream_has_stages_in_order_and_ends_with_result(
         ("quote_check", "done"),
         ("verify", "started"),
         ("verify", "done"),
-        ("compose", "started"),
-        ("compose", "done"),
     ]
+    if hits[0].doc_id != hits[1].doc_id:
+        expected_stages.extend(
+            [("detect_conflict", "started"), ("detect_conflict", "done")]
+        )
+    expected_stages.extend([("compose", "started"), ("compose", "done")])
+    assert stages == expected_stages
     result = events[-1][1]
     assert result["outcome"] == "answered"
     assert count_answers(imported_conn) == 1
@@ -226,7 +306,12 @@ def test_get_in_same_session_returns_saved_result(
     assert body["chunk_set_id"] == CHUNK_SET_ID
     assert [c["text"] for c in body["result"]["claims"]] == ["Claim 0.", "Claim 1."]
     assert body["config"]["k"] == 8
-    assert set(body["config"]["prompt_versions"]) == {"draft", "verify"}
+    assert body["config"]["chunk_set_ids"] == [CHUNK_SET_ID]
+    assert set(body["config"]["prompt_versions"]) == {
+        "draft",
+        "verify",
+        "detect_conflict",
+    }
     assert body["duration_ms"] is not None
 
 
@@ -346,3 +431,91 @@ def test_answer_deadline_saves_failed_row_and_sends_error(
     assert row is not None
     assert row[0] == "failed"
     assert "TimeoutError" in row[1]
+
+
+def test_conflicting_stream_saves_conflicting_outcome_and_loads_via_get(
+    api_client: TestClient,
+    imported_conn: psycopg.Connection,
+    use_model: Callable[[BaseChatModel], None],
+) -> None:
+    use_model(scripted_conflict(imported_conn))
+    events = post(api_client)
+
+    stages = [(d["stage"], d["status"]) for name, d in events if name == "stage"]
+    assert ("detect_conflict", "started") in stages
+    assert ("detect_conflict", "done") in stages
+    assert stages[-2:] == [("compose", "started"), ("compose", "done")]
+
+    name, payload = events[-1]
+    assert name == "result"
+    assert payload["outcome"] == "conflicting"
+    answer_id = payload["answer_id"]
+
+    row = imported_conn.execute(
+        "SELECT outcome FROM answers WHERE id = %s", (answer_id,)
+    ).fetchone()
+    assert row == ("conflicting",)
+
+    record = api_client.get(f"/api/answers/{answer_id}")
+    assert record.status_code == 200
+    body = record.json()
+    assert body["outcome"] == "conflicting"
+    assert body["config"]["chunk_set_ids"] == [CHUNK_SET_ID]
+    res = body["result"]
+    assert res["outcome"] == "conflicting"
+    assert res["conflict_type"] == "different_recommendations"
+    assert len(res["sides"]) == 2
+    assert [s["label"] for s in res["sides"]] == ["A", "B"]
+    assert [r["kind"] for r in res["comparison_rows"]] == [
+        "recommendation",
+        "audience",
+        "doc_date",
+        "product_version",
+    ]
+
+
+def test_historical_citation_without_new_fields_loads_from_db(
+    api_client: TestClient,
+    imported_conn: psycopg.Connection,
+    use_model: Callable[[BaseChatModel], None],
+) -> None:
+    # Uzyskaj prawdziwą sesję przez POST, potem nadpisz `result` historycznym JSON.
+    use_model(scripted_answer(imported_conn))
+    answer_id = post(api_client)[-1][1]["answer_id"]
+
+    legacy_result = {
+        "outcome": "answered",
+        "claims": [{"text": "Legacy claim.", "code": None, "citation": 1}],
+        "citations": [
+            {
+                "n": 1,
+                "chunk_id": f"{CHUNK_SET_ID}/doc0/0",
+                "doc_id": "doc0",
+                "title": "Legacy Title",
+                "headings": [],
+                "claims": [
+                    {
+                        "claim_index": 0,
+                        "quote": "Legacy quote",
+                        "quote_start": 0,
+                        "quote_end": 12,
+                    }
+                ],
+            }
+        ],
+        "checked_chunks": [],
+        "omitted_claims": 0,
+    }
+    imported_conn.execute(
+        "UPDATE answers SET result = %s::jsonb WHERE id = %s",
+        (json.dumps(legacy_result), answer_id),
+    )
+    imported_conn.commit()
+
+    response = api_client.get(f"/api/answers/{answer_id}")
+    assert response.status_code == 200
+    cit = response.json()["result"]["citations"][0]
+    assert cit["snapshot_id"] is None
+    assert cit["is_synthetic"] is False
+    assert cit["doc_date"] is None
+    assert cit["product_version"] is None

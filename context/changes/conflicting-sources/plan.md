@@ -426,19 +426,18 @@ Rozbudowujemy migawkę `synthetic@v1` o komplet dokumentów syntetycznych zakotw
 
 #### Automated
 
-- [x] 1.1 Migracja `0003_synthetic_and_conflicts.sql` wykonuje się czysto i idempotentnie: `cd backend; uv run python -m app.cli migrate`
-- [x] 1.2 Import syntetycznej migawki `synthetic@v1` jest idempotentny (`state_sha256` identyczny w dwóch uruchomieniach) i nie zmienia `state_sha256` czystego `import-techqa`: `cd backend; uv run pytest tests/synthetic/ tests/techqa/test_importer.py`
-- [x] 1.3 Testy wyszukiwania nakładkowego `ANY(chunk_set_ids)` oraz metadanych `/api/evidence` i `/api/documents` (w tym podświetlenia fragmentu dla `snapshot_id="synthetic@v1"`) przechodzą: `cd backend; uv run pytest tests/test_retrieval_synthetic.py tests/api/test_evidence.py`
-- [x] 1.4 Kontrole jakości backendu przechodzą bez błędów: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
-
+- [x] 1.1 Migracja `0003_synthetic_and_conflicts.sql` wykonuje się czysto i idempotentnie: `cd backend; uv run python -m app.cli migrate` — d141d5b
+- [x] 1.2 Import syntetycznej migawki `synthetic@v1` jest idempotentny (`state_sha256` identyczny w dwóch uruchomieniach) i nie zmienia `state_sha256` czystego `import-techqa`: `cd backend; uv run pytest tests/synthetic/ tests/techqa/test_importer.py` — d141d5b
+- [x] 1.3 Testy wyszukiwania nakładkowego `ANY(chunk_set_ids)` oraz metadanych `/api/evidence` i `/api/documents` (w tym podświetlenia fragmentu dla `snapshot_id="synthetic@v1"`) przechodzą: `cd backend; uv run pytest tests/test_retrieval_synthetic.py tests/api/test_evidence.py` — d141d5b
+- [x] 1.4 Kontrole jakości backendu przechodzą bez błędów: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .` — d141d5b
 ### Phase 2: Wykrywanie konfliktu w grafie LangGraph i kontrakt API
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe węzłów i topologii grafu (`detect_conflict` tylko dla `>= 2` `doc_id`, 2 wywołania modelu dla 1 dokumentu, deterministyczny strażnik zakresu dla różnych wersji, obsługa `>= 3` sprzecznych źródeł) przechodzą: `cd backend; uv run pytest tests/answering/`
-- [ ] 2.2 Testy API (`POST /api/answers` SSE i `GET /api/answers/{id}` dla `outcome="conflicting"`) oraz kompatybilności runnera S-06 (`include_synthetic=False`, obsługa `ConflictingResult` bez `AssertionError`) przechodzą: `cd backend; uv run pytest tests/api/test_answers.py tests/evals/`
-- [ ] 2.3 Kontrakt OpenAPI i wygenerowane typy frontendu są zsynchronizowane i przechodzą kontrolę typów: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck`
-- [ ] 2.4 Pełny zestaw kontroli i testów backendu przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest`
+- [x] 2.1 Testy jednostkowe węzłów i topologii grafu (`detect_conflict` tylko dla `>= 2` `doc_id`, 2 wywołania modelu dla 1 dokumentu, deterministyczny strażnik zakresu dla różnych wersji, obsługa `>= 3` sprzecznych źródeł) przechodzą: `cd backend; uv run pytest tests/answering/`
+- [x] 2.2 Testy API (`POST /api/answers` SSE i `GET /api/answers/{id}` dla `outcome="conflicting"`) oraz kompatybilności runnera S-06 (`include_synthetic=False`, obsługa `ConflictingResult` bez `AssertionError`) przechodzą: `cd backend; uv run pytest tests/api/test_answers.py tests/evals/`
+- [x] 2.3 Kontrakt OpenAPI i wygenerowane typy frontendu są zsynchronizowane i przechodzą kontrolę typów: `cd backend; uv run python scripts/export_openapi.py` oraz `cd frontend; npm run api:types; npm run typecheck`
+- [x] 2.4 Pełny zestaw kontroli i testów backendu przechodzi: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .; uv run pytest`
 
 ### Phase 3: Ekran 4 (`ConflictView`), kopiowanie obu wersji i okno `390 px`
 

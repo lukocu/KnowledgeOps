@@ -11,6 +11,8 @@ from pydantic import BaseModel
 Verdict = Literal["supported", "contradicted", "insufficient"]
 RejectionReason = Literal["quote_not_found", "unknown_chunk"]
 AbstainReason = Literal["no_hits", "no_claims", "none_supported"]
+ConflictType = Literal["contradiction", "different_recommendations"]
+ScopeRelation = Literal["same_scope", "different_scope", "unknown_scope"]
 
 
 class DraftClaim(BaseModel):
@@ -58,7 +60,12 @@ class CitationClaim(BaseModel):
 
 
 class Citation(BaseModel):
-    """Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego."""
+    """Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.
+
+    Pola migawki i metadanych mają wartości domyślne, żeby zapisane wcześniej
+    odpowiedzi (`answers.result`) nadal się walidowały; brak `snapshot_id` oznacza
+    migawkę z rekordu odpowiedzi.
+    """
 
     n: int
     chunk_id: str
@@ -66,6 +73,10 @@ class Citation(BaseModel):
     title: str
     headings: list[str]
     claims: list[CitationClaim]
+    snapshot_id: str | None = None
+    is_synthetic: bool = False
+    doc_date: str | None = None
+    product_version: str | None = None
 
 
 class CheckedChunk(BaseModel):
@@ -92,4 +103,68 @@ class AbstainedResult(BaseModel):
     omitted_claims: int
 
 
-AnswerResult = AnsweredResult | AbstainedResult
+class ConflictComparisonOutput(BaseModel):
+    """Porównanie zalecanych wartości po obu stronach (z modelu)."""
+
+    value_label: str
+    side_a_value: str
+    side_b_value: str
+
+
+class ConflictCheckOutput(BaseModel):
+    """Ocena `detect_conflict`; `reasoning` stoi przed werdyktem.
+
+    Indeksy to `claim_index` tez ze szkicu (jak w `verify`), tylko tez `supported`.
+    """
+
+    reasoning: str
+    has_conflict: bool
+    scope_relation: ScopeRelation | None
+    side_a_claim_indices: list[int]
+    side_b_claim_indices: list[int]
+    conflicting_doc_ids: list[str]
+    summary: str | None
+    comparison: ConflictComparisonOutput | None
+    refine_hint: str | None
+
+
+class ConflictSide(BaseModel):
+    """Jedna strona konfliktu (A albo B) z dosłownym cytatem i metadanymi."""
+
+    label: Literal["A", "B"]
+    snapshot_id: str
+    doc_id: str
+    chunk_id: str
+    title: str
+    headings: list[str]
+    is_synthetic: bool
+    doc_date: str | None
+    product_version: str | None
+    audience: str | None
+    claim_text: str
+    code: str | None
+    quote: str
+    quote_start: int
+    quote_end: int
+
+
+class ConflictComparisonRow(BaseModel):
+    kind: Literal["recommendation", "audience", "doc_date", "product_version"]
+    label: str | None = None
+    side_a: str | None
+    side_b: str | None
+
+
+class ConflictingResult(BaseModel):
+    outcome: Literal["conflicting"] = "conflicting"
+    conflict_type: ConflictType
+    summary: str
+    refine_hint: str | None
+    comparison_rows: list[ConflictComparisonRow]
+    sides: tuple[ConflictSide, ConflictSide]
+    extra_conflicting_docs: int = 0
+    checked_chunks: list[CheckedChunk]
+    omitted_claims: int
+
+
+AnswerResult = AnsweredResult | AbstainedResult | ConflictingResult

@@ -25,6 +25,9 @@ from psycopg import AsyncConnection
 from app.answering.model import JudgeModelInfo
 from app.answering.schemas import (
     ClaimVerdict,
+    ConflictCheckOutput,
+    ConflictComparisonOutput,
+    ConflictingResult,
     DraftClaim,
     DraftOutput,
     VerifyOutput,
@@ -834,3 +837,124 @@ async def test_runner_executes_against_mini_snapshot_on_selector_loop(
     assert artifact.summary.citation_support_claim_rate == 1.0
     assert artifact.summary.reference_agreement_mean == 1.0
     assert artifact.items[1].abstention_reason == "no_hits"
+
+
+@pytest.mark.anyio
+async def test_runner_forces_include_synthetic_false_and_handles_conflicting_result(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _make_settings(monkeypatch)
+    assert settings.include_synthetic is True
+
+    captured_include_synthetic: list[bool] = []
+
+    async def _spy_resolve(
+        conn: Any,
+        base_chunk_set_id: str,
+        *,
+        include_synthetic: bool,
+        synthetic_chunk_set_id: str,
+    ) -> list[str]:
+        del conn, synthetic_chunk_set_id
+        captured_include_synthetic.append(include_synthetic)
+        return [base_chunk_set_id]
+
+    async def _fake_search(
+        conn: Any, query: str, *, chunk_set_id: str, k: int
+    ) -> list[RetrievedChunk]:
+        del conn, query, chunk_set_id, k
+        return [
+            RetrievedChunk(
+                rank=1,
+                score=2.0,
+                chunk_id="c1",
+                doc_id="doc_1",
+                title="Doc 1",
+                headings=[],
+                text="Set timeout to 30 seconds.",
+                snapshot_id="techqa@rev",
+            ),
+            RetrievedChunk(
+                rank=2,
+                score=1.8,
+                chunk_id="c2",
+                doc_id="doc_2",
+                title="Doc 2",
+                headings=[],
+                text="Set timeout to 120 seconds.",
+                snapshot_id="techqa@rev",
+            ),
+        ]
+
+    monkeypatch.setattr(
+        "app.answering.nodes.resolve_active_chunk_set_ids", _spy_resolve
+    )
+    monkeypatch.setattr("app.answering.nodes.search_bm25", _fake_search)
+
+    script = Script(
+        drafts=[
+            DraftOutput(
+                claims=[
+                    DraftClaim(
+                        text="Set timeout to 30s.",
+                        code=None,
+                        chunk_id="c1",
+                        quote="Set timeout to 30 seconds.",
+                    ),
+                    DraftClaim(
+                        text="Set timeout to 120s.",
+                        code=None,
+                        chunk_id="c2",
+                        quote="Set timeout to 120 seconds.",
+                    ),
+                ]
+            )
+        ],
+        verifies=[
+            VerifyOutput(
+                verdicts=[
+                    ClaimVerdict(claim_index=0, reasoning="ok", verdict="supported"),
+                    ClaimVerdict(claim_index=1, reasoning="ok", verdict="supported"),
+                ]
+            )
+        ],
+        conflicts=[
+            ConflictCheckOutput(
+                reasoning="Two docs disagree on timeout.",
+                has_conflict=True,
+                scope_relation="same_scope",
+                side_a_claim_indices=[0],
+                side_b_claim_indices=[1],
+                conflicting_doc_ids=["doc_1", "doc_2"],
+                summary="Timeout values differ.",
+                comparison=ConflictComparisonOutput(
+                    value_label="timeout",
+                    side_a_value="30s",
+                    side_b_value="120s",
+                ),
+                refine_hint=None,
+            )
+        ],
+    )
+    judge_model = FakeJudgeChatModel()
+
+    artifact = await run_abstention_eval(
+        dataset=_sample_dataset(_sample_items()[:1]),
+        settings=settings,
+        pool=cast(AsyncPool, _DummyPool()),
+        split="dev",
+        concurrency=1,
+        use_langfuse=False,
+        chat_model=ScriptedChatModel(script=script),
+        judge_model=judge_model,
+        repro_info=_sample_repro(),
+    )
+
+    assert captured_include_synthetic == [False]
+    assert len(artifact.items) == 1
+    assert artifact.items[0].outcome == "conflicting"
+    assert isinstance(artifact.items[0].answer, ConflictingResult)
+    assert artifact.summary.n_total == 1
+    assert artifact.summary.n_evaluated == 1
+    assert artifact.summary.n_failed == 0
+    assert judge_model.calls == []

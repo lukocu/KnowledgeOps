@@ -11,6 +11,9 @@ from app.answering.schemas import (
     AbstainedResult,
     AnsweredResult,
     ClaimVerdict,
+    ConflictCheckOutput,
+    ConflictComparisonOutput,
+    ConflictingResult,
     DraftClaim,
     DraftOutput,
     VerifyOutput,
@@ -60,10 +63,31 @@ def stages(events: list[dict[str, Any]]) -> list[tuple[str, str]]:
     return [(e["stage"], e["status"]) for e in events]
 
 
+def no_conflict() -> ConflictCheckOutput:
+    return ConflictCheckOutput(
+        reasoning="Claims complement each other.",
+        has_conflict=False,
+        scope_relation=None,
+        side_a_claim_indices=[],
+        side_b_claim_indices=[],
+        conflicting_doc_ids=[],
+        summary=None,
+        comparison=None,
+        refine_hint=None,
+    )
+
+
 def answered(state: AnswerState) -> AnsweredResult:
     assert state["outcome"] == "answered"
     result = state["answer"]
     assert isinstance(result, AnsweredResult)
+    return result
+
+
+def conflicting(state: AnswerState) -> ConflictingResult:
+    assert state["outcome"] == "conflicting"
+    result = state["answer"]
+    assert isinstance(result, ConflictingResult)
     return result
 
 
@@ -78,6 +102,7 @@ async def test_full_answer(
     async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
 ) -> None:
     hits = await top_hits(async_imported_conn)
+    two_docs = hits[0].doc_id != hits[1].doc_id
     script = Script(
         drafts=[
             DraftOutput(
@@ -90,6 +115,7 @@ async def test_full_answer(
         verifies=[
             VerifyOutput(verdicts=[verdict(0, "supported"), verdict(1, "supported")])
         ],
+        conflicts=[no_conflict()] if two_docs else [],
     )
     events, state = await run(pool, answer_settings, script)
 
@@ -110,11 +136,14 @@ async def test_full_answer(
         only = citation.claims[0]
         assert hit.text[only.quote_start : only.quote_end] == only.quote
 
-    # Dokładnie dwa wywołania modelu, oba strict; weryfikator nie widzi pytania.
-    assert [(c.schema, c.strict) for c in script.calls] == [
+    # Wywołania są strict; weryfikator nie widzi pytania.
+    expected_calls = [
         ("DraftOutput", True),
         ("VerifyOutput", True),
     ]
+    if two_docs:
+        expected_calls.append(("ConflictCheckOutput", True))
+    assert [(c.schema, c.strict) for c in script.calls] == expected_calls
     assert QUESTION in str(script.calls[0].messages[1].content)
     assert "Question:" not in str(script.calls[1].messages[1].content)
     assert "Claims to check" in str(script.calls[1].messages[1].content)
@@ -142,6 +171,11 @@ async def test_stage_events_in_order(
         ("compose", "started"),
         ("compose", "done"),
     ]
+    # Jeden dokument: dokładnie 2 wywołania modelu, bez detect_conflict.
+    assert [(c.schema, c.strict) for c in script.calls] == [
+        ("DraftOutput", True),
+        ("VerifyOutput", True),
+    ]
     by_stage = {(e["stage"], e["status"]): e["data"] for e in events}
     assert by_stage[("retrieve", "done")] == {"checked": len(hits)}
     assert by_stage[("verify", "done")] == {"supported": 1, "omitted": 0}
@@ -152,6 +186,7 @@ async def test_partial_answer_omits_unsupported_without_number_gaps(
     async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
 ) -> None:
     hits = await top_hits(async_imported_conn)
+    two_docs = hits[0].doc_id != hits[2].doc_id
     script = Script(
         drafts=[
             DraftOutput(
@@ -171,6 +206,7 @@ async def test_partial_answer_omits_unsupported_without_number_gaps(
                 ]
             )
         ],
+        conflicts=[no_conflict()] if two_docs else [],
     )
     events, state = await run(pool, answer_settings, script)
 
@@ -191,6 +227,7 @@ async def test_two_claims_from_one_chunk_share_a_citation(
     async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
 ) -> None:
     hits = await top_hits(async_imported_conn)
+    two_docs = hits[0].doc_id != hits[1].doc_id
     first = DraftClaim(
         text="A", code=None, chunk_id=hits[0].chunk_id, quote=hits[0].text[:20]
     )
@@ -208,6 +245,7 @@ async def test_two_claims_from_one_chunk_share_a_citation(
                 ]
             )
         ],
+        conflicts=[no_conflict()] if two_docs else [],
     )
     _, state = await run(pool, answer_settings, script)
 
@@ -412,3 +450,130 @@ async def test_claim_without_verdict_is_omitted(
     result = answered(state)
     assert len(result.claims) == 1
     assert result.omitted_claims == 1
+
+
+async def test_two_claims_from_same_doc_skip_detect_conflict(
+    async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
+) -> None:
+    hits = await top_hits(async_imported_conn)
+    first = DraftClaim(
+        text="First.", code=None, chunk_id=hits[0].chunk_id, quote=hits[0].text[:20]
+    )
+    second = DraftClaim(
+        text="Second.", code=None, chunk_id=hits[0].chunk_id, quote=hits[0].text[-20:]
+    )
+    script = Script(
+        drafts=[DraftOutput(claims=[first, second])],
+        verifies=[
+            VerifyOutput(verdicts=[verdict(0, "supported"), verdict(1, "supported")])
+        ],
+    )
+    events, state = await run(pool, answer_settings, script)
+
+    assert answered(state).claims[0].text == "First."
+    assert [(c.schema, c.strict) for c in script.calls] == [
+        ("DraftOutput", True),
+        ("VerifyOutput", True),
+    ]
+    assert ("detect_conflict", "started") not in stages(events)
+
+
+async def test_multi_doc_conflict_routes_to_compose_conflict(
+    async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
+) -> None:
+    hits = await top_hits(async_imported_conn)
+    first = hits[0]
+    second = next(h for h in hits[1:] if h.doc_id != first.doc_id)
+    script = Script(
+        drafts=[
+            DraftOutput(
+                claims=[
+                    claim_from(first, "Use value A."),
+                    claim_from(second, "Use value B."),
+                ]
+            )
+        ],
+        verifies=[
+            VerifyOutput(verdicts=[verdict(0, "supported"), verdict(1, "supported")])
+        ],
+        conflicts=[
+            ConflictCheckOutput(
+                reasoning="Documents give mutually exclusive values.",
+                has_conflict=True,
+                scope_relation="same_scope",
+                side_a_claim_indices=[0],
+                side_b_claim_indices=[1],
+                conflicting_doc_ids=[first.doc_id, second.doc_id],
+                summary="Two documents disagree on the recommended value.",
+                comparison=ConflictComparisonOutput(
+                    value_label="setting",
+                    side_a_value="value A",
+                    side_b_value="value B",
+                ),
+                refine_hint="Specify the target environment.",
+            )
+        ],
+    )
+    events, state = await run(pool, answer_settings, script)
+
+    result = conflicting(state)
+    assert result.conflict_type == "contradiction"
+    assert [c.schema for c in script.calls] == [
+        "DraftOutput",
+        "VerifyOutput",
+        "ConflictCheckOutput",
+    ]
+    assert stages(events) == [
+        ("retrieve", "started"),
+        ("retrieve", "done"),
+        ("draft", "started"),
+        ("draft", "done"),
+        ("quote_check", "started"),
+        ("quote_check", "done"),
+        ("verify", "started"),
+        ("verify", "done"),
+        ("detect_conflict", "started"),
+        ("detect_conflict", "done"),
+        ("compose", "started"),
+        ("compose", "done"),
+    ]
+    side_a, side_b = result.sides
+    assert (side_a.label, side_a.doc_id) == ("A", first.doc_id)
+    assert (side_b.label, side_b.doc_id) == ("B", second.doc_id)
+    assert first.text[side_a.quote_start : side_a.quote_end] == side_a.quote
+    assert second.text[side_b.quote_start : side_b.quote_end] == side_b.quote
+
+
+async def test_invalid_conflict_indices_fall_back_to_answered(
+    async_imported_conn: AsyncConnection, pool: AsyncPool, answer_settings: Settings
+) -> None:
+    hits = await top_hits(async_imported_conn)
+    first = hits[0]
+    second = next(h for h in hits[1:] if h.doc_id != first.doc_id)
+    script = Script(
+        drafts=[
+            DraftOutput(
+                claims=[claim_from(first, "First."), claim_from(second, "Second.")]
+            )
+        ],
+        verifies=[
+            VerifyOutput(verdicts=[verdict(0, "supported"), verdict(1, "supported")])
+        ],
+        conflicts=[
+            ConflictCheckOutput(
+                reasoning="Bad indices returned by model.",
+                has_conflict=True,
+                scope_relation="same_scope",
+                side_a_claim_indices=[42],
+                side_b_claim_indices=[99],
+                conflicting_doc_ids=[first.doc_id, second.doc_id],
+                summary="Invalid conflict.",
+                comparison=None,
+                refine_hint=None,
+            )
+        ],
+    )
+    _, state = await run(pool, answer_settings, script)
+
+    result = answered(state)
+    assert [c.text for c in result.claims] == ["First.", "Second."]

@@ -9,7 +9,7 @@ from functools import cache
 from pathlib import Path
 
 PROMPTS_DIR = Path(__file__).resolve().parent
-PROMPT_NAMES = ("draft", "verify")
+PROMPT_NAMES = ("draft", "verify", "detect_conflict")
 
 
 def _path(name: str) -> Path:

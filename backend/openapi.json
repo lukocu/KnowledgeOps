@@ -104,6 +104,7 @@
             "enum": [
               "answered",
               "abstained",
+              "conflicting",
               "failed"
             ],
             "title": "Outcome",
@@ -119,7 +120,8 @@
                 "discriminator": {
                   "mapping": {
                     "abstained": "#/components/schemas/AbstainedResult",
-                    "answered": "#/components/schemas/AnsweredResult"
+                    "answered": "#/components/schemas/AnsweredResult",
+                    "conflicting": "#/components/schemas/ConflictingResult"
                   },
                   "propertyName": "outcome"
                 },
@@ -129,6 +131,9 @@
                   },
                   {
                     "$ref": "#/components/schemas/AbstainedResult"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ConflictingResult"
                   }
                 ]
               },
@@ -285,7 +290,7 @@
         "type": "object"
       },
       "Citation": {
-        "description": "Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.",
+        "description": "Jeden numer cytatu na fragment; obejmuje wszystkie pokazane tezy z niego.\n\nPola migawki i metadanych mają wartości domyślne, żeby zapisane wcześniej\nodpowiedzi (`answers.result`) nadal się walidowały; brak `snapshot_id` oznacza\nmigawkę z rekordu odpowiedzi.",
         "properties": {
           "chunk_id": {
             "title": "Chunk Id",
@@ -298,6 +303,17 @@
             "title": "Claims",
             "type": "array"
           },
+          "doc_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Date"
+          },
           "doc_id": {
             "title": "Doc Id",
             "type": "string"
@@ -309,9 +325,36 @@
             "title": "Headings",
             "type": "array"
           },
+          "is_synthetic": {
+            "default": false,
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
           "n": {
             "title": "N",
             "type": "integer"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
           },
           "title": {
             "title": "Title",
@@ -356,6 +399,260 @@
           "quote_end"
         ],
         "title": "CitationClaim",
+        "type": "object"
+      },
+      "ConflictComparisonRow": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "recommendation",
+              "audience",
+              "doc_date",
+              "product_version"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "side_a": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Side A"
+          },
+          "side_b": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Side B"
+          }
+        },
+        "required": [
+          "kind",
+          "side_a",
+          "side_b"
+        ],
+        "title": "ConflictComparisonRow",
+        "type": "object"
+      },
+      "ConflictSide": {
+        "description": "Jedna strona konfliktu (A albo B) z dosłownym cytatem i metadanymi.",
+        "properties": {
+          "audience": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
+          "chunk_id": {
+            "title": "Chunk Id",
+            "type": "string"
+          },
+          "claim_text": {
+            "title": "Claim Text",
+            "type": "string"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "doc_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Date"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "headings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Headings",
+            "type": "array"
+          },
+          "is_synthetic": {
+            "title": "Is Synthetic",
+            "type": "boolean"
+          },
+          "label": {
+            "enum": [
+              "A",
+              "B"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "product_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Version"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "quote_end": {
+            "title": "Quote End",
+            "type": "integer"
+          },
+          "quote_start": {
+            "title": "Quote Start",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "snapshot_id",
+          "doc_id",
+          "chunk_id",
+          "title",
+          "headings",
+          "is_synthetic",
+          "doc_date",
+          "product_version",
+          "audience",
+          "claim_text",
+          "code",
+          "quote",
+          "quote_start",
+          "quote_end"
+        ],
+        "title": "ConflictSide",
+        "type": "object"
+      },
+      "ConflictingResult": {
+        "properties": {
+          "checked_chunks": {
+            "items": {
+              "$ref": "#/components/schemas/CheckedChunk"
+            },
+            "title": "Checked Chunks",
+            "type": "array"
+          },
+          "comparison_rows": {
+            "items": {
+              "$ref": "#/components/schemas/ConflictComparisonRow"
+            },
+            "title": "Comparison Rows",
+            "type": "array"
+          },
+          "conflict_type": {
+            "enum": [
+              "contradiction",
+              "different_recommendations"
+            ],
+            "title": "Conflict Type",
+            "type": "string"
+          },
+          "extra_conflicting_docs": {
+            "default": 0,
+            "title": "Extra Conflicting Docs",
+            "type": "integer"
+          },
+          "omitted_claims": {
+            "title": "Omitted Claims",
+            "type": "integer"
+          },
+          "outcome": {
+            "const": "conflicting",
+            "default": "conflicting",
+            "title": "Outcome",
+            "type": "string"
+          },
+          "refine_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refine Hint"
+          },
+          "sides": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "$ref": "#/components/schemas/ConflictSide"
+              },
+              {
+                "$ref": "#/components/schemas/ConflictSide"
+              }
+            ],
+            "title": "Sides",
+            "type": "array"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conflict_type",
+          "summary",
+          "refine_hint",
+          "comparison_rows",
+          "sides",
+          "checked_chunks",
+          "omitted_claims"
+        ],
+        "title": "ConflictingResult",
         "type": "object"
       },
       "CorpusInfo": {
@@ -676,7 +973,8 @@
           "outcome": {
             "enum": [
               "answered",
-              "abstained"
+              "abstained",
+              "conflicting"
             ],
             "title": "Outcome",
             "type": "string"
@@ -703,6 +1001,7 @@
               "draft",
               "quote_check",
               "verify",
+              "detect_conflict",
               "compose",
               "abstain"
             ],

@@ -39,12 +39,12 @@ def test_run_config_has_name_metadata_and_no_session_data(settings: Settings) ->
 
 def test_prompt_version_is_12_hex_chars_and_distinct() -> None:
     versions = prompt_versions()
-    assert set(versions) == {"draft", "verify"}
+    assert set(versions) == {"draft", "verify", "detect_conflict"}
     for name, version in versions.items():
         assert version == prompt_version(name)
         assert len(version) == 12
         int(version, 16)
-    assert versions["draft"] != versions["verify"]
+    assert len(set(versions.values())) == 3
     with pytest.raises(ValueError):
         prompt_version("nope")
 
