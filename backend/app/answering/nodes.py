@@ -416,9 +416,11 @@ def compose_conflict_result(
 
     if conflict_check.comparison is not None:
         comp = conflict_check.comparison
-        rec_a = comp.side_b_value if resolved.swapped else comp.side_a_value
-        rec_b = comp.side_a_value if resolved.swapped else comp.side_b_value
-        rec_label: str | None = comp.value_label
+        raw_a = comp.side_b_value if resolved.swapped else comp.side_a_value
+        raw_b = comp.side_a_value if resolved.swapped else comp.side_b_value
+        rec_a = raw_a.strip() or resolved.side_a.claim.text
+        rec_b = raw_b.strip() or resolved.side_b.claim.text
+        rec_label: str | None = comp.value_label.strip() or None
     else:
         rec_a = resolved.side_a.claim.text
         rec_b = resolved.side_b.claim.text

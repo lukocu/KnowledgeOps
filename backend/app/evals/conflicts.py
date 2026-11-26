@@ -35,10 +35,10 @@ from app.evals.metrics import (
     ExecutionOutcome,
     ItemScore,
     TokenUsage,
-    _percentile,
     check_citation_invariants,
+    percentile,
 )
-from app.evals.runner import _extract_token_usage, ensure_langfuse_ready
+from app.evals.runner import ensure_langfuse_ready, extract_token_usage
 from app.observability import flush_traces, make_trace_handler, run_config
 from app.retrieval import ChunkSetReproInfo, get_chunk_set_repro_info
 from app.settings import Settings
@@ -420,8 +420,8 @@ def aggregate_conflict_run(
     )
 
     latencies = [float(r.latency_ms) for r in evaluated]
-    latency_p50_ms = _percentile(latencies, 50.0)
-    latency_p95_ms = _percentile(latencies, 95.0)
+    latency_p50_ms = percentile(latencies, 50.0)
+    latency_p95_ms = percentile(latencies, 95.0)
     within_latency_budget_rate = (
         sum(1 for lat in latencies if lat < LATENCY_BUDGET_MS) / len(latencies)
         if latencies
@@ -668,7 +668,7 @@ async def execute_conflict_item(
                 f"TimeoutError: przekroczono answer_deadline_s"
                 f" ({settings.answer_deadline_s:g}s)"
             ),
-            usage=_extract_token_usage(usage_handler),
+            usage=extract_token_usage(usage_handler),
         )
     except Exception as exc:
         latency_ms = (time.monotonic() - started) * 1000.0
@@ -677,7 +677,7 @@ async def execute_conflict_item(
             outcome="failed",
             latency_ms=latency_ms,
             error=f"{type(exc).__name__}: {exc}",
-            usage=_extract_token_usage(usage_handler),
+            usage=extract_token_usage(usage_handler),
         )
 
     latency_ms = (time.monotonic() - started) * 1000.0
@@ -688,7 +688,7 @@ async def execute_conflict_item(
             outcome="failed",
             latency_ms=latency_ms,
             error="brak wyniku answer w stanie końcowym grafu",
-            usage=_extract_token_usage(usage_handler),
+            usage=extract_token_usage(usage_handler),
         )
 
     chunk_texts = {
@@ -706,7 +706,7 @@ async def execute_conflict_item(
             answer=result,
             both_sides_cited=invariants.passed,
             citation_invariants=invariants,
-            usage=_extract_token_usage(usage_handler),
+            usage=extract_token_usage(usage_handler),
         )
 
     if isinstance(result, AnsweredResult):
@@ -720,7 +720,7 @@ async def execute_conflict_item(
             answer=result,
             both_sides_cited=None,
             citation_invariants=invariants,
-            usage=_extract_token_usage(usage_handler),
+            usage=extract_token_usage(usage_handler),
         )
 
     assert isinstance(result, AbstainedResult)
@@ -733,7 +733,7 @@ async def execute_conflict_item(
         answer=result,
         both_sides_cited=None,
         citation_invariants=None,
-        usage=_extract_token_usage(usage_handler),
+        usage=extract_token_usage(usage_handler),
     )
 
 
@@ -1387,8 +1387,10 @@ def render_conflicts_markdown_report(run: ConflictEvalRunArtifact) -> str:
             " syntetycznych o jawnych, identycznych metadanych (`product_version`,"
             " `audience`), ponieważ dokumenty TechQA nie mają strukturalnych pól"
             " wersji ani odbiorcy (`NULL`), a deterministyczny strażnik"
-            " `resolve_conflict_type()` celowo degraduje pary z nieustaloną lub"
-            " rozbieżną wersją do `different_recommendations`.",
+            " `resolve_conflict_type()` celowo degraduje pary z rozbieżnymi lub"
+            " jednostronnie określonymi metadanymi do `different_recommendations`"
+            " (natomiast pary dwóch dokumentów TechQA bez metadanych opierają się"
+            " na ocenie `scope_relation` z treści w kroku `detect_conflict`).",
             "- Próba liczy 24 przypadki (po 8 na klasę) i używa pojedynczego"
             f" mechanizmu wyszukiwania BM25 (`k={cfg.k}`), więc przedział ufności"
             " pojedynczych wskaźników jest szeroki; wynik służy jako bramka"

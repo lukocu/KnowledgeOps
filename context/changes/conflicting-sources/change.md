@@ -1,7 +1,7 @@
 ---
 change_id: conflicting-sources
 title: Conflicting sources
-status: implemented
+status: impl_reviewed
 created: 2026-11-26
 updated: 2026-11-26
 archived_at: null

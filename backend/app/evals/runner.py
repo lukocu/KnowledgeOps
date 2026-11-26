@@ -130,14 +130,14 @@ def estimate_llm_calls(items: Sequence[EvalItem]) -> tuple[int, int]:
 
     Minimum: 1 wywołanie `draft` na pytanie (gdy brak trafień BM25 może być 0,
     ale konserwatywnie raportujemy co najmniej 1 przy założeniu trafień).
-    Maksimum: `draft` + `verify` + `judge_citations` na każde pytanie oraz
-    `judge_reference` dla każdego pytania `answerable_in_corpus`.
+    Maksimum: `draft` + `verify` + opcjonalny `detect_conflict` + `judge_citations`
+    na każde pytanie oraz `judge_reference` dla każdego pytania `answerable_in_corpus`.
     """
     n_total = len(items)
     n_answerable = sum(
         1 for item in items if item.verified_label == "answerable_in_corpus"
     )
-    return n_total, (3 * n_total) + n_answerable
+    return n_total, (4 * n_total) + n_answerable
 
 
 def format_cost_confirmation(
@@ -240,7 +240,7 @@ def ensure_langfuse_ready(
     return client
 
 
-def _extract_token_usage(handler: UsageMetadataCallbackHandler) -> TokenUsage | None:
+def extract_token_usage(handler: UsageMetadataCallbackHandler) -> TokenUsage | None:
     """Sumuje `usage_metadata` zebrane ze wszystkich wywołań LLM dla jednego pytania."""
     if not handler.usage_metadata:
         return None
@@ -260,6 +260,9 @@ def _extract_token_usage(handler: UsageMetadataCallbackHandler) -> TokenUsage | 
         output_tokens=output_tokens,
         total_tokens=total_tokens,
     )
+
+
+_extract_token_usage = extract_token_usage
 
 
 async def execute_item(

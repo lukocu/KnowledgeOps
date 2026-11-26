@@ -93,6 +93,7 @@ class RunSummary(BaseModel):
     n_failed: int
     n_answered: int
     n_abstained: int
+    n_conflicting: int = 0
     n_unanswerable_eval: int
     abstention_accuracy: float | None
     n_answerable_eval: int
@@ -307,7 +308,7 @@ def score_item(item: EvalItem, run_item: EvalItemExecution) -> list[ItemScore]:
     return scores
 
 
-def _percentile(values: Sequence[float], pct: float) -> float | None:
+def percentile(values: Sequence[float], pct: float) -> float | None:
     """Percentyl z interpolacją liniową (0..100); dla pustej listy zwraca `None`."""
     if not values:
         return None
@@ -321,6 +322,9 @@ def _percentile(values: Sequence[float], pct: float) -> float | None:
         return float(ordered[low])
     weight = rank - low
     return ordered[low] + weight * (ordered[high] - ordered[low])
+
+
+_percentile = percentile
 
 
 def _resolve_abstention_cause(run_item: EvalItemExecution) -> str | None:
@@ -339,6 +343,7 @@ def aggregate_run(results: Sequence[EvalItemExecution]) -> RunSummary:
     n_failed = n_total - n_evaluated
     n_answered = sum(1 for item in evaluated if item.outcome == "answered")
     n_abstained = sum(1 for item in evaluated if item.outcome == "abstained")
+    n_conflicting = sum(1 for item in evaluated if item.outcome == "conflicting")
 
     unanswerable = [
         item for item in evaluated if item.verified_label == "verified_unanswerable"
@@ -456,6 +461,7 @@ def aggregate_run(results: Sequence[EvalItemExecution]) -> RunSummary:
         n_failed=n_failed,
         n_answered=n_answered,
         n_abstained=n_abstained,
+        n_conflicting=n_conflicting,
         n_unanswerable_eval=n_unanswerable_eval,
         abstention_accuracy=abstention_accuracy,
         n_answerable_eval=n_answerable_eval,

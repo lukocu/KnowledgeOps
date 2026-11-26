@@ -29,6 +29,7 @@ export type EvidenceTarget = {
 };
 
 type EvidenceMeta = {
+  snapshotId: string;
   isSynthetic: boolean;
   docDate: string | null;
   productVersion: string | null;
@@ -152,11 +153,14 @@ function WindowView({
     async (signal: AbortSignal) => {
       void attempt; // nowa próba = nowa tożsamość funkcji = nowe żądanie
       const result = await getEvidence(target.chunkId, before, after, signal);
-      onMeta({
-        isSynthetic: result.is_synthetic,
-        docDate: result.doc_date ?? null,
-        productVersion: result.product_version ?? null,
-      });
+      if (!signal.aborted) {
+        onMeta({
+          snapshotId: result.snapshot_id,
+          isSynthetic: result.is_synthetic,
+          docDate: result.doc_date ?? null,
+          productVersion: result.product_version ?? null,
+        });
+      }
       return result;
     },
     [target.chunkId, before, after, attempt, onMeta],
@@ -313,10 +317,13 @@ function EvidenceBody({
     setLoadedMeta(meta);
   }, []);
 
+  const snapshotId = loadedMeta?.snapshotId ?? target.snapshotId;
   const isSynthetic = loadedMeta?.isSynthetic ?? target.isSynthetic ?? false;
   const docDate = loadedMeta?.docDate ?? target.docDate ?? null;
   const productVersion =
     loadedMeta?.productVersion ?? target.productVersion ?? null;
+  const resolvedTarget =
+    snapshotId === target.snapshotId ? target : { ...target, snapshotId };
 
   const meta: string[] = [];
   if (target.headings.length > 0) meta.push(target.headings.join(" › "));
@@ -377,7 +384,7 @@ function EvidenceBody({
           ) : null}
           {" · "}
           {t("evidence.snapshot")}{" "}
-          <span className="font-mono">{snapshotShort(target.snapshotId)}</span>
+          <span className="font-mono">{snapshotShort(snapshotId)}</span>
         </div>
       </div>
 
@@ -398,7 +405,11 @@ function EvidenceBody({
             onRetry={retry}
           />
         ) : (
-          <DocumentView target={target} attempt={attempt} onRetry={retry} />
+          <DocumentView
+            target={resolvedTarget}
+            attempt={attempt}
+            onRetry={retry}
+          />
         )}
       </div>
 
