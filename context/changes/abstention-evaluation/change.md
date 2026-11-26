@@ -1,7 +1,7 @@
 ---
 change_id: abstention-evaluation
 title: Abstention evaluation
-status: implementing
+status: implemented
 created: 2026-11-25
 updated: 2026-11-26
 archived_at: null
