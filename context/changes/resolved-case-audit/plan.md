@@ -307,16 +307,16 @@ Budujemy ekrany `2`, `2P`, `3` i `3N` (desktop `>= 1280 px` i wąskie okno `390 
 
 #### Automated
 
-- [x] 1.1 Migracja `0004_audits.sql` stosuje się idempotentnie: `cd backend; uv run python -m app.cli migrate`
-- [x] 1.2 Testy Fazy 1 i brak regresji przechodzą: `cd backend; uv run pytest tests/test_audit_store.py tests/test_observability.py tests/test_answers_api.py`
-- [x] 1.3 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
+- [x] 1.1 Migracja `0004_audits.sql` stosuje się idempotentnie: `cd backend; uv run python -m app.cli migrate` — 6cbd843
+- [x] 1.2 Testy Fazy 1 i brak regresji przechodzą: `cd backend; uv run pytest tests/test_audit_store.py tests/test_observability.py tests/test_answers_api.py` — 6cbd843
+- [x] 1.3 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .` — 6cbd843
 
 ### Phase 2: Graf audytu LangGraph (`backend/app/auditing/`) i deterministyczne reguły
 
 #### Automated
 
-- [ ] 2.1 Testy jednostkowe reguł i grafu audytu przechodzą: `cd backend; uv run pytest tests/test_audit_rules.py tests/test_audit_graph.py`
-- [ ] 2.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
+- [x] 2.1 Testy jednostkowe reguł i grafu audytu przechodzą: `cd backend; uv run pytest tests/test_audit_rules.py tests/test_audit_graph.py`
+- [x] 2.2 Kontrole jakości backendu przechodzą: `cd backend; uv run ruff check .; uv run ruff format --check .; uv run python -m mypy .`
 
 ### Phase 3: Wykonanie w tle (`lifespan`), API `/api/audits` i synchronizacja OpenAPI/TS
 
