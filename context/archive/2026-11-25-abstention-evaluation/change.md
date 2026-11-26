@@ -1,10 +1,10 @@
 ---
 change_id: abstention-evaluation
 title: Abstention evaluation
-status: impl_reviewed
+status: archived
 created: 2026-11-25
 updated: 2026-11-26
-archived_at: null
+archived_at: 2026-11-26T16:15:00Z
 ---
 
 ## Notes
