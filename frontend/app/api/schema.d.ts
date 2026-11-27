@@ -45,7 +45,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Audits Endpoint */
+        get: operations["list_audits_endpoint_api_audits_get"];
         put?: never;
         /** Create Audit Endpoint */
         post: operations["create_audit_endpoint_api_audits_post"];
@@ -325,6 +326,8 @@ export interface components {
             history: components["schemas"]["AuditHistoryEventResponse"][];
             /** Include Synthetic */
             include_synthetic: boolean;
+            /** Is Demo */
+            is_demo: boolean;
             /** Note Verdict */
             note_verdict: ("full" | "partial" | "contradiction" | "insufficient") | null;
             /** Resolution Note */
@@ -376,6 +379,93 @@ export interface components {
             note_verdict?: ("full" | "partial" | "contradiction" | "insufficient") | null;
             /** Role Label */
             role_label?: ("editor" | "consultant") | null;
+        };
+        /**
+         * AuditListItemResponse
+         * @description Wiersz listy analiz w odpowiedzi `GET /api/audits`.
+         */
+        AuditListItemResponse: {
+            /** Audit Id */
+            audit_id: string;
+            /** Case Ref */
+            case_ref: string | null;
+            /** Claims Contradicted */
+            claims_contradicted: number;
+            /** Claims Done */
+            claims_done: number;
+            /** Claims Insufficient */
+            claims_insufficient: number;
+            /** Claims Supported */
+            claims_supported: number;
+            /** Claims Total */
+            claims_total: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Decision Status
+             * @enum {string}
+             */
+            decision_status: "pending" | "in_progress" | "saved" | "not_applicable";
+            /** Decisions Count */
+            decisions_count: number;
+            /** Is Demo */
+            is_demo: boolean;
+            /**
+             * Last Activity At
+             * Format: date-time
+             */
+            last_activity_at: string;
+            /** Note Verdict */
+            note_verdict: ("full" | "partial" | "contradiction" | "insufficient") | null;
+            /** Problem Summary */
+            problem_summary: string;
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "queued" | "extracting" | "retrieving" | "verifying" | "aggregating" | "completed" | "failed";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "completed" | "failed";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * AuditListResponse
+         * @description Odpowiedź `GET /api/audits`: przefiltrowane wiersze i pełne podsumowanie.
+         */
+        AuditListResponse: {
+            /** Items */
+            items: components["schemas"]["AuditListItemResponse"][];
+            summary: components["schemas"]["AuditListSummaryResponse"];
+        };
+        /**
+         * AuditListSummaryResponse
+         * @description Podsumowanie pełnego zbioru analiz widocznego dla sesji (przed filtrami).
+         */
+        AuditListSummaryResponse: {
+            /** Demo Count */
+            demo_count: number;
+            /** In Progress Count */
+            in_progress_count: number;
+            /** Next Pending Audit Id */
+            next_pending_audit_id?: string | null;
+            /** Next Pending Case Ref */
+            next_pending_case_ref?: string | null;
+            /** Pending Count */
+            pending_count: number;
+            /** Saved Count */
+            saved_count: number;
+            /** Session Count */
+            session_count: number;
         };
         /**
          * CaseContext
@@ -919,6 +1009,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_audits_endpoint_api_audits_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                decision_status?: ("pending" | "in_progress" | "saved" | "not_applicable") | null;
+                note_verdict?: ("full" | "partial" | "contradiction" | "insufficient") | null;
+                source?: "all" | "demo" | "session";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditListResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

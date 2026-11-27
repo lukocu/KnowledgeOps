@@ -8,8 +8,14 @@ import pytest
 from fastapi.testclient import TestClient
 from psycopg.types.json import Jsonb
 
-from app.api.audits import MAX_JUSTIFICATION_LENGTH, compute_decision_status
-from app.auditing.store import AuditStage, AuditStatus, DecisionStatus, NoteVerdict
+from app.api.audits import MAX_JUSTIFICATION_LENGTH
+from app.auditing.store import (
+    AuditStage,
+    AuditStatus,
+    DecisionStatus,
+    NoteVerdict,
+    compute_decision_status,
+)
 from app.session import hash_token
 from tests.techqa.helpers import CHUNK_SET_ID, SNAPSHOT_ID
 

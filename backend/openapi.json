@@ -466,6 +466,10 @@
             "title": "Include Synthetic",
             "type": "boolean"
           },
+          "is_demo": {
+            "title": "Is Demo",
+            "type": "boolean"
+          },
           "note_verdict": {
             "anyOf": [
               {
@@ -517,6 +521,7 @@
         },
         "required": [
           "audit_id",
+          "is_demo",
           "case_ref",
           "case_description",
           "resolution_note",
@@ -663,6 +668,221 @@
           "created_at"
         ],
         "title": "AuditHistoryEventResponse",
+        "type": "object"
+      },
+      "AuditListItemResponse": {
+        "description": "Wiersz listy analiz w odpowiedzi `GET /api/audits`.",
+        "properties": {
+          "audit_id": {
+            "title": "Audit Id",
+            "type": "string"
+          },
+          "case_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Case Ref"
+          },
+          "claims_contradicted": {
+            "title": "Claims Contradicted",
+            "type": "integer"
+          },
+          "claims_done": {
+            "title": "Claims Done",
+            "type": "integer"
+          },
+          "claims_insufficient": {
+            "title": "Claims Insufficient",
+            "type": "integer"
+          },
+          "claims_supported": {
+            "title": "Claims Supported",
+            "type": "integer"
+          },
+          "claims_total": {
+            "title": "Claims Total",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision_status": {
+            "enum": [
+              "pending",
+              "in_progress",
+              "saved",
+              "not_applicable"
+            ],
+            "title": "Decision Status",
+            "type": "string"
+          },
+          "decisions_count": {
+            "title": "Decisions Count",
+            "type": "integer"
+          },
+          "is_demo": {
+            "title": "Is Demo",
+            "type": "boolean"
+          },
+          "last_activity_at": {
+            "format": "date-time",
+            "title": "Last Activity At",
+            "type": "string"
+          },
+          "note_verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "full",
+                  "partial",
+                  "contradiction",
+                  "insufficient"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Verdict"
+          },
+          "problem_summary": {
+            "title": "Problem Summary",
+            "type": "string"
+          },
+          "stage": {
+            "enum": [
+              "queued",
+              "extracting",
+              "retrieving",
+              "verifying",
+              "aggregating",
+              "completed",
+              "failed"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "audit_id",
+          "is_demo",
+          "case_ref",
+          "problem_summary",
+          "status",
+          "stage",
+          "note_verdict",
+          "claims_total",
+          "claims_done",
+          "claims_supported",
+          "claims_contradicted",
+          "claims_insufficient",
+          "decisions_count",
+          "decision_status",
+          "created_at",
+          "updated_at",
+          "last_activity_at"
+        ],
+        "title": "AuditListItemResponse",
+        "type": "object"
+      },
+      "AuditListResponse": {
+        "description": "Odpowiedź `GET /api/audits`: przefiltrowane wiersze i pełne podsumowanie.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditListItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AuditListSummaryResponse"
+          }
+        },
+        "required": [
+          "items",
+          "summary"
+        ],
+        "title": "AuditListResponse",
+        "type": "object"
+      },
+      "AuditListSummaryResponse": {
+        "description": "Podsumowanie pełnego zbioru analiz widocznego dla sesji (przed filtrami).",
+        "properties": {
+          "demo_count": {
+            "title": "Demo Count",
+            "type": "integer"
+          },
+          "in_progress_count": {
+            "title": "In Progress Count",
+            "type": "integer"
+          },
+          "next_pending_audit_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Pending Audit Id"
+          },
+          "next_pending_case_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Pending Case Ref"
+          },
+          "pending_count": {
+            "title": "Pending Count",
+            "type": "integer"
+          },
+          "saved_count": {
+            "title": "Saved Count",
+            "type": "integer"
+          },
+          "session_count": {
+            "title": "Session Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "demo_count",
+          "session_count",
+          "pending_count",
+          "in_progress_count",
+          "saved_count"
+        ],
+        "title": "AuditListSummaryResponse",
         "type": "object"
       },
       "CaseContext": {
@@ -1975,6 +2195,112 @@
       }
     },
     "/api/audits": {
+      "get": {
+        "operationId": "list_audits_endpoint_api_audits_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "decision_status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "pending",
+                    "in_progress",
+                    "saved",
+                    "not_applicable"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Decision Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "note_verdict",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "full",
+                    "partial",
+                    "contradiction",
+                    "insufficient"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Note Verdict"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "default": "all",
+              "enum": [
+                "all",
+                "demo",
+                "session"
+              ],
+              "title": "Source",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Audits Endpoint",
+        "tags": [
+          "audits"
+        ]
+      },
       "post": {
         "operationId": "create_audit_endpoint_api_audits_post",
         "requestBody": {

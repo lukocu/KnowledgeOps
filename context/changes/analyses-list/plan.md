@@ -326,17 +326,17 @@ Wdrażamy ekran `5` („Analizy i decyzje”) pod trasą `/analizy`, dodajemy go
 
 #### Automated
 
-- [x] 2.1 Testy `backend/tests/test_demo_seed.py` przechodzą w Dockerze (`pytest`).
-- [x] 2.2 Komenda `docker compose exec backend .venv/bin/python -m app.cli import-demo-audits` uruchamia się czysto na lokalnej bazie TechQA; drugie uruchomienie raportuje `identyczny` i 4 przykłady demo.
-- [x] 2.3 Kontrole jakości backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
+- [x] 2.1 Testy `backend/tests/test_demo_seed.py` przechodzą w Dockerze (`pytest`). — 51566f6
+- [x] 2.2 Komenda `docker compose exec backend .venv/bin/python -m app.cli import-demo-audits` uruchamia się czysto na lokalnej bazie TechQA; drugie uruchomienie raportuje `identyczny` i 4 przykłady demo. — 51566f6
+- [x] 2.3 Kontrole jakości backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`). — 51566f6
 
 ### Phase 3: API `GET /api/audits`, poprawki sesyjne i kontrakt OpenAPI/TS
 
 #### Automated
 
-- [ ] 3.1 Wszystkie testy backendu przechodzą w Dockerze (`pytest`), w tym nowe testy HTTP izolacji sesji i odczytu/zapisu demo bez ciasteczka.
-- [ ] 3.2 Kontrole backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
-- [ ] 3.3 Kontrakt jest aktualny (`backend/openapi.json` i `frontend/app/api/schema.d.ts` zregenerowane), a `cd frontend; npm run typecheck` przechodzi bez błędów.
+- [x] 3.1 Wszystkie testy backendu przechodzą w Dockerze (`pytest`), w tym nowe testy HTTP izolacji sesji i odczytu/zapisu demo bez ciasteczka.
+- [x] 3.2 Kontrole backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
+- [x] 3.3 Kontrakt jest aktualny (`backend/openapi.json` i `frontend/app/api/schema.d.ts` zregenerowane), a `cd frontend; npm run typecheck` przechodzi bez błędów.
 
 ### Phase 4: Frontend ekranu `/analizy`, nawigacja i responsywność 390 px
 

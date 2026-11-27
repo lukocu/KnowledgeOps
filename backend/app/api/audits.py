@@ -24,20 +24,25 @@ from app.auditing.store import (
     AuditEventType,
     AuditNotCompletedError,
     AuditNotFoundError,
+    AuditSourceFilter,
     AuditStatus,
     DecisionCategory,
     DecisionStatus,
     RoleLabel,
     StoredAudit,
     StoredAuditEvent,
+    StoredAuditListItem,
+    StoredAuditListResult,
     StoredClaimDecision,
+    compute_decision_status,
     create_audit,
     get_audit_for_session,
+    list_audits_for_session,
     upsert_claim_decision,
 )
 from app.db import PoolDep, http_connection
 from app.retrieval import get_corpus_info, resolve_active_chunk_set_ids
-from app.session import AuditSessionDep, SessionDep
+from app.session import OptionalSessionDep, SessionDep
 from app.settings import SettingsDep
 
 logger = logging.getLogger(__name__)
@@ -147,6 +152,7 @@ class AuditDetailResponse(BaseModel):
     """Pełny stan audytu (w kolejce, w toku, zakończony lub błędny)."""
 
     audit_id: str
+    is_demo: bool
     case_ref: str | None
     case_description: str
     resolution_note: str
@@ -170,21 +176,82 @@ class AuditDetailResponse(BaseModel):
     completed_at: datetime | None
 
 
-def compute_decision_status(
-    status: AuditStatus, claims_total: int, decisions_count: int
-) -> DecisionStatus:
-    """Wylicza stan decyzji redaktora niezależnie od technicznego `audits.status`."""
-    if status in ("queued", "running"):
-        return "pending"
-    if status == "failed":
-        return "not_applicable"
-    if claims_total <= 0:
-        return "not_applicable"
-    if decisions_count <= 0:
-        return "pending"
-    if decisions_count < claims_total:
-        return "in_progress"
-    return "saved"
+class AuditListItemResponse(BaseModel):
+    """Wiersz listy analiz w odpowiedzi `GET /api/audits`."""
+
+    audit_id: str
+    is_demo: bool
+    case_ref: str | None
+    problem_summary: str
+    status: AuditStatus
+    stage: AuditStage
+    note_verdict: NoteVerdict | None
+    claims_total: int
+    claims_done: int
+    claims_supported: int
+    claims_contradicted: int
+    claims_insufficient: int
+    decisions_count: int
+    decision_status: DecisionStatus
+    created_at: datetime
+    updated_at: datetime
+    last_activity_at: datetime
+
+
+class AuditListSummaryResponse(BaseModel):
+    """Podsumowanie pełnego zbioru analiz widocznego dla sesji (przed filtrami)."""
+
+    demo_count: int
+    session_count: int
+    pending_count: int
+    in_progress_count: int
+    saved_count: int
+    next_pending_audit_id: str | None = None
+    next_pending_case_ref: str | None = None
+
+
+class AuditListResponse(BaseModel):
+    """Odpowiedź `GET /api/audits`: przefiltrowane wiersze i pełne podsumowanie."""
+
+    items: list[AuditListItemResponse]
+    summary: AuditListSummaryResponse
+
+
+def _to_list_item_response(item: StoredAuditListItem) -> AuditListItemResponse:
+    return AuditListItemResponse(
+        audit_id=item.id,
+        is_demo=item.is_demo,
+        case_ref=item.case_ref,
+        problem_summary=item.problem_summary,
+        status=item.status,
+        stage=item.stage,
+        note_verdict=item.note_verdict,
+        claims_total=item.claims_total,
+        claims_done=item.claims_done,
+        claims_supported=item.claims_supported,
+        claims_contradicted=item.claims_contradicted,
+        claims_insufficient=item.claims_insufficient,
+        decisions_count=item.decisions_count,
+        decision_status=item.decision_status,
+        created_at=item.created_at,
+        updated_at=item.updated_at,
+        last_activity_at=item.last_activity_at,
+    )
+
+
+def _to_list_response(result: StoredAuditListResult) -> AuditListResponse:
+    return AuditListResponse(
+        items=[_to_list_item_response(item) for item in result.items],
+        summary=AuditListSummaryResponse(
+            demo_count=result.demo_count,
+            session_count=result.session_count,
+            pending_count=result.pending_count,
+            in_progress_count=result.in_progress_count,
+            saved_count=result.saved_count,
+            next_pending_audit_id=result.next_pending_audit_id,
+            next_pending_case_ref=result.next_pending_case_ref,
+        ),
+    )
 
 
 def _to_claim_decision_response(
@@ -262,6 +329,7 @@ def _to_detail_response(stored: StoredAudit) -> AuditDetailResponse:
     history = [_to_history_event_response(event) for event in stored.history]
     return AuditDetailResponse(
         audit_id=stored.id,
+        is_demo=stored.is_demo,
         case_ref=stored.case_ref,
         case_description=stored.case_description,
         resolution_note=stored.resolution_note,
@@ -371,6 +439,30 @@ async def create_audit_endpoint(
 
 
 @router.get(
+    "/audits",
+    response_model=AuditListResponse,
+)
+async def list_audits_endpoint(
+    pool: PoolDep,
+    session_hash: OptionalSessionDep,
+    q: str | None = None,
+    decision_status: DecisionStatus | None = None,
+    note_verdict: NoteVerdict | None = None,
+    source: AuditSourceFilter = "all",
+) -> AuditListResponse:
+    async with http_connection(pool) as conn:
+        result = await list_audits_for_session(
+            conn,
+            session_hash,
+            q=q,
+            decision_status=decision_status,
+            note_verdict=note_verdict,
+            source=source,
+        )
+    return _to_list_response(result)
+
+
+@router.get(
     "/audits/{audit_id}",
     response_model=AuditDetailResponse,
     responses={404: {"description": "Brak analizy w tej sesji"}},
@@ -378,7 +470,7 @@ async def create_audit_endpoint(
 async def get_audit_endpoint(
     audit_id: str,
     pool: PoolDep,
-    session_hash: AuditSessionDep,
+    session_hash: OptionalSessionDep,
 ) -> AuditDetailResponse:
     async with http_connection(pool) as conn:
         stored = await get_audit_for_session(conn, audit_id, session_hash)
@@ -400,7 +492,7 @@ async def save_claim_decision_endpoint(
     claim_id: str,
     body: SaveClaimDecisionRequest,
     pool: PoolDep,
-    session_hash: AuditSessionDep,
+    session_hash: SessionDep,
 ) -> AuditDetailResponse:
     async with http_connection(pool) as conn:
         try:

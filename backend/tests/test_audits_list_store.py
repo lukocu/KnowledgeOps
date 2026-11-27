@@ -9,9 +9,9 @@ import pytest
 from fastapi import Request
 from psycopg import AsyncConnection
 
-from app.api.audits import compute_decision_status as api_compute_decision_status
 from app.auditing.store import (
     AuditStatus,
+    DecisionStatus,
     NewAuditClaim,
     _derive_problem_summary,
     complete_audit,
@@ -89,16 +89,22 @@ def _make_claims() -> list[NewAuditClaim]:
     ]
 
 
-def test_compute_decision_status_parity_with_api() -> None:
-    statuses: tuple[AuditStatus, ...] = ("queued", "running", "completed", "failed")
-    for audit_status in statuses:
-        for claims_total in (0, 1, 3):
-            for decisions_count in (0, 1, 3, 4):
-                assert compute_decision_status(
-                    audit_status, claims_total, decisions_count
-                ) == api_compute_decision_status(
-                    audit_status, claims_total, decisions_count
-                )
+def test_compute_decision_status_cases() -> None:
+    expected_cases: list[tuple[AuditStatus, int, int, DecisionStatus]] = [
+        ("queued", 0, 0, "pending"),
+        ("running", 3, 1, "pending"),
+        ("failed", 3, 0, "not_applicable"),
+        ("completed", 0, 0, "not_applicable"),
+        ("completed", 3, 0, "pending"),
+        ("completed", 3, 1, "in_progress"),
+        ("completed", 3, 3, "saved"),
+        ("completed", 3, 4, "saved"),
+    ]
+    for audit_status, claims_total, decisions_count, expected in expected_cases:
+        assert (
+            compute_decision_status(audit_status, claims_total, decisions_count)
+            == expected
+        )
 
 
 def test_derive_problem_summary_prefers_case_context_problem() -> None:
