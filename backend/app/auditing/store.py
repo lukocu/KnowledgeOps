@@ -38,6 +38,37 @@ AuditEventType = Literal[
 ]
 AuditEventActor = Literal["system", "human"]
 DecisionStatus = Literal["pending", "in_progress", "saved", "not_applicable"]
+AuditSourceFilter = Literal["all", "demo", "session"]
+
+
+def compute_decision_status(
+    status: AuditStatus, claims_total: int, decisions_count: int
+) -> DecisionStatus:
+    """Wylicza stan decyzji redaktora niezależnie od technicznego `audits.status`."""
+    if status in ("queued", "running"):
+        return "pending"
+    if status == "failed":
+        return "not_applicable"
+    if claims_total <= 0:
+        return "not_applicable"
+    if decisions_count <= 0:
+        return "pending"
+    if decisions_count < claims_total:
+        return "in_progress"
+    return "saved"
+
+
+def _derive_problem_summary(
+    case_context: dict[str, Any] | None, case_description: str
+) -> str:
+    """Zwraca skrót problemu z `case_context["problem"]`, gdy niepusty."""
+    if isinstance(case_context, dict):
+        raw_problem = case_context.get("problem")
+        if isinstance(raw_problem, str):
+            stripped = raw_problem.strip()
+            if stripped:
+                return stripped
+    return case_description.strip()
 
 
 class AuditNotFoundError(LookupError):
@@ -141,6 +172,41 @@ class StoredAudit(BaseModel):
     completed_at: datetime | None
     claims: list[StoredAuditClaim] = Field(default_factory=list)
     history: list[StoredAuditEvent] = Field(default_factory=list)
+
+
+class StoredAuditListItem(BaseModel):
+    """Wiersz listy analiz z agregacją tez, decyzji sesji i ostatniej aktywności."""
+
+    id: str
+    is_demo: bool
+    case_ref: str | None
+    problem_summary: str
+    status: AuditStatus
+    stage: AuditStage
+    note_verdict: NoteVerdict | None
+    claims_total: int
+    claims_done: int
+    claims_supported: int
+    claims_contradicted: int
+    claims_insufficient: int
+    decisions_count: int
+    decision_status: DecisionStatus
+    created_at: datetime
+    updated_at: datetime
+    last_activity_at: datetime
+
+
+class StoredAuditListResult(BaseModel):
+    """Wynik listowania analiz z licznikami pełnego zbioru widocznego dla sesji."""
+
+    items: list[StoredAuditListItem] = Field(default_factory=list)
+    demo_count: int
+    session_count: int
+    pending_count: int
+    in_progress_count: int
+    saved_count: int
+    next_pending_audit_id: str | None = None
+    next_pending_case_ref: str | None = None
 
 
 async def _insert_audit_event(
@@ -538,4 +604,188 @@ async def get_audit_for_session(
     ]
     return StoredAudit.model_validate(
         {**audit_row, "claims": enriched_claims, "history": event_rows}
+    )
+
+
+def _priority_group(item: StoredAuditListItem) -> int:
+    if item.status == "completed" and item.decision_status in (
+        "pending",
+        "in_progress",
+    ):
+        return 0
+    if item.status in ("queued", "running"):
+        return 1
+    return 2
+
+
+async def list_audits_for_session(
+    conn: AsyncConnection,
+    session_hash: str | None,
+    *,
+    q: str | None = None,
+    decision_status: DecisionStatus | None = None,
+    note_verdict: NoteVerdict | None = None,
+    source: AuditSourceFilter = "all",
+) -> StoredAuditListResult:
+    """Zwraca listę analiz widocznych dla sesji wraz z licznikami i sortowaniem.
+
+    Liczniki podsumowania i wskazanie kolejnej analizy do decyzji (`next_pending_*`)
+    wyliczane są na całym widocznym zbiorze przed filtrami, a `items` zawiera
+    wiersze po zastosowaniu filtrów `q`, `decision_status`, `note_verdict`, `source`.
+    """
+    async with conn.cursor(row_factory=dict_row) as cur:
+        await cur.execute(
+            "WITH visible_audits AS ("
+            " SELECT id, is_demo, case_ref, case_description, case_context,"
+            "  status, stage, note_verdict, claims_total, claims_done,"
+            "  created_at, updated_at"
+            " FROM audits"
+            " WHERE is_demo = true"
+            "  OR (%s::text IS NOT NULL AND session_hash = %s)"
+            "),"
+            " claim_stats AS ("
+            " SELECT c.audit_id,"
+            "  COUNT(*) FILTER (WHERE c.verdict = 'supported')::int"
+            "   AS claims_supported,"
+            "  COUNT(*) FILTER (WHERE c.verdict = 'contradicted')::int"
+            "   AS claims_contradicted,"
+            "  COUNT(*) FILTER (WHERE c.verdict = 'insufficient')::int"
+            "   AS claims_insufficient"
+            " FROM audit_claims AS c"
+            " JOIN visible_audits AS va ON va.id = c.audit_id"
+            " GROUP BY c.audit_id"
+            "),"
+            " decision_stats AS ("
+            " SELECT d.audit_id,"
+            "  COUNT(*)::int AS decisions_count,"
+            "  MAX(d.updated_at) AS last_decision_at"
+            " FROM audit_claim_decisions AS d"
+            " JOIN visible_audits AS va ON va.id = d.audit_id"
+            " WHERE %s::text IS NOT NULL AND d.session_hash = %s"
+            " GROUP BY d.audit_id"
+            ")"
+            " SELECT"
+            "  va.id::text AS id,"
+            "  va.is_demo,"
+            "  va.case_ref,"
+            "  va.case_description,"
+            "  va.case_context,"
+            "  va.status,"
+            "  va.stage,"
+            "  va.note_verdict,"
+            "  va.claims_total,"
+            "  va.claims_done,"
+            "  COALESCE(cs.claims_supported, 0) AS claims_supported,"
+            "  COALESCE(cs.claims_contradicted, 0) AS claims_contradicted,"
+            "  COALESCE(cs.claims_insufficient, 0) AS claims_insufficient,"
+            "  COALESCE(ds.decisions_count, 0) AS decisions_count,"
+            "  va.created_at,"
+            "  va.updated_at,"
+            "  GREATEST("
+            "   va.updated_at,"
+            "   COALESCE(ds.last_decision_at, va.updated_at)"
+            "  ) AS last_activity_at"
+            " FROM visible_audits AS va"
+            " LEFT JOIN claim_stats AS cs ON cs.audit_id = va.id"
+            " LEFT JOIN decision_stats AS ds ON ds.audit_id = va.id",
+            (session_hash, session_hash, session_hash, session_hash),
+        )
+        rows = await cur.fetchall()
+
+    visible_entries: list[tuple[StoredAuditListItem, str]] = []
+    for row in rows:
+        case_description = str(row["case_description"])
+        raw_context = row["case_context"]
+        case_context: dict[str, Any] | None = (
+            raw_context if isinstance(raw_context, dict) else None
+        )
+        row_status: AuditStatus = row["status"]
+        claims_total = int(row["claims_total"])
+        decisions_count = int(row["decisions_count"])
+        item = StoredAuditListItem.model_validate(
+            {
+                "id": row["id"],
+                "is_demo": row["is_demo"],
+                "case_ref": row["case_ref"],
+                "problem_summary": _derive_problem_summary(
+                    case_context, case_description
+                ),
+                "status": row_status,
+                "stage": row["stage"],
+                "note_verdict": row["note_verdict"],
+                "claims_total": claims_total,
+                "claims_done": row["claims_done"],
+                "claims_supported": row["claims_supported"],
+                "claims_contradicted": row["claims_contradicted"],
+                "claims_insufficient": row["claims_insufficient"],
+                "decisions_count": decisions_count,
+                "decision_status": compute_decision_status(
+                    row_status, claims_total, decisions_count
+                ),
+                "created_at": row["created_at"],
+                "updated_at": row["updated_at"],
+                "last_activity_at": row["last_activity_at"],
+            }
+        )
+        visible_entries.append((item, case_description))
+
+    visible_entries.sort(
+        key=lambda entry: (
+            entry[0].last_activity_at,
+            entry[0].created_at,
+            entry[0].id,
+        ),
+        reverse=True,
+    )
+    visible_entries.sort(key=lambda entry: _priority_group(entry[0]))
+
+    demo_count = sum(1 for item, _ in visible_entries if item.is_demo)
+    session_count = len(visible_entries) - demo_count
+    pending_count = sum(
+        1 for item, _ in visible_entries if item.decision_status == "pending"
+    )
+    in_progress_count = sum(
+        1 for item, _ in visible_entries if item.decision_status == "in_progress"
+    )
+    saved_count = sum(
+        1 for item, _ in visible_entries if item.decision_status == "saved"
+    )
+
+    next_pending = next(
+        (item for item, _ in visible_entries if _priority_group(item) == 0),
+        None,
+    )
+
+    needle = q.strip().casefold() if q is not None else ""
+    filtered_items: list[StoredAuditListItem] = []
+    for item, case_description in visible_entries:
+        if source == "demo" and not item.is_demo:
+            continue
+        if source == "session" and item.is_demo:
+            continue
+        if decision_status is not None and item.decision_status != decision_status:
+            continue
+        if note_verdict is not None and item.note_verdict != note_verdict:
+            continue
+        if needle:
+            haystacks = (
+                (item.case_ref or "").casefold(),
+                item.problem_summary.casefold(),
+                case_description.casefold(),
+            )
+            if not any(needle in text for text in haystacks):
+                continue
+        filtered_items.append(item)
+
+    return StoredAuditListResult(
+        items=filtered_items,
+        demo_count=demo_count,
+        session_count=session_count,
+        pending_count=pending_count,
+        in_progress_count=in_progress_count,
+        saved_count=saved_count,
+        next_pending_audit_id=next_pending.id if next_pending is not None else None,
+        next_pending_case_ref=(
+            next_pending.case_ref if next_pending is not None else None
+        ),
     )

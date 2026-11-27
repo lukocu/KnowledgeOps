@@ -21,6 +21,7 @@ def test_second_run_applies_nothing(temp_database: str) -> None:
             "0003_synthetic_and_conflicts",
             "0004_audits",
             "0005_audit_decisions_and_history",
+            "0006_audits_demo_index",
         ]
         assert apply_migrations(conn, MIGRATIONS_DIR) == []
 
