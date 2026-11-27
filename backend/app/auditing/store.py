@@ -22,6 +22,57 @@ AuditStage = Literal[
 ]
 NoteVerdict = Literal["full", "partial", "contradiction", "insufficient"]
 ClaimVerdict = Literal["supported", "contradicted", "insufficient"]
+DecisionCategory = Literal[
+    "agree_with_system",
+    "request_source_or_verify",
+    "consider_doc_update",
+    "system_verdict_wrong",
+]
+RoleLabel = Literal["editor", "consultant"]
+AuditEventType = Literal[
+    "audit_created",
+    "evaluation_completed",
+    "evaluation_failed",
+    "decision_saved",
+    "decision_updated",
+]
+AuditEventActor = Literal["system", "human"]
+DecisionStatus = Literal["pending", "in_progress", "saved", "not_applicable"]
+
+
+class AuditNotFoundError(LookupError):
+    """Audyt lub teza nie istnieje albo nie należy do bieżącej sesji."""
+
+
+class AuditNotCompletedError(RuntimeError):
+    """Audyt nie jest zakończony i nie można zapisać dla niego decyzji."""
+
+
+class StoredClaimDecision(BaseModel):
+    """Bieżąca decyzja redaktora zapisana dla pojedynczej tezy audytu."""
+
+    id: str
+    audit_id: str
+    claim_id: str
+    decision: DecisionCategory
+    justification: str
+    role_label: RoleLabel
+    created_at: datetime
+    updated_at: datetime
+
+
+class StoredAuditEvent(BaseModel):
+    """Niemutowalne zdarzenie w historii cyklu życia audytu."""
+
+    id: str
+    audit_id: str
+    claim_id: str | None = None
+    claim_index: int | None = None
+    event_type: AuditEventType
+    actor_type: AuditEventActor
+    role_label: RoleLabel | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
 
 
 class NewAuditClaim(BaseModel):
@@ -61,6 +112,7 @@ class StoredAuditClaim(BaseModel):
     evidence: list[dict[str, Any]] = Field(default_factory=list)
     checked_docs: list[dict[str, Any]] = Field(default_factory=list)
     error: str | None = None
+    decision: StoredClaimDecision | None = None
 
 
 class StoredAudit(BaseModel):
@@ -88,6 +140,37 @@ class StoredAudit(BaseModel):
     updated_at: datetime
     completed_at: datetime | None
     claims: list[StoredAuditClaim] = Field(default_factory=list)
+    history: list[StoredAuditEvent] = Field(default_factory=list)
+
+
+async def _insert_audit_event(
+    conn: AsyncConnection,
+    *,
+    audit_id: str,
+    event_type: AuditEventType,
+    actor_type: AuditEventActor,
+    claim_id: str | None = None,
+    session_hash: str | None = None,
+    role_label: RoleLabel | None = None,
+    payload: dict[str, Any] | None = None,
+) -> None:
+    """Dopisuje niemutowalne zdarzenie do `audit_events` w bieżącej transakcji."""
+    await conn.execute(
+        "INSERT INTO audit_events ("
+        " id, audit_id, claim_id, session_hash, event_type,"
+        " actor_type, role_label, payload"
+        ") VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+        (
+            str(uuid.uuid4()),
+            audit_id,
+            claim_id,
+            session_hash,
+            event_type,
+            actor_type,
+            role_label,
+            Jsonb(payload if payload is not None else {}),
+        ),
+    )
 
 
 async def create_audit(
@@ -122,6 +205,13 @@ async def create_audit(
                 list(chunk_set_ids),
                 Jsonb(config),
             ),
+        )
+        await _insert_audit_event(
+            conn,
+            audit_id=resolved_id,
+            event_type="audit_created",
+            actor_type="system",
+            payload={"case_ref": case_ref},
         )
     return resolved_id
 
@@ -227,6 +317,13 @@ async def complete_audit(
                 audit_id,
             ),
         )
+        await _insert_audit_event(
+            conn,
+            audit_id=audit_id,
+            event_type="evaluation_completed",
+            actor_type="system",
+            payload={"note_verdict": note_verdict, "claims_total": total},
+        )
 
 
 async def fail_audit(
@@ -250,6 +347,13 @@ async def fail_audit(
             " WHERE id = %s",
             (error, trace_id, duration_ms, audit_id),
         )
+        await _insert_audit_event(
+            conn,
+            audit_id=audit_id,
+            event_type="evaluation_failed",
+            actor_type="system",
+            payload={},
+        )
 
 
 async def fail_orphaned_audits(
@@ -265,10 +369,104 @@ async def fail_orphaned_audits(
                 "     stage = 'failed',"
                 "     error = %s,"
                 "     updated_at = now()"
-                " WHERE status IN ('queued', 'running')",
+                " WHERE status IN ('queued', 'running')"
+                " RETURNING id::text",
                 (reason,),
             )
-            return cur.rowcount
+            rows = await cur.fetchall()
+        for row in rows:
+            await _insert_audit_event(
+                conn,
+                audit_id=str(row[0]),
+                event_type="evaluation_failed",
+                actor_type="system",
+                payload={"orphaned": True},
+            )
+        return len(rows)
+
+
+async def upsert_claim_decision(
+    conn: AsyncConnection,
+    *,
+    audit_id: str,
+    claim_id: str,
+    session_hash: str,
+    decision: DecisionCategory,
+    justification: str,
+    role_label: RoleLabel,
+) -> Literal["saved", "updated"]:
+    """Zapisuje lub aktualizuje decyzję redaktora dla tezy i dopisuje zdarzenie."""
+    try:
+        uuid.UUID(audit_id)
+        uuid.UUID(claim_id)
+    except ValueError as exc:
+        raise AuditNotFoundError(
+            "Nieprawidłowy identyfikator audytu lub tezy."
+        ) from exc
+
+    async with conn.transaction():
+        async with conn.cursor(row_factory=dict_row) as cur:
+            await cur.execute(
+                "SELECT status"
+                " FROM audits"
+                " WHERE id = %s AND (is_demo = true OR session_hash = %s)",
+                (audit_id, session_hash),
+            )
+            audit_row = await cur.fetchone()
+            if audit_row is None:
+                raise AuditNotFoundError(f"Nie znaleziono audytu {audit_id}.")
+            if audit_row["status"] != "completed":
+                raise AuditNotCompletedError(
+                    f"Audyt {audit_id} ma status '{audit_row['status']}', "
+                    "decyzje można zapisywać tylko dla zakończonych audytów."
+                )
+            await cur.execute(
+                "SELECT claim_index FROM audit_claims WHERE id = %s AND audit_id = %s",
+                (claim_id, audit_id),
+            )
+            claim_row = await cur.fetchone()
+            if claim_row is None:
+                raise AuditNotFoundError(
+                    f"Nie znaleziono tezy {claim_id} w audycie {audit_id}."
+                )
+            claim_index = int(claim_row["claim_index"])
+            await cur.execute(
+                "INSERT INTO audit_claim_decisions ("
+                " id, audit_id, claim_id, session_hash,"
+                " decision, justification, role_label"
+                ") VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                " ON CONFLICT (claim_id, session_hash) DO UPDATE"
+                " SET decision = EXCLUDED.decision,"
+                "     justification = EXCLUDED.justification,"
+                "     role_label = EXCLUDED.role_label,"
+                "     updated_at = now()"
+                " RETURNING (xmax = 0) AS inserted",
+                (
+                    str(uuid.uuid4()),
+                    audit_id,
+                    claim_id,
+                    session_hash,
+                    decision,
+                    justification,
+                    role_label,
+                ),
+            )
+            upsert_row = await cur.fetchone()
+            inserted = bool(upsert_row["inserted"]) if upsert_row is not None else False
+        event_type: AuditEventType = (
+            "decision_saved" if inserted else "decision_updated"
+        )
+        await _insert_audit_event(
+            conn,
+            audit_id=audit_id,
+            claim_id=claim_id,
+            session_hash=session_hash,
+            event_type=event_type,
+            actor_type="human",
+            role_label=role_label,
+            payload={"decision": decision, "claim_index": claim_index},
+        )
+        return "saved" if inserted else "updated"
 
 
 async def get_audit_for_session(
@@ -310,4 +508,34 @@ async def get_audit_for_session(
             (audit_id,),
         )
         claim_rows = await cur.fetchall()
-    return StoredAudit.model_validate({**audit_row, "claims": claim_rows})
+        decisions_by_claim: dict[str, dict[str, Any]] = {}
+        if session_hash is not None:
+            await cur.execute(
+                "SELECT id::text AS id, audit_id::text AS audit_id,"
+                " claim_id::text AS claim_id, decision, justification,"
+                " role_label, created_at, updated_at"
+                " FROM audit_claim_decisions"
+                " WHERE audit_id = %s AND session_hash = %s",
+                (audit_id, session_hash),
+            )
+            decision_rows = await cur.fetchall()
+            decisions_by_claim = {str(row["claim_id"]): row for row in decision_rows}
+        await cur.execute(
+            "SELECT e.id::text AS id, e.audit_id::text AS audit_id,"
+            " e.claim_id::text AS claim_id, c.claim_index AS claim_index,"
+            " e.event_type, e.actor_type, e.role_label, e.payload, e.created_at"
+            " FROM audit_events AS e"
+            " LEFT JOIN audit_claims AS c ON c.id = e.claim_id"
+            " WHERE e.audit_id = %s"
+            "   AND (e.actor_type = 'system' OR e.session_hash = %s)"
+            " ORDER BY e.created_at ASC, e.seq ASC",
+            (audit_id, session_hash),
+        )
+        event_rows = await cur.fetchall()
+    enriched_claims = [
+        {**claim_row, "decision": decisions_by_claim.get(str(claim_row["id"]))}
+        for claim_row in claim_rows
+    ]
+    return StoredAudit.model_validate(
+        {**audit_row, "claims": enriched_claims, "history": event_rows}
+    )
