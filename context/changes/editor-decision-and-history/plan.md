@@ -389,14 +389,14 @@ Wdrażamy pełny interfejs decyzji redaktora i historii analizy zgodny z makieta
 
 #### Automated
 
-- [x] 3.1 Linter, formatowanie, typecheck, testy Vitest i build frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
-- [x] 3.2 Pełna suita backendu (`ruff`, `mypy` w Dockerze, `pytest`) nadal przechodzi bez regresji
+- [x] 3.1 Linter, formatowanie, typecheck, testy Vitest i build frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build` — 3f39fc7
+- [x] 3.2 Pełna suita backendu (`ruff`, `mypy` w Dockerze, `pytest`) nadal przechodzi bez regresji — 3f39fc7
 
 #### Manual
 
-- [x] 3.3 Ekran `3` przy `1280 px` i `1440 px`: prawy panel decyzji (`340 px`) obok oceny tezy, brak wyboru domyślnego i brak „Sugestii systemu”, tymczasowa zamiana przy otwarciu dowodu/kontekstu i powrót po `X`/`Escape`
-- [x] 3.4 Przełącznik ról: tryb tylko do odczytu + przycisk „Przełącz na rolę Redaktor” dla `Konsultant`, zapis i edycja decyzji dla każdej tezy w roli `Redaktor`
-- [x] 3.5 Zapis bez kategorii lub uzasadnienia jest zablokowany; po zapisaniu decyzji dla wszystkich tez status analizy zmienia się na `Zapisana` i przetrwa odświeżenie strony
-- [x] 3.6 `Historia` (domyślnie zwinięta nad `Jak powstała ta analiza`) pokazuje wyłącznie rzeczywiste zdarzenia z rozróżnieniem systemu i człowieka
-- [x] 3.7 Ekran `3N` i arkusz `3N-D` przy `390 px`: przyklejony dolny pasek CTA otwiera arkusz modalny z trapem fokusu i `Escape`, zero przewijania w poziomie
-- [x] 3.8 Przełącznik języka `PL`/`EN` przełącza wszystkie nowe etykiety interfejsu bez tłumaczenia treści zgłoszenia i cytatów
+- [x] 3.3 Ekran `3` przy `1280 px` i `1440 px`: prawy panel decyzji (`340 px`) obok oceny tezy, brak wyboru domyślnego i brak „Sugestii systemu”, tymczasowa zamiana przy otwarciu dowodu/kontekstu i powrót po `X`/`Escape` — 3f39fc7
+- [x] 3.4 Przełącznik ról: tryb tylko do odczytu + przycisk „Przełącz na rolę Redaktor” dla `Konsultant`, zapis i edycja decyzji dla każdej tezy w roli `Redaktor` — 3f39fc7
+- [x] 3.5 Zapis bez kategorii lub uzasadnienia jest zablokowany; po zapisaniu decyzji dla wszystkich tez status analizy zmienia się na `Zapisana` i przetrwa odświeżenie strony — 3f39fc7
+- [x] 3.6 `Historia` (domyślnie zwinięta nad `Jak powstała ta analiza`) pokazuje wyłącznie rzeczywiste zdarzenia z rozróżnieniem systemu i człowieka — 3f39fc7
+- [x] 3.7 Ekran `3N` i arkusz `3N-D` przy `390 px`: przyklejony dolny pasek CTA otwiera arkusz modalny z trapem fokusu i `Escape`, zero przewijania w poziomie — 3f39fc7
+- [x] 3.8 Przełącznik języka `PL`/`EN` przełącza wszystkie nowe etykiety interfejsu bez tłumaczenia treści zgłoszenia i cytatów — 3f39fc7
