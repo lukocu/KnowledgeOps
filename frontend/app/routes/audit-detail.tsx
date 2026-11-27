@@ -96,8 +96,8 @@ function AuditDetailScreen({ id }: { id: string }) {
           {t("audit.detail.notFoundBody")}
         </p>
         <div className="mt-5">
-          <Link to="/audyt" className={PRIMARY_BUTTON}>
-            {t("audit.detail.newAudit")}
+          <Link to="/analizy" className={PRIMARY_BUTTON}>
+            {t("audit.detail.allAnalyses")}
           </Link>
         </div>
       </section>
@@ -127,8 +127,8 @@ function AuditDetailScreen({ id }: { id: string }) {
           >
             {t("errorState.retry")}
           </button>
-          <Link to="/audyt" className={SECONDARY_BUTTON}>
-            {t("audit.detail.newAudit")}
+          <Link to="/analizy" className={SECONDARY_BUTTON}>
+            {t("audit.detail.allAnalyses")}
           </Link>
         </div>
       </section>
@@ -180,8 +180,8 @@ function AuditDetailScreen({ id }: { id: string }) {
           >
             {t("audit.detail.retryAudit")}
           </Link>
-          <Link to="/audyt" className={SECONDARY_BUTTON}>
-            {t("audit.detail.newAudit")}
+          <Link to="/analizy" className={SECONDARY_BUTTON}>
+            {t("audit.detail.allAnalyses")}
           </Link>
         </div>
       </section>

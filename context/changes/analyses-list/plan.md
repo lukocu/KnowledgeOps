@@ -334,21 +334,21 @@ Wdrażamy ekran `5` („Analizy i decyzje”) pod trasą `/analizy`, dodajemy go
 
 #### Automated
 
-- [x] 3.1 Wszystkie testy backendu przechodzą w Dockerze (`pytest`), w tym nowe testy HTTP izolacji sesji i odczytu/zapisu demo bez ciasteczka.
-- [x] 3.2 Kontrole backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
-- [x] 3.3 Kontrakt jest aktualny (`backend/openapi.json` i `frontend/app/api/schema.d.ts` zregenerowane), a `cd frontend; npm run typecheck` przechodzi bez błędów.
+- [x] 3.1 Wszystkie testy backendu przechodzą w Dockerze (`pytest`), w tym nowe testy HTTP izolacji sesji i odczytu/zapisu demo bez ciasteczka. — 449c170
+- [x] 3.2 Kontrole backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`). — 449c170
+- [x] 3.3 Kontrakt jest aktualny (`backend/openapi.json` i `frontend/app/api/schema.d.ts` zregenerowane), a `cd frontend; npm run typecheck` przechodzi bez błędów. — 449c170
 
 ### Phase 4: Frontend ekranu `/analizy`, nawigacja i responsywność 390 px
 
 #### Automated
 
-- [ ] 4.1 Kontrole frontendu przechodzą bez błędów i ostrzeżeń: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`.
-- [ ] 4.2 Kontrole backendu nadal przechodzą (brak regresji).
+- [x] 4.1 Kontrole frontendu przechodzą bez błędów i ostrzeżeń: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`.
+- [x] 4.2 Kontrole backendu nadal przechodzą (brak regresji).
 
 #### Manual
 
-- [ ] 4.3 Na czystej sesji przeglądarki (bez ciasteczka `kops_session`) wejście na `/analizy` pokazuje 4 przykłady demo (`SIM-P08`, `SIM-P11`, `SIM-P04`, `SIM-P01`), baner „Zacznij od SIM-P08”, chip `Demo` oraz komunikat pustej sesji z CTA do `/audyt`.
-- [ ] 4.4 Kliknięcie `SIM-P08` otwiera `/audyt/:id`, cytat otwiera panel dowodu, zapisanie decyzji zapisuje ją w tej sesji, a powrót przez „Wszystkie analizy” odświeża status i „Ostatnią zmianę” `SIM-P08` na liście.
-- [ ] 4.5 W drugiej, osobnej sesji (incognito / wyczyszczone ciasteczka) `SIM-P08` nadal czeka na decyzję, a analiza utworzona w pierwszej sesji nie pojawia się na liście.
-- [ ] 4.6 Oba stany puste są osiągalne i wyraźnie różne: stan pustej sesji (np. filtr `Twoje (ta sesja)` bez własnych analiz) z CTA do `/audyt` oraz stan braku wyników filtra (np. wpisanie nieistniejącej frazy w wyszukiwarce) z przyciskiem „Wyczyść filtry”.
-- [ ] 4.7 Przy szerokości `390 px` ekran `/analizy` wyświetla czytelne karty bez przewijania w poziomie, a przełączenie roli (`Konsultant` / `Redaktor`) i języka (`PL` / `EN`) działa bez blokowania widoku.
+- [x] 4.3 Na czystej sesji przeglądarki (bez ciasteczka `kops_session`) wejście na `/analizy` pokazuje 4 przykłady demo (`SIM-P08`, `SIM-P11`, `SIM-P04`, `SIM-P01`), baner „Zacznij od SIM-P08”, chip `Demo` oraz komunikat pustej sesji z CTA do `/audyt`.
+- [x] 4.4 Kliknięcie `SIM-P08` otwiera `/audyt/:id`, cytat otwiera panel dowodu, zapisanie decyzji zapisuje ją w tej sesji, a powrót przez „Wszystkie analizy” odświeża status i „Ostatnią zmianę” `SIM-P08` na liście.
+- [x] 4.5 W drugiej, osobnej sesji (incognito / wyczyszczone ciasteczka) `SIM-P08` nadal czeka na decyzję, a analiza utworzona w pierwszej sesji nie pojawia się na liście.
+- [x] 4.6 Oba stany puste są osiągalne i wyraźnie różne: stan pustej sesji (np. filtr `Twoje (ta sesja)` bez własnych analiz) z CTA do `/audyt` oraz stan braku wyników filtra (np. wpisanie nieistniejącej frazy w wyszukiwarce) z przyciskiem „Wyczyść filtry”.
+- [x] 4.7 Przy szerokości `390 px` ekran `/analizy` wyświetla czytelne karty bez przewijania w poziomie, a przełączenie roli (`Konsultant` / `Redaktor`) i języka (`PL` / `EN`) działa bez blokowania widoku.

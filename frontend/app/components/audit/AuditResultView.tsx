@@ -5,18 +5,14 @@ import type {
   AuditClaimResponse,
   AuditDetailResponse,
   ClaimVerdict,
-  DecisionStatus,
   NoteVerdict,
 } from "../../api/audits";
 import { useLanguage, useT } from "../../i18n/context";
 import {
   buildNoteSegments,
-  CLAIM_VERDICT_LABEL,
   claimTag,
-  DECISION_STATUS_LABEL,
   hasSyntheticScope,
   isEditableTarget,
-  NOTE_VERDICT_LABEL,
 } from "../../lib/audit";
 import { pluralForm } from "../../lib/plural";
 import { snapshotShort } from "../../lib/snapshot";
@@ -24,16 +20,18 @@ import { useMediaQuery } from "../../lib/use-media-query";
 import { EvidencePanel, type EvidenceTarget } from "../assistant/EvidencePanel";
 import {
   ChevronIcon,
-  ContradictionIcon,
   ExternalLinkIcon,
   InfoIcon,
-  InsufficientIcon,
-  PartialIcon,
   PersonIcon,
   SupportedIcon,
   SystemIcon,
 } from "../assistant/Icon";
 import { PanelFrame } from "../assistant/PanelFrame";
+import {
+  ClaimVerdictPill,
+  DecisionStatusPill,
+  NoteVerdictPill,
+} from "./AuditBadges";
 import { AuditHistoryDetails } from "./AuditHistoryDetails";
 import { AuditPreparationDetails } from "./AuditPreparationDetails";
 import { CaseContextPanel } from "./CaseContextPanel";
@@ -55,79 +53,6 @@ type ActivePanel =
 
 function focusSoon(find: () => HTMLElement | null | undefined) {
   requestAnimationFrame(() => find()?.focus());
-}
-
-/** Pigułka oceny całej notatki (zawsze słowo i ikona; brak dowodu szary, nigdy czerwony). */
-function NoteVerdictPill({ verdict }: { verdict: NoteVerdict }) {
-  const t = useT();
-  const styles: Record<NoteVerdict, string> = {
-    full: "bg-supported-bg text-supported-text",
-    partial: "bg-partial-bg text-partial-text",
-    contradiction: "bg-conflict-bg text-conflict-text",
-    insufficient: "bg-insufficient-bg text-insufficient-text",
-  };
-  return (
-    <span
-      className={
-        "inline-flex items-center gap-1.5 rounded-full py-[3px] pr-3 pl-2.5 text-[13px] leading-[22px] font-semibold whitespace-nowrap " +
-        styles[verdict]
-      }
-    >
-      {verdict === "full" ? (
-        <SupportedIcon size={14} className="flex-none text-supported-icon" />
-      ) : verdict === "partial" ? (
-        <PartialIcon size={15} className="flex-none text-partial-icon" />
-      ) : verdict === "contradiction" ? (
-        <ContradictionIcon size={14} className="flex-none text-conflict-icon" />
-      ) : (
-        <InsufficientIcon size={15} className="flex-none text-icon" />
-      )}
-      {t(NOTE_VERDICT_LABEL[verdict])}
-    </span>
-  );
-}
-
-/** Pigułka oceny pojedynczej tezy (zawsze słowo i ikona; brak dowodu szary). */
-function ClaimVerdictPill({
-  verdict,
-  size = "sm",
-}: {
-  verdict: ClaimVerdict;
-  size?: "sm" | "md";
-}) {
-  const t = useT();
-  const styles: Record<ClaimVerdict, string> = {
-    supported: "bg-supported-bg text-supported-text",
-    contradicted: "bg-conflict-bg text-conflict-text",
-    insufficient: "bg-insufficient-bg text-insufficient-text",
-  };
-  const textSize = size === "md" ? "text-sm" : "text-xs";
-  const iconSize = size === "md" ? 16 : 14;
-  return (
-    <span
-      className={
-        "inline-flex items-center gap-1.5 rounded-full py-[3px] pr-3 pl-2.5 leading-[22px] font-semibold whitespace-nowrap " +
-        textSize +
-        " " +
-        styles[verdict]
-      }
-    >
-      {verdict === "supported" ? (
-        <SupportedIcon
-          size={iconSize}
-          className="flex-none text-supported-icon"
-        />
-      ) : verdict === "contradicted" ? (
-        <ContradictionIcon
-          size={iconSize}
-          className="flex-none text-conflict-icon"
-        />
-      ) : (
-        <InsufficientIcon size={iconSize} className="flex-none text-icon" />
-      )}
-      {t(CLAIM_VERDICT_LABEL[verdict])}
-    </span>
-  );
 }
 
 function ClaimTagBadge({ tag, selected }: { tag: string; selected: boolean }) {
@@ -153,50 +78,6 @@ function underlineClass(verdict: ClaimVerdict): string {
     return "underline decoration-conflict-icon decoration-solid decoration-2 underline-offset-[5px]";
   }
   return "underline decoration-muted decoration-dashed decoration-2 underline-offset-[5px]";
-}
-
-/** Zbiorcza pigułka statusu decyzji redaktora w nagłówku sprawy (oddzielna od oceny systemu). */
-function DecisionStatusPill({
-  status,
-  decisionsCount,
-  claimsTotal,
-}: {
-  status: DecisionStatus;
-  decisionsCount: number;
-  claimsTotal: number;
-}) {
-  const t = useT();
-  if (status === "not_applicable") return null;
-
-  const isSaved = status === "saved";
-  const isInProgress = status === "in_progress";
-  const label = t(DECISION_STATUS_LABEL[status], {
-    done: decisionsCount,
-    total: claimsTotal,
-  });
-
-  return (
-    <span
-      className={
-        "inline-flex items-center gap-1.5 rounded-full py-[3px] pr-3 pl-2.5 text-[13px] leading-[22px] font-semibold whitespace-nowrap " +
-        (isSaved
-          ? "bg-supported-bg text-supported-text"
-          : isInProgress
-            ? "bg-surface text-text"
-            : "bg-surface text-muted")
-      }
-    >
-      {isSaved ? (
-        <SupportedIcon size={14} className="flex-none text-supported-icon" />
-      ) : (
-        <PersonIcon
-          size={14}
-          className={"flex-none " + (isInProgress ? "text-icon" : "text-muted")}
-        />
-      )}
-      {label}
-    </span>
-  );
 }
 
 /**
@@ -460,10 +341,10 @@ export function AuditResultView({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 text-xs leading-[18px] text-muted">
               <Link
-                to="/audyt"
+                to="/analizy"
                 className="text-muted no-underline hover:underline"
               >
-                {t("audit.detail.newAudit")}
+                {t("audit.detail.allAnalyses")}
               </Link>
               <span aria-hidden="true">·</span>
               <span>

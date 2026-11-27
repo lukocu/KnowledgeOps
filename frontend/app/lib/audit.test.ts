@@ -1,21 +1,42 @@
 import { describe, expect, it } from "vitest";
 
+import type { Translate } from "../i18n/context";
+import { en } from "../i18n/en";
+import { pl } from "../i18n/pl";
 import {
   buildNoteSegments,
   canSubmitDecision,
   claimTag,
+  countAwaitingDecision,
   countUniqueCheckedDocs,
   DECISION_CATEGORIES,
   DECISION_CATEGORY_LABEL,
   DECISION_STATUS_LABEL,
   deriveAuditSteps,
   formatAuditTimestamp,
+  formatClaimBreakdown,
+  formatCompactTimestamp,
+  formatSummaryLine,
+  hasActiveListFilters,
+  hasActiveSearchOrStatusFilters,
   hasSyntheticScope,
   HISTORY_EVENT_LABEL,
   isDecisionUnchanged,
   isEditableTarget,
   MAX_JUSTIFICATION_LENGTH,
 } from "./audit";
+
+function makeTranslator(dict: typeof pl | typeof en): Translate {
+  return (key, vars) => {
+    let text = dict[key];
+    if (vars) {
+      for (const [name, replacement] of Object.entries(vars)) {
+        text = text.replaceAll(`{${name}}`, String(replacement));
+      }
+    }
+    return text;
+  };
+}
 
 describe("buildNoteSegments", () => {
   it("zwraca pustą listę dla pustej notatki", () => {
@@ -341,5 +362,123 @@ describe("decyzje redaktora i historia", () => {
     const formattedEn = formatAuditTimestamp("2026-11-27T12:30:00Z", "en");
     expect(formattedPl.length).toBeGreaterThan(0);
     expect(formattedEn.length).toBeGreaterThan(0);
+  });
+});
+
+describe("lista analiz (/analizy)", () => {
+  const tPl = makeTranslator(pl);
+  const tEn = makeTranslator(en);
+
+  it("formatClaimBreakdown obsługuje wszystkie warianty werdyktów i 0 tez (PL i EN)", () => {
+    expect(
+      formatClaimBreakdown(
+        {
+          claims_supported: 0,
+          claims_contradicted: 0,
+          claims_insufficient: 0,
+        },
+        tPl,
+        "pl",
+      ),
+    ).toBe("");
+
+    expect(
+      formatClaimBreakdown(
+        {
+          claims_supported: 2,
+          claims_contradicted: 0,
+          claims_insufficient: 0,
+        },
+        tPl,
+        "pl",
+      ),
+    ).toBe("2 poparte");
+
+    expect(
+      formatClaimBreakdown(
+        {
+          claims_supported: 1,
+          claims_contradicted: 0,
+          claims_insufficient: 1,
+        },
+        tPl,
+        "pl",
+      ),
+    ).toBe("1 poparta · 1 bez wystarczających dowodów");
+
+    expect(
+      formatClaimBreakdown(
+        {
+          claims_supported: 5,
+          claims_contradicted: 1,
+          claims_insufficient: 2,
+        },
+        tPl,
+        "pl",
+      ),
+    ).toBe("1 sprzeczna · 5 popartych · 2 bez wystarczających dowodów");
+
+    expect(
+      formatClaimBreakdown(
+        {
+          claims_supported: 1,
+          claims_contradicted: 2,
+          claims_insufficient: 1,
+        },
+        tEn,
+        "en",
+      ),
+    ).toBe("2 contradicted · 1 supported · 1 insufficient evidence");
+  });
+
+  it("formatCompactTimestamp formatuje datę w układzie DD.MM HH:MM (PL) i DD/MM HH:MM (EN)", () => {
+    expect(formatCompactTimestamp("not-a-date", "pl")).toBe("not-a-date");
+    expect(formatCompactTimestamp("2026-11-22T10:22:00", "pl")).toBe(
+      "22.11 10:22",
+    );
+    expect(formatCompactTimestamp("2026-03-05T08:04:00", "en")).toBe(
+      "05/03 08:04",
+    );
+  });
+
+  it("hasActiveListFilters rozróżnia stan pusty filtrów od aktywnego filtra", () => {
+    expect(hasActiveListFilters({})).toBe(false);
+    expect(
+      hasActiveListFilters({
+        q: "   ",
+        decision_status: null,
+        note_verdict: null,
+        source: "all",
+      }),
+    ).toBe(false);
+
+    expect(hasActiveListFilters({ q: "SIM-P04" })).toBe(true);
+    expect(hasActiveListFilters({ decision_status: "pending" })).toBe(true);
+    expect(hasActiveListFilters({ note_verdict: "contradiction" })).toBe(true);
+    expect(hasActiveListFilters({ source: "demo" })).toBe(true);
+    expect(hasActiveListFilters({ source: "session" })).toBe(true);
+
+    expect(hasActiveSearchOrStatusFilters({ source: "session" })).toBe(false);
+    expect(hasActiveSearchOrStatusFilters({ q: "streams" })).toBe(true);
+  });
+
+  it("zlicza analizy oczekujące i formatuje pasek podsumowania liczbowego", () => {
+    const summary = {
+      demo_count: 4,
+      session_count: 2,
+      pending_count: 2,
+      in_progress_count: 1,
+      saved_count: 3,
+      next_pending_audit_id: "a1",
+      next_pending_case_ref: "SIM-P08",
+    };
+
+    expect(countAwaitingDecision(summary)).toBe(3);
+    expect(formatSummaryLine(summary, tPl, "pl")).toBe(
+      "4 przykłady · 2 Twoje (ta sesja) · 2 czekają · 1 w toku · 3 zapisane",
+    );
+    expect(formatSummaryLine(summary, tEn, "en")).toBe(
+      "4 examples · 2 yours (this session) · 2 awaiting · 1 in progress · 3 saved",
+    );
   });
 });

@@ -3,7 +3,7 @@ import { NavLink } from "react-router";
 
 import { useT } from "../../i18n/context";
 import type { TranslationKey } from "../../i18n/pl";
-import { AuditNavIcon } from "../assistant/Icon";
+import { AnalysesListIcon, AuditNavIcon } from "../assistant/Icon";
 
 type NavItem = {
   to: string;
@@ -25,7 +25,6 @@ const ICON_PROPS = {
   className: "flex-none",
 } as const;
 
-/** Dwie pozycje do S-10: nie pokazujemy linku do listy analiz przed jej implementacją. */
 const NAV_ITEMS: NavItem[] = [
   {
     to: "/",
@@ -40,7 +39,13 @@ const NAV_ITEMS: NavItem[] = [
   {
     to: "/audyt",
     label: "nav.audit",
+    end: true,
     icon: <AuditNavIcon />,
+  },
+  {
+    to: "/analizy",
+    label: "nav.analyses",
+    icon: <AnalysesListIcon />,
   },
 ];
 

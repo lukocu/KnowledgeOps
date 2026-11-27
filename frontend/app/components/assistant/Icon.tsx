@@ -229,6 +229,37 @@ export const AuditNavIcon = ({
   </Icon>
 );
 
+/** Ikona nawigacji listy analiz (kanwa S5). */
+export const AnalysesListIcon = ({
+  size = 18,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <path d="M5 7h2M5 12h2M5 17h2M10 7h9M10 12h9M10 17h9" />
+  </Icon>
+);
+
+/** Ikona wyszukiwania (kanwa S5). */
+export const SearchIcon = ({
+  size = 16,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <circle cx="11" cy="11" r="6" />
+    <path d="M20 20l-4-4" />
+  </Icon>
+);
+
 /** Ikona otwarcia całego dokumentu (kanwa S3). */
 export const ExternalLinkIcon = ({
   size = 16,

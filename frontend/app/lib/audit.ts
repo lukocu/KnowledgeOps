@@ -2,6 +2,9 @@ import type {
   AuditClaimResponse,
   AuditDetailResponse,
   AuditHistoryEventType,
+  AuditListFilters,
+  AuditListItemResponse,
+  AuditListSummaryResponse,
   AuditStage,
   AuditStatus,
   ClaimDecisionResponse,
@@ -10,7 +13,9 @@ import type {
   DecisionStatus,
   NoteVerdict,
 } from "../api/audits";
+import type { Lang, Translate } from "../i18n/context";
 import type { TranslationKey } from "../i18n/pl";
+import { pluralForm } from "./plural";
 import type { StepStatus } from "./stages";
 
 export const MAX_AUDIT_TEXT_LENGTH = 4000;
@@ -272,4 +277,109 @@ export function countUniqueCheckedDocs(
     }
   }
   return seen.size;
+}
+
+/**
+ * Formatuje krótki podział tez pod pigułką oceny notatki na liście analiz
+ * (np. „1 poparta · 1 bez wystarczających dowodów”). Zwraca pusty ciąg dla 0 tez.
+ */
+export function formatClaimBreakdown(
+  item: Pick<
+    AuditListItemResponse,
+    "claims_supported" | "claims_contradicted" | "claims_insufficient"
+  >,
+  t: Translate,
+  lang: Lang = "pl",
+): string {
+  const parts: string[] = [];
+  if (item.claims_contradicted > 0) {
+    parts.push(
+      t(
+        `analyses.breakdown.contradicted${pluralForm(lang, item.claims_contradicted)}`,
+        { n: item.claims_contradicted },
+      ),
+    );
+  }
+  if (item.claims_supported > 0) {
+    parts.push(
+      t(
+        `analyses.breakdown.supported${pluralForm(lang, item.claims_supported)}`,
+        { n: item.claims_supported },
+      ),
+    );
+  }
+  if (item.claims_insufficient > 0) {
+    parts.push(
+      t(
+        `analyses.breakdown.insufficient${pluralForm(lang, item.claims_insufficient)}`,
+        { n: item.claims_insufficient },
+      ),
+    );
+  }
+  return parts.join(" · ");
+}
+
+/** Formatuje znacznik czasu ISO w zwartym formacie tabeli (`22.11 10:22` dla PL, `22/11 10:22` dla EN). */
+export function formatCompactTimestamp(iso: string, locale = "pl"): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const pad = (value: number) => String(value).padStart(2, "0");
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const hours = pad(date.getHours());
+  const minutes = pad(date.getMinutes());
+  if (locale.toLowerCase().startsWith("en")) {
+    return `${day}/${month} ${hours}:${minutes}`;
+  }
+  return `${day}.${month} ${hours}:${minutes}`;
+}
+
+/** Czy użytkownik ustawił którykolwiek z filtrów wyszukiwania, decyzji lub oceny systemu. */
+export function hasActiveSearchOrStatusFilters(
+  filters: AuditListFilters,
+): boolean {
+  return (
+    Boolean(filters.q?.trim()) ||
+    Boolean(filters.decision_status) ||
+    Boolean(filters.note_verdict)
+  );
+}
+
+/** Czy na liście analiz aktywny jest jakikolwiek filtr (w tym zawężenie źródła). */
+export function hasActiveListFilters(filters: AuditListFilters): boolean {
+  return (
+    hasActiveSearchOrStatusFilters(filters) ||
+    (filters.source !== undefined && filters.source !== "all")
+  );
+}
+
+/** Łączna liczba analiz wymagających decyzji redaktora (`pending` + `in_progress`). */
+export function countAwaitingDecision(
+  summary: Pick<
+    AuditListSummaryResponse,
+    "pending_count" | "in_progress_count"
+  >,
+): number {
+  return summary.pending_count + summary.in_progress_count;
+}
+
+/** Formatuje pasek podsumowania liczbowego na liście analiz (przed filtrami). */
+export function formatSummaryLine(
+  summary: AuditListSummaryResponse,
+  t: Translate,
+  lang: Lang = "pl",
+): string {
+  return [
+    t(`analyses.summary.demo${pluralForm(lang, summary.demo_count)}`, {
+      n: summary.demo_count,
+    }),
+    t("analyses.summary.session", { n: summary.session_count }),
+    t(`analyses.summary.pending${pluralForm(lang, summary.pending_count)}`, {
+      n: summary.pending_count,
+    }),
+    t("analyses.summary.inProgress", { n: summary.in_progress_count }),
+    t(`analyses.summary.saved${pluralForm(lang, summary.saved_count)}`, {
+      n: summary.saved_count,
+    }),
+  ].join(" · ");
 }

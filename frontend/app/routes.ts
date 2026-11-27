@@ -11,5 +11,6 @@ export default [
     route("odpowiedz/:id", "routes/answer.tsx"),
     route("audyt", "routes/audit-new.tsx"),
     route("audyt/:id", "routes/audit-detail.tsx"),
+    route("analizy", "routes/analyses.tsx"),
   ]),
 ] satisfies RouteConfig;
