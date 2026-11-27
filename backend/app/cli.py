@@ -10,6 +10,11 @@ from pathlib import Path
 import psycopg
 
 from app.answering.model import make_chat_model, make_judge_model
+from app.auditing.demo_seed import (
+    DEMO_AUDITS_PATH,
+    DemoSeedReport,
+    import_demo_audits,
+)
 from app.db import create_pool
 from app.evals.agreement import evaluate_judge_agreement
 from app.evals.conflicts import (
@@ -131,6 +136,31 @@ def _import_synthetic(file: Path | None) -> int:
     with psycopg.connect(Settings().database_url, connect_timeout=5) as conn:
         report = import_synthetic_snapshot(conn, path, ChunkerConfig())
     _print_synthetic_report(report)
+    return 0
+
+
+def _print_demo_audits_report(report: DemoSeedReport) -> None:
+    print(f"Migawka: {report.snapshot_id}")
+    print(f"Zestaw fragmentów: {report.chunk_set_id}")
+    print(f"Audyty demo: {report.audits_count}, tezy: {report.claims_count}")
+    print(f"Hash stanu (SHA-256): {report.state_sha256}")
+    print(f"Porównanie z poprzednim importem: {report.comparison}")
+    if report.comparison == "różny":
+        print(
+            "OSTRZEŻENIE: hash stanu różni się od poprzedniego importu "
+            "(zmiana przykładów demo, kodu lub migawki)."
+        )
+
+
+def _import_demo_audits(file: Path | None, chunk_set: str | None) -> int:
+    settings = Settings()
+    path = file if file is not None else DEMO_AUDITS_PATH
+    effective_chunk_set = (
+        chunk_set if chunk_set is not None else settings.effective_chunk_set_id()
+    )
+    with psycopg.connect(settings.database_url, connect_timeout=5) as conn:
+        report = import_demo_audits(conn, path, chunk_set_id=effective_chunk_set)
+    _print_demo_audits_report(report)
     return 0
 
 
@@ -530,6 +560,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         default=None,
         help="plik documents.json (domyślnie app/synthetic/documents.json)",
     )
+    demo_audits = commands.add_parser(
+        "import-demo-audits",
+        help="seeduje 4 przykłady demo audytów z pilotażu (idempotentnie)",
+    )
+    demo_audits.add_argument(
+        "--file",
+        type=Path,
+        default=None,
+        help="plik demo_audits.json (domyślnie app/auditing/demo_audits.json)",
+    )
+    demo_audits.add_argument(
+        "--chunk-set",
+        default=None,
+        help="id zestawu fragmentów (domyślnie aktywny zestaw TechQA)",
+    )
     searcher = commands.add_parser(
         "search", help="wyszukuje fragmenty (BM25 albo tsvector)"
     )
@@ -751,6 +796,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         if args.command == "import-synthetic-conflicts":
             return _import_synthetic(args.file)
+        if args.command == "import-demo-audits":
+            return _import_demo_audits(args.file, args.chunk_set)
         if args.command == "eval-prepare-abstention":
             return _eval_prepare_abstention(
                 args.out_dir,

@@ -318,17 +318,17 @@ Wdrażamy ekran `5` („Analizy i decyzje”) pod trasą `/analizy`, dodajemy go
 
 #### Automated
 
-- [x] 1.1 Migracja `0006_audits_demo_index.sql` nakłada się czysto i idempotentnie (`python -m app.cli migrate`).
-- [x] 1.2 Testy `backend/tests/test_audits_list_store.py` oraz istniejące testy audytu przechodzą w Dockerze (`pytest`).
-- [x] 1.3 Kontrole jakości backendu przechodzą bez błędów (`ruff check .`, `ruff format --check .`, `mypy .`).
+- [x] 1.1 Migracja `0006_audits_demo_index.sql` nakłada się czysto i idempotentnie (`python -m app.cli migrate`). — 0aeed0f
+- [x] 1.2 Testy `backend/tests/test_audits_list_store.py` oraz istniejące testy audytu przechodzą w Dockerze (`pytest`). — 0aeed0f
+- [x] 1.3 Kontrole jakości backendu przechodzą bez błędów (`ruff check .`, `ruff format --check .`, `mypy .`). — 0aeed0f
 
 ### Phase 2: Idempotentny seeder przykładów demo (`import-demo-audits`)
 
 #### Automated
 
-- [ ] 2.1 Testy `backend/tests/test_demo_seed.py` przechodzą w Dockerze (`pytest`).
-- [ ] 2.2 Komenda `docker compose exec backend .venv/bin/python -m app.cli import-demo-audits` uruchamia się czysto na lokalnej bazie TechQA; drugie uruchomienie raportuje `identyczny` i 4 przykłady demo.
-- [ ] 2.3 Kontrole jakości backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
+- [x] 2.1 Testy `backend/tests/test_demo_seed.py` przechodzą w Dockerze (`pytest`).
+- [x] 2.2 Komenda `docker compose exec backend .venv/bin/python -m app.cli import-demo-audits` uruchamia się czysto na lokalnej bazie TechQA; drugie uruchomienie raportuje `identyczny` i 4 przykłady demo.
+- [x] 2.3 Kontrole jakości backendu przechodzą (`ruff check .`, `ruff format --check .`, `mypy .`).
 
 ### Phase 3: API `GET /api/audits`, poprawki sesyjne i kontrakt OpenAPI/TS
 

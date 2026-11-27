@@ -1,0 +1,221 @@
+{
+  "version": "demo-audits@v1",
+  "audits": [
+    {
+      "slug": "sim-p08",
+      "case_ref": "SIM-P08",
+      "case_description": "WebSphere Application Server on Linux experiencing native OutOfMemory errors; customer asks for the recommended ulimit -u / nproc setting on Linux.",
+      "resolution_note": "The documented support recommendation for Linux nproc is 1024, not 131072.",
+      "note_verdict": "contradiction",
+      "case_context": {
+        "problem": "WebSphere Application Server on Linux · native OutOfMemory, nproc limit",
+        "environment": "WebSphere Application Server on Linux",
+        "solution": "Set Linux nproc limit to 1024 instead of 131072",
+        "constraints": [
+          "Linux operating system"
+        ],
+        "missing_info": []
+      },
+      "created_offset_minutes": 0,
+      "claims": [
+        {
+          "claim_index": 0,
+          "claim_label": "Linux nproc recommendation",
+          "claim_text": "The documented WebSphere Application Server Support recommendation for Linux nproc is 1024, not 131072.",
+          "source_excerpt": "The documented support recommendation for Linux nproc is 1024, not 131072.",
+          "search_query": "WebSphere Application Server Linux nproc ulimit 131072 recommendation",
+          "verdict": "contradicted",
+          "rationale": "The referenced Linux WebSphere Application Server document explicitly recommends an nproc (ulimit -u) value of 131072, directly contradicting the resolution note's claim that the documented value is 1024.",
+          "scope_note": "Same scope: WebSphere Application Server on Linux (nproc / ulimit -u limit).",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21648497",
+              "anchor_terms": [
+                "131072",
+                "nproc",
+                "Linux"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21648497"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sim-p11",
+      "case_ref": "SIM-P11",
+      "case_description": "Netcool/Impact IPL policy calls Exit() inside a user-defined function; operator asks about required procedure when using Exit().",
+      "resolution_note": "Using Exit() requires written approval from the finance department.",
+      "note_verdict": "insufficient",
+      "case_context": {
+        "problem": "Netcool/Impact IPL · Exit() inside a user defined function",
+        "environment": "IBM Tivoli Netcool/Impact (IPL)",
+        "solution": "Obtain written approval from the finance department before using Exit()",
+        "constraints": [
+          "IPL user-defined function"
+        ],
+        "missing_info": [
+          "Internal organizational approval policy"
+        ]
+      },
+      "created_offset_minutes": 3,
+      "claims": [
+        {
+          "claim_index": 0,
+          "claim_label": "Finance approval for Exit()",
+          "claim_text": "Using Exit() in a Netcool/Impact IPL policy requires written approval from the finance department.",
+          "source_excerpt": "Using Exit() requires written approval from the finance department.",
+          "search_query": "Netcool Impact IPL Exit user defined function approval",
+          "verdict": "insufficient",
+          "rationale": "The checked Netcool/Impact documentation explains how Exit() behaves inside a user-defined function, but does not mention any requirement for written approval from the finance department.",
+          "scope_note": "Checked technical documentation does not cover internal organizational approval rules; absence of evidence is not a contradiction.",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21675316",
+              "anchor_terms": [
+                "Exit",
+                "function",
+                "policy"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21675316"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sim-p04",
+      "case_ref": "SIM-P04",
+      "case_description": "IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service: jobs do not inherit environment variables from .bashrc.",
+      "resolution_note": "Set required application environment variables with streamtool setproperty --application-ev. This procedure also requires restarting the operating system twice.",
+      "note_verdict": "partial",
+      "case_context": {
+        "problem": "Streams 4.1.1.2 · .bashrc variables not inherited when Streams runs as a system service",
+        "environment": "IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service",
+        "solution": "Configure application environment variables via streamtool setproperty --application-ev and restart OS twice",
+        "constraints": [
+          "Streams running as a system service"
+        ],
+        "missing_info": []
+      },
+      "created_offset_minutes": 10,
+      "claims": [
+        {
+          "claim_index": 0,
+          "claim_label": "Set variables with streamtool",
+          "claim_text": "Set required application environment variables on the Streams instance using streamtool setproperty --application-ev.",
+          "source_excerpt": "Set required application environment variables with streamtool setproperty --application-ev.",
+          "search_query": "IBM Streams system service streamtool setproperty application-ev",
+          "verdict": "supported",
+          "rationale": "The IBM Streams documentation states that when Streams runs as a system service, required application environment variables should be set directly on the instance using streamtool setproperty with --application-ev.",
+          "scope_note": "Same scope: IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service.",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21996508",
+              "anchor_terms": [
+                "streamtool",
+                "setproperty",
+                "application-ev"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21996508"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "claim_label": "Mandatory double OS restart",
+          "claim_text": "Applying the streamtool environment variable configuration requires restarting the operating system twice.",
+          "source_excerpt": "This procedure also requires restarting the operating system twice.",
+          "search_query": "IBM Streams streamtool setproperty restart operating system twice",
+          "verdict": "insufficient",
+          "rationale": "The checked IBM Streams document describes setting application environment variables via streamtool, but does not mention any requirement to restart the operating system twice.",
+          "scope_note": "Lack of confirmation in the checked document does not prove a contradiction.",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21996508",
+              "anchor_terms": [
+                "streamtool",
+                "environment",
+                "instance"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21996508"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sim-p01",
+      "case_ref": "SIM-P01",
+      "case_description": "IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service: submitted jobs do not inherit environment variables defined in .bashrc.",
+      "resolution_note": "Set required application environment variables directly on the instance using streamtool setproperty and --application-ev.",
+      "note_verdict": "full",
+      "case_context": {
+        "problem": "Streams 4.1.1.1 · jobs do not inherit environment variables",
+        "environment": "IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service",
+        "solution": "Set application environment variables directly on the instance via streamtool setproperty --application-ev",
+        "constraints": [
+          "Streams running as a system service"
+        ],
+        "missing_info": []
+      },
+      "created_offset_minutes": 25,
+      "claims": [
+        {
+          "claim_index": 0,
+          "claim_label": "Set variables directly on instance",
+          "claim_text": "Set required application environment variables directly on the IBM Streams instance when running as a system service.",
+          "source_excerpt": "Set required application environment variables directly on the instance",
+          "search_query": "IBM Streams system service set application environment variables directly instance",
+          "verdict": "supported",
+          "rationale": "The IBM Streams document confirms that when Streams runs as a system service, application environment variables must be configured directly in the instance.",
+          "scope_note": "Same scope: IBM Streams 4.1.1.1 / 4.1.1.2 running as a system service.",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21996508",
+              "anchor_terms": [
+                "environment variables",
+                "instance",
+                "system service"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21996508"
+          ]
+        },
+        {
+          "claim_index": 1,
+          "claim_label": "Use streamtool setproperty --application-ev",
+          "claim_text": "Use streamtool setproperty with the --application-ev option to configure the application environment variables.",
+          "source_excerpt": "using streamtool setproperty and --application-ev.",
+          "search_query": "IBM Streams streamtool setproperty application-ev",
+          "verdict": "supported",
+          "rationale": "The Problem Solution section specifies using streamtool setproperty with --application-ev to set the required application environment variables.",
+          "scope_note": "Same scope: IBM Streams 4.1.1.1 / 4.1.1.2.",
+          "evidence_specs": [
+            {
+              "doc_id": "swg21996508",
+              "anchor_terms": [
+                "streamtool",
+                "setproperty",
+                "application-ev"
+              ]
+            }
+          ],
+          "checked_doc_ids": [
+            "swg21996508"
+          ]
+        }
+      ]
+    }
+  ]
+}
