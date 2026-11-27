@@ -335,7 +335,8 @@ async def test_audit_graph_isolates_single_claim_llm_error_and_timeout() -> None
     assert [c.verdict for c in claims] == ["supported", "insufficient", "insufficient"]
 
     assert claims[0].error is None
-    assert claims[1].error == "RuntimeError: upstream 502"
+    assert claims[1].error == "Nie udało się zweryfikować tezy z powodu błędu modelu."
+    assert "upstream 502" not in claims[1].error
     assert claims[1].evidence[0]["chunk_id"] == hit.chunk_id
     assert claims[1].evidence[0]["supports_claim"] is False
 

@@ -1,7 +1,7 @@
 ---
 change_id: resolved-case-audit
 title: Resolved case audit
-status: implemented
+status: impl_reviewed
 created: 2026-11-26
 updated: 2026-11-27
 archived_at: null

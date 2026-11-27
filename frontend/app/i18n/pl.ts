@@ -302,6 +302,9 @@ export const pl = {
   "audit.detail.evidenceDoesNotSupport": "nie wspiera tezy",
   "audit.detail.evidenceSupports": "wspiera tezę",
   "audit.detail.evidenceContradicts": "sprzeczny z tezą",
+  "audit.detail.evidenceLabelSupported": "Wspiera tezę {tag}",
+  "audit.detail.evidenceLabelContradicted": "Sprzeczny z tezą {tag}",
+  "audit.detail.evidenceLabelClosest": "Najbliższy fragment · {tag}",
   "audit.detail.noEvidenceFound":
     "Wyszukiwanie nie znalazło fragmentów pasujących do tej tezy.",
   "audit.detail.showWiderContext": "Pokaż szerszy kontekst",

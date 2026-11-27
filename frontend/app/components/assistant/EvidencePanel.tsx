@@ -20,8 +20,8 @@ export type EvidenceTarget = {
   headings: string[];
   /** Cytaty (offsety względem tekstu fragmentu). Puste: zaznaczany jest cały fragment. */
   quotes: { start: number; end: number }[];
-  /** Tezy wspierane przez ten fragment (`index` to numer tezy, od 1). Puste: bez pola. */
-  claims: { index: number; text: string }[];
+  /** Tezy powiązane z tym fragmentem (`index` to numer tezy, od 1). Puste: bez pola. */
+  claims: { index: number; text: string; label?: string }[];
   isSynthetic?: boolean;
   docDate?: string | null;
   productVersion?: string | null;
@@ -346,9 +346,11 @@ function EvidenceBody({
               className="py-0.5 pl-3 shadow-[inset_3px_0_0_var(--color-accent)]"
             >
               <div className="text-xs leading-[18px] font-semibold tracking-[.05em] text-accent-strong uppercase">
-                {target.sideLabel
-                  ? t("evidence.conflictFooter", { side: target.sideLabel })
-                  : t("evidence.supports", { n: claim.index })}
+                {claim.label
+                  ? claim.label
+                  : target.sideLabel
+                    ? t("evidence.conflictFooter", { side: target.sideLabel })
+                    : t("evidence.supports", { n: claim.index })}
               </div>
               <div className="text-sm leading-5">{claim.text}</div>
             </div>

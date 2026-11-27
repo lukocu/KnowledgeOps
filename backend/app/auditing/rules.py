@@ -205,8 +205,8 @@ def resolve_claim_verdict(
             verified_chunk = candidate
             verified_span = span
 
-    # Strażnik zakresu: różny zakres (wersja/produkt/kontekst) nie jest sprzecznością.
-    if raw.verdict == "contradicted" and raw.scope_relation == "different_scope":
+    # Strażnik zakresu: sprzeczność dopuszczalna wyłącznie przy tym samym zakresie.
+    if raw.verdict == "contradicted" and raw.scope_relation != "same_scope":
         evidence: list[ClaimEvidence] = []
         if verified_chunk is not None and verified_span is not None:
             evidence.append(

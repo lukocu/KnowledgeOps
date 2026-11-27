@@ -6,10 +6,12 @@ import time
 from typing import Annotated, cast
 
 import anyio
+import psycopg
 from fastapi import Depends, Request
 from fastapi.concurrency import run_in_threadpool
 from langchain_core.language_models.chat_models import BaseChatModel
 from langfuse.langchain import CallbackHandler
+from psycopg_pool import PoolTimeout
 
 from app.auditing.graph import (
     AuditProgressUpdate,
@@ -29,6 +31,15 @@ from app.observability import flush_traces, make_trace_handler, run_config
 from app.settings import Settings
 
 logger = logging.getLogger(__name__)
+
+MAX_CONCURRENT_AUDITS = 2
+
+
+def _safe_audit_error(exc: Exception) -> str:
+    """Klasyfikuje nieobsłużony wyjątek na bezpieczny komunikat dla klienta."""
+    if isinstance(exc, (psycopg.Error, PoolTimeout)):
+        return "Błąd połączenia z bazą danych podczas analizy."
+    return "Nie udało się ukończyć analizy notatki z powodu błędu technicznego."
 
 
 async def _mark_failed(
@@ -56,8 +67,9 @@ async def _mark_failed(
 class AuditTaskManager:
     """Rejestr aktywnych zadań audytu w tle, zamykany przy shutdown aplikacji."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, max_concurrent: int = MAX_CONCURRENT_AUDITS) -> None:
         self._tasks: set[asyncio.Task[None]] = set()
+        self._semaphore = asyncio.Semaphore(max(1, max_concurrent))
 
     def schedule(
         self,
@@ -114,100 +126,105 @@ class AuditTaskManager:
         include_synthetic: bool,
         k: int,
     ) -> None:
-        started = time.monotonic()
+        async with self._semaphore:
+            started = time.monotonic()
 
-        def duration_ms() -> int:
-            return int((time.monotonic() - started) * 1000)
+            def duration_ms() -> int:
+                return int((time.monotonic() - started) * 1000)
 
-        handler: CallbackHandler | None = make_trace_handler(settings)
+            handler: CallbackHandler | None = make_trace_handler(settings)
 
-        async def _on_progress(update: AuditProgressUpdate) -> None:
-            async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
-                await update_audit_progress(
-                    conn,
-                    audit_id,
-                    stage=update.stage,
-                    status="running",
-                    claims_total=update.claims_total,
-                    claims_done=update.claims_done,
-                    case_context=update.case_context,
-                )
+            async def _on_progress(update: AuditProgressUpdate) -> None:
+                async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
+                    await update_audit_progress(
+                        conn,
+                        audit_id,
+                        stage=update.stage,
+                        status="running",
+                        claims_total=update.claims_total,
+                        claims_done=update.claims_done,
+                        case_context=update.case_context,
+                    )
 
-        graph = build_audit_graph(
-            chat_model=chat_model,
-            settings=settings,
-            pool=pool,
-            on_progress=_on_progress,
-        )
-        run_cfg = run_config(
-            settings,
-            chunk_set_id=chunk_set_id,
-            k=k,
-            handler=handler,
-            run_name="audit",
-            prompt_versions_map=prompt_versions(),
-            extra_metadata={
-                "audit_id": audit_id,
-                "include_synthetic": include_synthetic,
-            },
-        )
-        state = initial_audit_state(
-            case_description=case_description,
-            resolution_note=resolution_note,
-            settings=settings,
-            chunk_set_id=chunk_set_id,
-            include_synthetic=include_synthetic,
-            k=k,
-        )
-
-        try:
-            async with asyncio.timeout(settings.audit_deadline_s):
-                raw_final = await graph.ainvoke(state, run_cfg)
-            final_state = cast(AuditState, raw_final)
-            trace_id = getattr(handler, "last_trace_id", None) if handler else None
-            case_context_obj = final_state.get("case_context")
-            case_context_dict = (
-                case_context_obj.model_dump() if case_context_obj is not None else None
+            graph = build_audit_graph(
+                chat_model=chat_model,
+                settings=settings,
+                pool=pool,
+                on_progress=_on_progress,
             )
-            claims = final_state.get("claims", [])
-            note_verdict: NoteVerdict = final_state.get("note_verdict", "insufficient")
-            async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
-                await complete_audit(
-                    conn,
+            run_cfg = run_config(
+                settings,
+                chunk_set_id=chunk_set_id,
+                k=k,
+                handler=handler,
+                run_name="audit",
+                prompt_versions_map=prompt_versions(),
+                extra_metadata={
+                    "audit_id": audit_id,
+                    "include_synthetic": include_synthetic,
+                },
+            )
+            state = initial_audit_state(
+                case_description=case_description,
+                resolution_note=resolution_note,
+                settings=settings,
+                chunk_set_id=chunk_set_id,
+                include_synthetic=include_synthetic,
+                k=k,
+            )
+
+            try:
+                async with asyncio.timeout(settings.audit_deadline_s):
+                    raw_final = await graph.ainvoke(state, run_cfg)
+                final_state = cast(AuditState, raw_final)
+                trace_id = getattr(handler, "last_trace_id", None) if handler else None
+                case_context_obj = final_state.get("case_context")
+                case_context_dict = (
+                    case_context_obj.model_dump()
+                    if case_context_obj is not None
+                    else None
+                )
+                claims = final_state.get("claims", [])
+                note_verdict: NoteVerdict = final_state.get(
+                    "note_verdict", "insufficient"
+                )
+                async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
+                    await complete_audit(
+                        conn,
+                        audit_id,
+                        claims=claims,
+                        note_verdict=note_verdict,
+                        case_context=case_context_dict,
+                        trace_id=trace_id,
+                        duration_ms=duration_ms(),
+                    )
+            except asyncio.CancelledError:
+                logger.info("Zadanie audytu %s zostało anulowane", audit_id)
+                raise
+            except TimeoutError:
+                logger.warning("Audyt %s przekroczył limit czasu", audit_id)
+                trace_id = getattr(handler, "last_trace_id", None) if handler else None
+                await _mark_failed(
+                    pool,
                     audit_id,
-                    claims=claims,
-                    note_verdict=note_verdict,
-                    case_context=case_context_dict,
+                    error="Przekroczono limit czasu analizy notatki.",
                     trace_id=trace_id,
                     duration_ms=duration_ms(),
                 )
-        except asyncio.CancelledError:
-            logger.info("Zadanie audytu %s zostało anulowane", audit_id)
-            raise
-        except TimeoutError:
-            logger.warning("Audyt %s przekroczył limit czasu", audit_id)
-            trace_id = getattr(handler, "last_trace_id", None) if handler else None
-            await _mark_failed(
-                pool,
-                audit_id,
-                error="Przekroczono limit czasu analizy notatki.",
-                trace_id=trace_id,
-                duration_ms=duration_ms(),
-            )
-        except Exception as exc:
-            logger.warning("Audyt %s zakończył się błędem", audit_id, exc_info=True)
-            trace_id = getattr(handler, "last_trace_id", None) if handler else None
-            await _mark_failed(
-                pool,
-                audit_id,
-                error=f"{type(exc).__name__}: {exc}",
-                trace_id=trace_id,
-                duration_ms=duration_ms(),
-            )
-        finally:
-            if handler is not None:
-                with anyio.CancelScope(shield=True):
-                    await run_in_threadpool(flush_traces)
+            except Exception as exc:
+                logger.warning("Audyt %s zakończył się błędem", audit_id, exc_info=True)
+                trace_id = getattr(handler, "last_trace_id", None) if handler else None
+                await _mark_failed(
+                    pool,
+                    audit_id,
+                    error=_safe_audit_error(exc),
+                    trace_id=trace_id,
+                    duration_ms=duration_ms(),
+                )
+            finally:
+                if handler is not None:
+                    with anyio.CancelScope(shield=True):
+                        await run_in_threadpool(flush_traces)
 
 
 def get_audit_task_manager(request: Request) -> AuditTaskManager:

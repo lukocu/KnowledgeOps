@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import { ApiError } from "../api/answers";
@@ -47,6 +47,13 @@ export default function AuditNewRoute() {
   );
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   function handleChange(patch: Partial<AuditFormValues>) {
     setValues((prev) => ({ ...prev, ...patch }));
@@ -83,16 +90,25 @@ export default function AuditNewRoute() {
       return;
     }
 
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setSubmitting(true);
     setErrorMessage(null);
     try {
-      const created = await createAudit({
-        case_ref: caseRef || null,
-        case_description: caseDescription,
-        resolution_note: resolutionNote,
-      });
+      const created = await createAudit(
+        {
+          case_ref: caseRef || null,
+          case_description: caseDescription,
+          resolution_note: resolutionNote,
+        },
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
       void navigate(`/audyt/${encodeURIComponent(created.audit_id)}`);
     } catch (error: unknown) {
+      if (controller.signal.aborted) return;
       if (error instanceof ApiError && error.status === 503) {
         setErrorMessage(t("audit.form.errorUnavailable"));
       } else {

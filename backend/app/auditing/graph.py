@@ -1,6 +1,7 @@
 """4-etapowy graf audytu LangGraph: extract -> retrieve -> verify -> aggregate."""
 
 import asyncio
+import logging
 from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, TypedDict
@@ -31,6 +32,8 @@ from app.auditing.store import NewAuditClaim
 from app.db import CONNECTION_TIMEOUT_S, AsyncPool
 from app.retrieval import RetrievedChunk, resolve_active_chunk_set_ids, search_bm25
 from app.settings import Settings
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -92,6 +95,8 @@ def initial_audit_state(
 
 def make_pool_retriever(pool: AsyncPool, settings: Settings) -> RetrieveFn:
     """Tworzy funkcję wyszukiwania BM25 z krótką transakcją per zapytanie."""
+    cached_ids: dict[tuple[str, bool], list[str]] = {}
+    cache_lock = asyncio.Lock()
 
     async def _retrieve(
         query: str,
@@ -99,14 +104,23 @@ def make_pool_retriever(pool: AsyncPool, settings: Settings) -> RetrieveFn:
         include_synthetic: bool,
         k: int,
     ) -> tuple[list[str], list[RetrievedChunk]]:
+        cache_key = (chunk_set_id, include_synthetic)
+        chunk_set_ids = cached_ids.get(cache_key)
+        if chunk_set_ids is None:
+            async with cache_lock:
+                chunk_set_ids = cached_ids.get(cache_key)
+                if chunk_set_ids is None:
+                    async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
+                        chunk_set_ids = await resolve_active_chunk_set_ids(
+                            conn,
+                            chunk_set_id,
+                            include_synthetic=include_synthetic,
+                            synthetic_chunk_set_id=settings.effective_synthetic_chunk_set_id(),
+                        )
+                    cached_ids[cache_key] = chunk_set_ids
+
+        extra = chunk_set_ids[1:]
         async with pool.connection(timeout=CONNECTION_TIMEOUT_S) as conn:
-            chunk_set_ids = await resolve_active_chunk_set_ids(
-                conn,
-                chunk_set_id,
-                include_synthetic=include_synthetic,
-                synthetic_chunk_set_id=settings.effective_synthetic_chunk_set_id(),
-            )
-            extra = chunk_set_ids[1:]
             if extra:
                 hits = await search_bm25(
                     conn,
@@ -246,6 +260,7 @@ class AuditNodes:
             }
 
         semaphore = asyncio.Semaphore(max(1, self._settings.audit_claim_concurrency))
+        progress_lock = asyncio.Lock()
         done_count = 0
 
         async def _retrieve_one(
@@ -259,14 +274,15 @@ class AuditNodes:
                     include_synthetic,
                     k,
                 )
-            done_count += 1
-            await self._report(
-                AuditProgressUpdate(
-                    stage="retrieving",
-                    claims_total=total,
-                    claims_done=done_count,
+            async with progress_lock:
+                done_count += 1
+                await self._report(
+                    AuditProgressUpdate(
+                        stage="retrieving",
+                        claims_total=total,
+                        claims_done=done_count,
+                    )
                 )
-            )
             return claim.claim_index, active_ids, hits
 
         results = await asyncio.gather(*(_retrieve_one(claim) for claim in prepared))
@@ -299,6 +315,7 @@ class AuditNodes:
             return {"claims": []}
 
         semaphore = asyncio.Semaphore(max(1, self._settings.audit_claim_concurrency))
+        progress_lock = asyncio.Lock()
         done_count = 0
         system_prompt = load_prompt("verify_claim")
 
@@ -353,7 +370,10 @@ class AuditNodes:
                         checked_docs=checked_docs,
                         error="Przekroczono limit czasu weryfikacji tezy.",
                     )
-                except Exception as exc:
+                except Exception:
+                    logger.warning(
+                        "Błąd weryfikacji tezy %s", claim.claim_index, exc_info=True
+                    )
                     closest = build_closest_evidence(candidates)
                     result = NewAuditClaim(
                         claim_index=claim.claim_index,
@@ -368,7 +388,7 @@ class AuditNodes:
                         scope_note=None,
                         evidence=[closest.model_dump()] if closest is not None else [],
                         checked_docs=checked_docs,
-                        error=f"{type(exc).__name__}: {exc}",
+                        error="Nie udało się zweryfikować tezy z powodu błędu modelu.",
                     )
                 else:
                     resolved = resolve_claim_verdict(raw, candidates)
@@ -388,14 +408,15 @@ class AuditNodes:
                         error=None,
                     )
 
-            done_count += 1
-            await self._report(
-                AuditProgressUpdate(
-                    stage="verifying",
-                    claims_total=total,
-                    claims_done=done_count,
+            async with progress_lock:
+                done_count += 1
+                await self._report(
+                    AuditProgressUpdate(
+                        stage="verifying",
+                        claims_total=total,
+                        claims_done=done_count,
+                    )
                 )
-            )
             return result
 
         verified = list(

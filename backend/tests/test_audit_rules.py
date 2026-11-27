@@ -188,6 +188,26 @@ def test_resolve_contradicted_without_verified_quote_degrades() -> None:
     assert resolved.evidence[0].supports_claim is False
 
 
+def test_resolve_contradicted_with_unclear_scope_degrades_to_insufficient() -> None:
+    chunk = _chunk()
+    raw = ClaimVerdictOutput(
+        reasoning="Scope cannot be confirmed as identical.",
+        verdict="contradicted",
+        scope_relation="unclear",
+        scope_note="Target product version is not stated in the note.",
+        evidence_chunk_id=chunk.chunk_id,
+        evidence_quote="Set maxConnections to 50",
+    )
+
+    resolved = resolve_claim_verdict(raw, [chunk])
+
+    assert resolved.verdict == "insufficient"
+    assert resolved.degraded_reason == "different_scope"
+    assert resolved.scope_note == "Target product version is not stated in the note."
+    assert len(resolved.evidence) == 1
+    assert resolved.evidence[0].supports_claim is False
+
+
 def test_resolve_insufficient_attaches_closest_chunk_when_candidates_exist() -> None:
     top = _chunk(rank=1, chunk_id="cs1/doc-top/0", doc_id="doc-top", score=7.5)
     second = _chunk(rank=2, chunk_id="cs1/doc-2/0", doc_id="doc-2", score=2.1)

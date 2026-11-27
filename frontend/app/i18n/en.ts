@@ -303,6 +303,9 @@ export const en: Record<TranslationKey, string> = {
   "audit.detail.evidenceDoesNotSupport": "does not support claim",
   "audit.detail.evidenceSupports": "supports claim",
   "audit.detail.evidenceContradicts": "contradicts claim",
+  "audit.detail.evidenceLabelSupported": "Supports claim {tag}",
+  "audit.detail.evidenceLabelContradicted": "Contradicts claim {tag}",
+  "audit.detail.evidenceLabelClosest": "Closest passage · {tag}",
   "audit.detail.noEvidenceFound":
     "Search found no passages matching this claim.",
   "audit.detail.showWiderContext": "Show wider context",

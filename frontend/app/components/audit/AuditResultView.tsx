@@ -259,6 +259,12 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
     if (panelClaim && evidenceItem) {
       const total = panelClaim.evidence.length;
       const tag = claimTag(panelClaim.claim_index);
+      const evidenceClaimLabel =
+        panelClaim.verdict === "supported" && evidenceItem.supports_claim
+          ? t("audit.detail.evidenceLabelSupported", { tag })
+          : panelClaim.verdict === "contradicted"
+            ? t("audit.detail.evidenceLabelContradicted", { tag })
+            : t("audit.detail.evidenceLabelClosest", { tag });
       const target: EvidenceTarget = {
         chunkId: evidenceItem.chunk_id,
         snapshotId: evidenceItem.snapshot_id ?? audit.snapshot_id,
@@ -278,6 +284,7 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
           {
             index: panelClaim.claim_index + 1,
             text: panelClaim.claim_text,
+            label: evidenceClaimLabel,
           },
         ],
         isSynthetic: evidenceItem.is_synthetic,
@@ -380,7 +387,15 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
                   return (
                     <span
                       key={segment.claimId}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => selectClaim(segment.claimId)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          selectClaim(segment.claimId);
+                        }
+                      }}
                       className={
                         "cursor-pointer rounded-[3px] px-0.5 py-px [box-decoration-break:clone] " +
                         underlineClass(segment.verdict) +
