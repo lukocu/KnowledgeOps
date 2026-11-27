@@ -5,6 +5,7 @@ import type {
   AuditClaimResponse,
   AuditDetailResponse,
   ClaimVerdict,
+  DecisionStatus,
   NoteVerdict,
 } from "../../api/audits";
 import { useLanguage, useT } from "../../i18n/context";
@@ -12,11 +13,14 @@ import {
   buildNoteSegments,
   CLAIM_VERDICT_LABEL,
   claimTag,
+  DECISION_STATUS_LABEL,
   hasSyntheticScope,
+  isEditableTarget,
   NOTE_VERDICT_LABEL,
 } from "../../lib/audit";
 import { pluralForm } from "../../lib/plural";
 import { snapshotShort } from "../../lib/snapshot";
+import { useMediaQuery } from "../../lib/use-media-query";
 import { EvidencePanel, type EvidenceTarget } from "../assistant/EvidencePanel";
 import {
   ChevronIcon,
@@ -25,16 +29,23 @@ import {
   InfoIcon,
   InsufficientIcon,
   PartialIcon,
+  PersonIcon,
   SupportedIcon,
   SystemIcon,
 } from "../assistant/Icon";
 import { PanelFrame } from "../assistant/PanelFrame";
+import { AuditHistoryDetails } from "./AuditHistoryDetails";
 import { AuditPreparationDetails } from "./AuditPreparationDetails";
 import { CaseContextPanel } from "./CaseContextPanel";
+import { ClaimDecisionPanel } from "./ClaimDecisionPanel";
+
+/** Próg desktopowego prawego panelu decyzji (`xl`, 1280 px). */
+const XL_QUERY = "(min-width: 1280px)";
 
 type ActivePanel =
   | null
   | { kind: "context" }
+  | { kind: "decision" }
   | {
       kind: "evidence";
       claimId: string;
@@ -144,14 +155,64 @@ function underlineClass(verdict: ClaimVerdict): string {
   return "underline decoration-muted decoration-dashed decoration-2 underline-offset-[5px]";
 }
 
+/** Zbiorcza pigułka statusu decyzji redaktora w nagłówku sprawy (oddzielna od oceny systemu). */
+function DecisionStatusPill({
+  status,
+  decisionsCount,
+  claimsTotal,
+}: {
+  status: DecisionStatus;
+  decisionsCount: number;
+  claimsTotal: number;
+}) {
+  const t = useT();
+  if (status === "not_applicable") return null;
+
+  const isSaved = status === "saved";
+  const isInProgress = status === "in_progress";
+  const label = t(DECISION_STATUS_LABEL[status], {
+    done: decisionsCount,
+    total: claimsTotal,
+  });
+
+  return (
+    <span
+      className={
+        "inline-flex items-center gap-1.5 rounded-full py-[3px] pr-3 pl-2.5 text-[13px] leading-[22px] font-semibold whitespace-nowrap " +
+        (isSaved
+          ? "bg-supported-bg text-supported-text"
+          : isInProgress
+            ? "bg-surface text-text"
+            : "bg-surface text-muted")
+      }
+    >
+      {isSaved ? (
+        <SupportedIcon size={14} className="flex-none text-supported-icon" />
+      ) : (
+        <PersonIcon
+          size={14}
+          className={"flex-none " + (isInProgress ? "text-icon" : "text-muted")}
+        />
+      )}
+      {label}
+    </span>
+  );
+}
+
 /**
- * Ekran wyniku audytu (3 na desktopie, 3N w wąskim oknie 390 px bez przewijania w poziomie).
- * Zakres S-08: ocena systemu, podświetlana notatka, lista tez, panel dowodu i kontekst sprawy
- * (bez panelu decyzji redaktora z S-09 i bez listy analiz z S-10).
+ * Ekran wyniku audytu (3 na desktopie >= 1280 px, 3N + arkusz 3N-D poniżej 1280 px
+ * bez przewijania w poziomie).
  */
-export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
+export function AuditResultView({
+  audit,
+  onAuditChange,
+}: {
+  audit: AuditDetailResponse;
+  onAuditChange: (audit: AuditDetailResponse) => void;
+}) {
   const t = useT();
   const { lang } = useLanguage();
+  const isXl = useMediaQuery(XL_QUERY);
 
   const [selectedClaimId, setSelectedClaimId] = useState<string | null>(
     audit.claims[0]?.claim_id ?? null,
@@ -159,6 +220,7 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const lastTrigger = useRef<HTMLElement | null>(null);
   const contextButtonRef = useRef<HTMLButtonElement>(null);
+  const decisionBarButtonRef = useRef<HTMLButtonElement>(null);
 
   const selectedClaim: AuditClaimResponse | null =
     audit.claims.find((claim) => claim.claim_id === selectedClaimId) ??
@@ -173,22 +235,32 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
       focusSoon(() => contextButtonRef.current);
       return;
     }
+    if (current.kind === "decision") {
+      focusSoon(() => decisionBarButtonRef.current);
+      return;
+    }
     focusSoon(() =>
       lastTrigger.current?.isConnected ? lastTrigger.current : null,
     );
   }, [activePanel]);
 
   useEffect(() => {
-    if (!activePanel) return;
+    const hasDismissiblePanel =
+      activePanel !== null && !(isXl && activePanel.kind === "decision");
+    if (!hasDismissiblePanel) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape" && !event.defaultPrevented) {
-        event.preventDefault();
-        closePanel();
+      if (event.key !== "Escape") {
+        if (isEditableTarget(event.target)) return;
+        return;
       }
+      if (event.defaultPrevented) return;
+      if (isXl && isEditableTarget(event.target)) return;
+      event.preventDefault();
+      closePanel();
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [activePanel, closePanel]);
+  }, [activePanel, closePanel, isXl]);
 
   const selectClaim = useCallback((claimId: string) => {
     setSelectedClaimId(claimId);
@@ -332,6 +404,41 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
         </PanelFrame>
       );
     }
+  } else if (!isXl && activePanel?.kind === "decision" && selectedClaim) {
+    sidePanel = (
+      <PanelFrame
+        label={t("audit.decision.heading", {
+          tag: claimTag(selectedClaim.claim_index),
+        })}
+        variant="decision"
+        wideQuery={XL_QUERY}
+        onDismiss={closePanel}
+      >
+        <ClaimDecisionPanel
+          key={selectedClaim.claim_id}
+          auditId={audit.audit_id}
+          claim={selectedClaim}
+          onAuditChange={onAuditChange}
+          variant="sheet"
+          onClose={closePanel}
+        />
+      </PanelFrame>
+    );
+  } else if (isXl && selectedClaim) {
+    sidePanel = (
+      <aside
+        aria-label={t("audit.decision.panelLabel")}
+        className="flex w-[340px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 py-5"
+      >
+        <ClaimDecisionPanel
+          key={selectedClaim.claim_id}
+          auditId={audit.audit_id}
+          claim={selectedClaim}
+          onAuditChange={onAuditChange}
+          variant="aside"
+        />
+      </aside>
+    );
   }
 
   return (
@@ -362,16 +469,28 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
             </h1>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-            <SystemIcon size={14} className="flex-none text-muted" />
-            <span>{t("audit.detail.noteVerdictLabel")}</span>
-            <NoteVerdictPill verdict={noteVerdict} />
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">
+            <div className="flex flex-wrap items-center gap-2">
+              <SystemIcon size={14} className="flex-none text-muted" />
+              <span>{t("audit.detail.noteVerdictLabel")}</span>
+              <NoteVerdictPill verdict={noteVerdict} />
+            </div>
+            <DecisionStatusPill
+              status={audit.decision_status}
+              decisionsCount={audit.decisions_count}
+              claimsTotal={audit.claims_total}
+            />
           </div>
         </div>
 
         {/* Treść: lewa kolumna (notatka + lista tez + kontekst) i środkowa (ocena systemu) */}
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
-          <section className="flex flex-col border-b border-border-soft px-4 py-4 md:px-6 lg:w-[400px] lg:flex-none lg:overflow-hidden lg:border-r lg:border-b-0 lg:px-7 lg:pt-6 lg:pb-3 xl:w-[440px]">
+        <div
+          className={
+            "flex min-h-0 flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden " +
+            (!isXl && selectedClaim ? "pb-[104px] lg:pb-0" : "")
+          }
+        >
+          <section className="flex flex-col border-b border-border-soft px-4 py-4 md:px-6 lg:w-[340px] lg:flex-none lg:overflow-hidden lg:border-r lg:border-b-0 lg:px-6 lg:pt-6 lg:pb-3 xl:w-[360px] 2xl:w-[440px]">
             <div className="flex-none">
               <div className="mb-2 text-xs leading-[18px] font-semibold tracking-[.05em] text-muted uppercase">
                 {t("audit.detail.noteHeading")}
@@ -449,8 +568,25 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
                           >
                             {claim.claim_label}
                           </span>
-                          <span className="mt-1 block">
+                          <span className="mt-1 flex flex-wrap items-center gap-1.5">
                             <ClaimVerdictPill verdict={claim.verdict} />
+                            {claim.decision ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-supported-bg px-2 py-0.5 text-[11px] leading-4 font-medium whitespace-nowrap text-supported-text">
+                                <SupportedIcon
+                                  size={11}
+                                  className="flex-none text-supported-icon"
+                                />
+                                {t("audit.decision.claimSaved")}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-surface px-2 py-0.5 text-[11px] leading-4 font-medium whitespace-nowrap text-muted">
+                                <PersonIcon
+                                  size={11}
+                                  className="flex-none text-muted"
+                                />
+                                {t("audit.decision.claimUnsaved")}
+                              </span>
+                            )}
                           </span>
                         </span>
                       </button>
@@ -482,7 +618,12 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
             </div>
           </section>
 
-          <section className="flex min-w-0 flex-1 flex-col px-4 py-5 md:px-6 lg:overflow-y-auto lg:px-8 lg:pt-5 lg:pb-4">
+          <section
+            className={
+              "flex min-w-0 flex-1 flex-col px-4 py-5 md:px-6 lg:overflow-y-auto lg:px-8 lg:pt-5 " +
+              (!isXl && selectedClaim ? "lg:pb-[104px]" : "lg:pb-4")
+            }
+          >
             <div className="flex flex-wrap items-center gap-2 border-b border-border-soft pb-2.5">
               <SystemIcon size={16} className="flex-none text-muted" />
               <div className="text-xs leading-[18px] font-semibold tracking-[.05em] text-muted uppercase">
@@ -507,16 +648,36 @@ export function AuditResultView({ audit }: { audit: AuditDetailResponse }) {
             )}
 
             <div className="mt-auto pt-5">
-              <p className="mt-0 mb-3 flex items-start gap-2 text-xs leading-[18px] text-muted">
-                <span className="mt-0.5 flex-none">
-                  <InfoIcon size={14} />
-                </span>
-                <span>{t("audit.detail.doesNotChangeDocs")}</span>
-              </p>
+              <AuditHistoryDetails history={audit.history} />
               <AuditPreparationDetails audit={audit} />
             </div>
           </section>
         </div>
+
+        {/* Przyklejony dolny pasek CTA poniżej 1280 px (3N) */}
+        {!isXl && selectedClaim ? (
+          <div className="sticky bottom-0 z-20 flex-none border-t border-border-soft bg-white px-4 pt-2.5 pb-3.5 shadow-[0_-6px_16px_rgba(31,32,35,.08)] xl:hidden">
+            <button
+              ref={decisionBarButtonRef}
+              type="button"
+              onClick={() => setActivePanel({ kind: "decision" })}
+              className="flex h-12 w-full cursor-pointer items-center justify-between rounded-[10px] border-0 bg-primary px-4 font-sans text-[15px] font-medium text-white hover:brightness-95"
+            >
+              <span className="inline-flex items-center gap-2">
+                <PersonIcon size={18} className="flex-none text-white" />
+                {t("audit.decision.ctaBarTitle", {
+                  tag: claimTag(selectedClaim.claim_index),
+                })}
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-[13px] opacity-90">
+                {selectedClaim.decision
+                  ? t("audit.decision.ctaBarSaved")
+                  : t("audit.decision.ctaBarUnsaved")}
+                <ChevronIcon direction="right" size={16} />
+              </span>
+            </button>
+          </div>
+        ) : null}
       </div>
 
       {sidePanel}

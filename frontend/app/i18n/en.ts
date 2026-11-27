@@ -340,4 +340,67 @@ export const en: Record<TranslationKey, string> = {
   "audit.details.syntheticScope": "Synthetic overlay",
   "audit.details.syntheticYes": "yes (synthetic@v1)",
   "audit.details.syntheticNo": "no",
+
+  "audit.decision.panelLabel": "Editor decision",
+  "audit.decision.heading": "Editor decision for {tag}",
+  "audit.decision.close": "Close decision panel",
+  "audit.decision.subtitle": "Your decision, independent of the system rating.",
+  "audit.decision.subtitleSheet":
+    "Your decision, independent of the system rating (rating: {verdict}).",
+  "audit.decision.radioGroupLabel": "Decision",
+  "audit.decision.noneSelected": "Nothing is pre-selected.",
+  "audit.decision.justificationLabel": "Justification",
+  "audit.decision.justificationPlaceholder":
+    "Explain why you are making this decision",
+  "audit.decision.incompleteButton":
+    "Select a decision and enter justification",
+  "audit.decision.savedButton": "Saved",
+  "audit.decision.saveButton": "Save decision for {tag}",
+  "audit.decision.updateButton": "Update decision for {tag}",
+  "audit.decision.saving": "Saving decision…",
+  "audit.decision.savedConfirmation": "Decision saved.",
+  "audit.decision.lastSaved": "Saved ({role}): {time}",
+  "audit.decision.disclaimer":
+    "Saving neither changes nor publishes documentation. “Editor” role without identity verification.",
+  "audit.decision.consultantReadOnly":
+    "Saving and editing decisions is available in the Editor role.",
+  "audit.decision.switchToEditor": "Switch to Editor role",
+  "audit.decision.savedBadge": "Saved decision",
+  "audit.decision.claimSaved": "Saved",
+  "audit.decision.claimUnsaved": "No decision",
+  "audit.decision.ctaBarTitle": "Decision for {tag}",
+  "audit.decision.ctaBarSaved": "saved",
+  "audit.decision.ctaBarUnsaved": "not saved",
+  "audit.decision.errorNotFound":
+    "Analysis or claim not found in the current session.",
+  "audit.decision.errorNotCompleted":
+    "A decision can only be saved after the analysis completes.",
+  "audit.decision.errorValidation":
+    "Select a decision category and enter a justification (max 2000 characters).",
+  "audit.decision.errorGeneric": "Could not save the decision. Try again.",
+
+  "audit.decision.category.agree_with_system": "Agree with system rating",
+  "audit.decision.category.request_source_or_verify":
+    "Request source or verify",
+  "audit.decision.category.consider_doc_update":
+    "Consider updating documentation",
+  "audit.decision.category.system_verdict_wrong": "System rating is wrong",
+
+  "audit.decision.status.pending": "Needs decision",
+  "audit.decision.status.in_progress": "Decisions: {done}/{total}",
+  "audit.decision.status.saved": "Saved ({done}/{total})",
+  "audit.decision.status.not_applicable": "No claims to decide",
+
+  "audit.history.title": "History",
+  "audit.history.empty": "No recorded events.",
+  "audit.history.countOne": "{n} event",
+  "audit.history.countFew": "{n} events",
+  "audit.history.countMany": "{n} events",
+  "audit.history.last": "latest: {label}",
+  "audit.history.actorSystem": "System",
+  "audit.history.event.audit_created": "Analysis created",
+  "audit.history.event.evaluation_completed": "System assessment completed",
+  "audit.history.event.evaluation_failed": "System assessment failed",
+  "audit.history.event.decision_saved": "Decision saved",
+  "audit.history.event.decision_updated": "Decision updated",
 };

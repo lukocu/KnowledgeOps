@@ -188,5 +188,10 @@ function AuditDetailScreen({ id }: { id: string }) {
     );
   }
 
-  return <AuditResultView audit={audit} />;
+  return (
+    <AuditResultView
+      audit={audit}
+      onAuditChange={(updated) => setState({ status: "ready", data: updated })}
+    />
+  );
 }

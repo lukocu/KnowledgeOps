@@ -339,6 +339,68 @@ export const pl = {
   "audit.details.syntheticScope": "Nakładka syntetyczna",
   "audit.details.syntheticYes": "tak (synthetic@v1)",
   "audit.details.syntheticNo": "nie",
+
+  "audit.decision.panelLabel": "Decyzja redaktora",
+  "audit.decision.heading": "Decyzja redaktora dla {tag}",
+  "audit.decision.close": "Zamknij panel decyzji",
+  "audit.decision.subtitle": "Twoja decyzja, niezależna od oceny systemu.",
+  "audit.decision.subtitleSheet":
+    "Twoja decyzja, niezależna od oceny systemu (ocena: {verdict}).",
+  "audit.decision.radioGroupLabel": "Decyzja",
+  "audit.decision.noneSelected": "Nic nie jest wybrane z góry.",
+  "audit.decision.justificationLabel": "Uzasadnienie",
+  "audit.decision.justificationPlaceholder": "Napisz, dlaczego tak decydujesz",
+  "audit.decision.incompleteButton": "Wybierz decyzję i wpisz uzasadnienie",
+  "audit.decision.savedButton": "Zapisano",
+  "audit.decision.saveButton": "Zapisz decyzję dla {tag}",
+  "audit.decision.updateButton": "Zaktualizuj decyzję dla {tag}",
+  "audit.decision.saving": "Zapisuję decyzję…",
+  "audit.decision.savedConfirmation": "Decyzja została zapisana.",
+  "audit.decision.lastSaved": "Zapisano ({role}): {time}",
+  "audit.decision.disclaimer":
+    "Zapis nie zmienia ani nie publikuje dokumentacji. Rola „Redaktor” bez weryfikacji tożsamości.",
+  "audit.decision.consultantReadOnly":
+    "Zapis i edycja decyzji są dostępne w roli Redaktor.",
+  "audit.decision.switchToEditor": "Przełącz na rolę Redaktor",
+  "audit.decision.savedBadge": "Zapisana decyzja",
+  "audit.decision.claimSaved": "Zapisana",
+  "audit.decision.claimUnsaved": "Bez decyzji",
+  "audit.decision.ctaBarTitle": "Decyzja dla {tag}",
+  "audit.decision.ctaBarSaved": "zapisano",
+  "audit.decision.ctaBarUnsaved": "nie zapisano",
+  "audit.decision.errorNotFound":
+    "Nie znaleziono analizy lub tezy w bieżącej sesji.",
+  "audit.decision.errorNotCompleted":
+    "Decyzję można zapisać dopiero po zakończeniu analizy.",
+  "audit.decision.errorValidation":
+    "Wybierz kategorię decyzji i wpisz uzasadnienie (maks. 2000 znaków).",
+  "audit.decision.errorGeneric":
+    "Nie udało się zapisać decyzji. Spróbuj ponownie.",
+
+  "audit.decision.category.agree_with_system": "Zgoda z oceną systemu",
+  "audit.decision.category.request_source_or_verify":
+    "Poproś o źródło lub zweryfikuj",
+  "audit.decision.category.consider_doc_update":
+    "Rozważ uzupełnienie dokumentacji",
+  "audit.decision.category.system_verdict_wrong": "Ocena systemu błędna",
+
+  "audit.decision.status.pending": "Do decyzji",
+  "audit.decision.status.in_progress": "Decyzje: {done}/{total}",
+  "audit.decision.status.saved": "Zapisana ({done}/{total})",
+  "audit.decision.status.not_applicable": "Brak tez do decyzji",
+
+  "audit.history.title": "Historia",
+  "audit.history.empty": "Brak zarejestrowanych zdarzeń.",
+  "audit.history.countOne": "{n} zdarzenie",
+  "audit.history.countFew": "{n} zdarzenia",
+  "audit.history.countMany": "{n} zdarzeń",
+  "audit.history.last": "ostatnie: {label}",
+  "audit.history.actorSystem": "System",
+  "audit.history.event.audit_created": "Utworzono analizę",
+  "audit.history.event.evaluation_completed": "Zakończono ocenę systemu",
+  "audit.history.event.evaluation_failed": "Błąd oceny systemu",
+  "audit.history.event.decision_saved": "Zapisano decyzję",
+  "audit.history.event.decision_updated": "Zaktualizowano decyzję",
 } as const;
 
 export type Dictionary = typeof pl;

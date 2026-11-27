@@ -376,27 +376,27 @@ Wdrażamy pełny interfejs decyzji redaktora i historii analizy zgodny z makieta
 
 #### Automated
 
-- [x] 2.1 Wszystkie testy backendu przechodzą: `cd backend; uv run pytest`
-- [x] 2.2 Linter, formatowanie i `mypy` (Docker) przechodzą bez błędów
-- [x] 2.3 Kontrakt OpenAPI i typy TS są aktualne i `frontend` przechodzi `typecheck`: `export_openapi.py` + `npm run api:types; npm run typecheck`
+- [x] 2.1 Wszystkie testy backendu przechodzą: `cd backend; uv run pytest` — b7b48da
+- [x] 2.2 Linter, formatowanie i `mypy` (Docker) przechodzą bez błędów — b7b48da
+- [x] 2.3 Kontrakt OpenAPI i typy TS są aktualne i `frontend` przechodzi `typecheck`: `export_openapi.py` + `npm run api:types; npm run typecheck` — b7b48da
 
 #### Manual
 
-- [x] 2.4 W Swagger UI widoczny jest `PUT /api/audits/{audit_id}/claims/{claim_id}/decision` oraz rozszerzony schemat `AuditDetailResponse` z `decision_status`, `decisions_count` i `history`
-- [x] 2.5 Zapis decyzji przez API nie tworzy żadnego śladu w Langfuse ani nie modyfikuje żadnego dokumentu w bazie
+- [x] 2.4 W Swagger UI widoczny jest `PUT /api/audits/{audit_id}/claims/{claim_id}/decision` oraz rozszerzony schemat `AuditDetailResponse` z `decision_status`, `decisions_count` i `history` — b7b48da
+- [x] 2.5 Zapis decyzji przez API nie tworzy żadnego śladu w Langfuse ani nie modyfikuje żadnego dokumentu w bazie — b7b48da
 
 ### Phase 3: Frontend — panel decyzji (`3`), pasek CTA + arkusz `3N-D` i sekcja `Historia`
 
 #### Automated
 
-- [ ] 3.1 Linter, formatowanie, typecheck, testy Vitest i build frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
-- [ ] 3.2 Pełna suita backendu (`ruff`, `mypy` w Dockerze, `pytest`) nadal przechodzi bez regresji
+- [x] 3.1 Linter, formatowanie, typecheck, testy Vitest i build frontendu przechodzą bez błędów: `cd frontend; npm run lint; npm run format:check; npm run typecheck; npm test; npm run build`
+- [x] 3.2 Pełna suita backendu (`ruff`, `mypy` w Dockerze, `pytest`) nadal przechodzi bez regresji
 
 #### Manual
 
-- [ ] 3.3 Ekran `3` przy `1280 px` i `1440 px`: prawy panel decyzji (`340 px`) obok oceny tezy, brak wyboru domyślnego i brak „Sugestii systemu”, tymczasowa zamiana przy otwarciu dowodu/kontekstu i powrót po `X`/`Escape`
-- [ ] 3.4 Przełącznik ról: tryb tylko do odczytu + przycisk „Przełącz na rolę Redaktor” dla `Konsultant`, zapis i edycja decyzji dla każdej tezy w roli `Redaktor`
-- [ ] 3.5 Zapis bez kategorii lub uzasadnienia jest zablokowany; po zapisaniu decyzji dla wszystkich tez status analizy zmienia się na `Zapisana` i przetrwa odświeżenie strony
-- [ ] 3.6 `Historia` (domyślnie zwinięta nad `Jak powstała ta analiza`) pokazuje wyłącznie rzeczywiste zdarzenia z rozróżnieniem systemu i człowieka
-- [ ] 3.7 Ekran `3N` i arkusz `3N-D` przy `390 px`: przyklejony dolny pasek CTA otwiera arkusz modalny z trapem fokusu i `Escape`, zero przewijania w poziomie
-- [ ] 3.8 Przełącznik języka `PL`/`EN` przełącza wszystkie nowe etykiety interfejsu bez tłumaczenia treści zgłoszenia i cytatów
+- [x] 3.3 Ekran `3` przy `1280 px` i `1440 px`: prawy panel decyzji (`340 px`) obok oceny tezy, brak wyboru domyślnego i brak „Sugestii systemu”, tymczasowa zamiana przy otwarciu dowodu/kontekstu i powrót po `X`/`Escape`
+- [x] 3.4 Przełącznik ról: tryb tylko do odczytu + przycisk „Przełącz na rolę Redaktor” dla `Konsultant`, zapis i edycja decyzji dla każdej tezy w roli `Redaktor`
+- [x] 3.5 Zapis bez kategorii lub uzasadnienia jest zablokowany; po zapisaniu decyzji dla wszystkich tez status analizy zmienia się na `Zapisana` i przetrwa odświeżenie strony
+- [x] 3.6 `Historia` (domyślnie zwinięta nad `Jak powstała ta analiza`) pokazuje wyłącznie rzeczywiste zdarzenia z rozróżnieniem systemu i człowieka
+- [x] 3.7 Ekran `3N` i arkusz `3N-D` przy `390 px`: przyklejony dolny pasek CTA otwiera arkusz modalny z trapem fokusu i `Escape`, zero przewijania w poziomie
+- [x] 3.8 Przełącznik języka `PL`/`EN` przełącza wszystkie nowe etykiety interfejsu bez tłumaczenia treści zgłoszenia i cytatów

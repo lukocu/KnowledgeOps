@@ -1,9 +1,13 @@
 import type {
   AuditClaimResponse,
   AuditDetailResponse,
+  AuditHistoryEventType,
   AuditStage,
   AuditStatus,
+  ClaimDecisionResponse,
   ClaimVerdict,
+  DecisionCategory,
+  DecisionStatus,
   NoteVerdict,
 } from "../api/audits";
 import type { TranslationKey } from "../i18n/pl";
@@ -11,6 +15,15 @@ import type { StepStatus } from "./stages";
 
 export const MAX_AUDIT_TEXT_LENGTH = 4000;
 export const MAX_CASE_REF_LENGTH = 120;
+export const MAX_JUSTIFICATION_LENGTH = 2000;
+
+/** Stała kolejność 4 kategorii decyzji redaktora z PRD (bez wyboru domyślnego). */
+export const DECISION_CATEGORIES = [
+  "agree_with_system",
+  "request_source_or_verify",
+  "consider_doc_update",
+  "system_verdict_wrong",
+] as const satisfies readonly DecisionCategory[];
 
 export type NoteSegment =
   | { kind: "text"; text: string }
@@ -140,6 +153,103 @@ export const NOTE_VERDICT_LABEL: Record<NoteVerdict, TranslationKey> = {
   contradiction: "audit.verdict.note.contradiction",
   insufficient: "audit.verdict.note.insufficient",
 };
+
+export const DECISION_CATEGORY_LABEL: Record<DecisionCategory, TranslationKey> =
+  {
+    agree_with_system: "audit.decision.category.agree_with_system",
+    request_source_or_verify:
+      "audit.decision.category.request_source_or_verify",
+    consider_doc_update: "audit.decision.category.consider_doc_update",
+    system_verdict_wrong: "audit.decision.category.system_verdict_wrong",
+  };
+
+export const DECISION_STATUS_LABEL: Record<DecisionStatus, TranslationKey> = {
+  pending: "audit.decision.status.pending",
+  in_progress: "audit.decision.status.in_progress",
+  saved: "audit.decision.status.saved",
+  not_applicable: "audit.decision.status.not_applicable",
+};
+
+export const HISTORY_EVENT_LABEL: Record<
+  AuditHistoryEventType,
+  TranslationKey
+> = {
+  audit_created: "audit.history.event.audit_created",
+  evaluation_completed: "audit.history.event.evaluation_completed",
+  evaluation_failed: "audit.history.event.evaluation_failed",
+  decision_saved: "audit.history.event.decision_saved",
+  decision_updated: "audit.history.event.decision_updated",
+};
+
+/** Czy wartości w formularzu decyzji są identyczne z już zapisaną decyzją. */
+export function isDecisionUnchanged(
+  category: DecisionCategory | null,
+  justification: string,
+  savedDecision:
+    | Pick<ClaimDecisionResponse, "decision" | "justification">
+    | null
+    | undefined,
+): boolean {
+  if (!savedDecision || category === null) return false;
+  return (
+    savedDecision.decision === category &&
+    savedDecision.justification.trim() === justification.trim()
+  );
+}
+
+/**
+ * Czy formularz decyzji redaktora można wysłać: wymaga wybranej kategorii,
+ * niepustego uzasadnienia (po `.trim()`, w limicie), braku trwającego zapisu
+ * oraz zmiany względem już zapisanej decyzji.
+ */
+export function canSubmitDecision(
+  category: DecisionCategory | null,
+  justification: string,
+  savedDecision:
+    | Pick<ClaimDecisionResponse, "decision" | "justification">
+    | null
+    | undefined,
+  isSaving: boolean,
+): boolean {
+  if (isSaving || category === null) return false;
+  const trimmed = justification.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_JUSTIFICATION_LENGTH) {
+    return false;
+  }
+  if (isDecisionUnchanged(category, justification, savedDecision)) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Czy zdarzenie klawiatury pochodzi z pola edytowalnego (`INPUT`, `TEXTAREA`,
+ * `SELECT` albo `contentEditable`), dla którego nie przechwytujemy skrótów.
+ */
+export function isEditableTarget(target: EventTarget | null): boolean {
+  if (!target || typeof target !== "object") return false;
+  const element = target as {
+    tagName?: unknown;
+    isContentEditable?: unknown;
+  };
+  if (element.isContentEditable === true) return true;
+  if (typeof element.tagName === "string") {
+    const tag = element.tagName.toUpperCase();
+    return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+  }
+  return false;
+}
+
+/** Formatuje znacznik czasu ISO w lokalnym formacie PL/EN. */
+export function formatAuditTimestamp(iso: string, lang: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const locale = lang === "en" ? "en-GB" : "pl-PL";
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+}
 
 /** Czy audyt obejmował syntetyczną nakładkę korpusu (`synthetic@v1`). */
 export function hasSyntheticScope(

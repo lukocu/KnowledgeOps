@@ -2,10 +2,19 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildNoteSegments,
+  canSubmitDecision,
   claimTag,
   countUniqueCheckedDocs,
+  DECISION_CATEGORIES,
+  DECISION_CATEGORY_LABEL,
+  DECISION_STATUS_LABEL,
   deriveAuditSteps,
+  formatAuditTimestamp,
   hasSyntheticScope,
+  HISTORY_EVENT_LABEL,
+  isDecisionUnchanged,
+  isEditableTarget,
+  MAX_JUSTIFICATION_LENGTH,
 } from "./audit";
 
 describe("buildNoteSegments", () => {
@@ -210,5 +219,127 @@ describe("pomocniki audytu", () => {
         },
       ]),
     ).toBe(2);
+  });
+});
+
+describe("decyzje redaktora i historia", () => {
+  it("utrzymuje stałą kolejność 4 kategorii decyzji z PRD i mapuje etykiety i18n", () => {
+    expect(DECISION_CATEGORIES).toEqual([
+      "agree_with_system",
+      "request_source_or_verify",
+      "consider_doc_update",
+      "system_verdict_wrong",
+    ]);
+    for (const category of DECISION_CATEGORIES) {
+      expect(DECISION_CATEGORY_LABEL[category]).toBeTruthy();
+    }
+    expect(Object.keys(DECISION_STATUS_LABEL).sort()).toEqual([
+      "in_progress",
+      "not_applicable",
+      "pending",
+      "saved",
+    ]);
+    expect(Object.keys(HISTORY_EVENT_LABEL).sort()).toEqual([
+      "audit_created",
+      "decision_saved",
+      "decision_updated",
+      "evaluation_completed",
+      "evaluation_failed",
+    ]);
+  });
+
+  it("blokuje zapis przy braku wybranej kategorii lub pustym uzasadnieniu (w tym samych spacjach)", () => {
+    expect(canSubmitDecision(null, "Uzasadnienie", null, false)).toBe(false);
+    expect(canSubmitDecision("agree_with_system", "", null, false)).toBe(false);
+    expect(
+      canSubmitDecision("agree_with_system", "   \n\t  ", null, false),
+    ).toBe(false);
+    expect(
+      canSubmitDecision(
+        "agree_with_system",
+        "a".repeat(MAX_JUSTIFICATION_LENGTH + 1),
+        null,
+        false,
+      ),
+    ).toBe(false);
+    expect(
+      canSubmitDecision("agree_with_system", "Potwierdzone.", null, true),
+    ).toBe(false);
+    expect(
+      canSubmitDecision("agree_with_system", "Potwierdzone.", null, false),
+    ).toBe(true);
+  });
+
+  it("wykrywa niezmienioną decyzję przy edycji i odblokowuje zapis po zmianie kategorii lub uzasadnienia", () => {
+    const saved = {
+      decision: "request_source_or_verify" as const,
+      justification: "Brak potwierdzenia w dokumentacji.",
+    };
+
+    expect(
+      isDecisionUnchanged(
+        "request_source_or_verify",
+        "  Brak potwierdzenia w dokumentacji.  ",
+        saved,
+      ),
+    ).toBe(true);
+    expect(
+      canSubmitDecision(
+        "request_source_or_verify",
+        "  Brak potwierdzenia w dokumentacji.  ",
+        saved,
+        false,
+      ),
+    ).toBe(false);
+
+    expect(
+      canSubmitDecision(
+        "consider_doc_update",
+        "Brak potwierdzenia w dokumentacji.",
+        saved,
+        false,
+      ),
+    ).toBe(true);
+    expect(
+      canSubmitDecision(
+        "request_source_or_verify",
+        "Zweryfikowano z zespołem produktu.",
+        saved,
+        false,
+      ),
+    ).toBe(true);
+  });
+
+  it("rozpoznaje cele edytowalne (INPUT, TEXTAREA, SELECT, contentEditable)", () => {
+    expect(isEditableTarget(null)).toBe(false);
+    expect(isEditableTarget({ tagName: "DIV" } as unknown as EventTarget)).toBe(
+      false,
+    );
+    expect(
+      isEditableTarget({ tagName: "BUTTON" } as unknown as EventTarget),
+    ).toBe(false);
+    expect(
+      isEditableTarget({ tagName: "INPUT" } as unknown as EventTarget),
+    ).toBe(true);
+    expect(
+      isEditableTarget({ tagName: "textarea" } as unknown as EventTarget),
+    ).toBe(true);
+    expect(
+      isEditableTarget({ tagName: "SELECT" } as unknown as EventTarget),
+    ).toBe(true);
+    expect(
+      isEditableTarget({
+        tagName: "DIV",
+        isContentEditable: true,
+      } as unknown as EventTarget),
+    ).toBe(true);
+  });
+
+  it("formatuje poprawny znacznik czasu ISO i zwraca surowy ciąg dla niepoprawnej daty", () => {
+    expect(formatAuditTimestamp("not-a-date", "pl")).toBe("not-a-date");
+    const formattedPl = formatAuditTimestamp("2026-11-27T12:30:00Z", "pl");
+    const formattedEn = formatAuditTimestamp("2026-11-27T12:30:00Z", "en");
+    expect(formattedPl.length).toBeGreaterThan(0);
+    expect(formattedEn.length).toBeGreaterThan(0);
   });
 });

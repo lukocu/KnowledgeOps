@@ -2,38 +2,43 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { useMediaQuery, WIDE_QUERY } from "../../lib/use-media-query";
 
-export type PanelVariant = "evidence" | "checked";
+export type PanelVariant = "evidence" | "checked" | "decision";
 
-/** Szeroki `aside` (S1A/S1C): szerokość i tło zależą od wariantu, jak dotąd. */
+/** Szeroki `aside` (S1A/S1C/S3): szerokość i tło zależą od wariantu. */
 const ASIDE_CLASS: Record<PanelVariant, string> = {
   evidence:
     "flex w-[min(400px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-white",
   checked:
     "flex w-[min(420px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-surface-alt",
+  decision:
+    "flex w-[340px] flex-none flex-col overflow-hidden border-l border-border-soft bg-surface-alt",
 };
 
 const SHEET_BACKGROUND: Record<PanelVariant, string> = {
   evidence: "bg-white",
   checked: "bg-surface-alt",
+  decision: "bg-surface-alt",
 };
 
 /**
- * Obudowa panelu bocznego: od 768 px `aside` po prawej, poniżej modalny arkusz
- * od dołu (1N). Renderowana raz wokół całego panelu, więc arkusz żyje przez
- * całe otwarcie, także przy przejściu lista sprawdzonych fragmentów ↔ fragment.
+ * Obudowa panelu bocznego: od progu `wideQuery` (domyślnie 768 px) `aside` po prawej,
+ * poniżej modalny arkusz od dołu (1N / 3N-D). Renderowana raz wokół całego panelu,
+ * więc arkusz żyje przez całe otwarcie.
  */
 export function PanelFrame({
   label,
   variant,
+  wideQuery = WIDE_QUERY,
   onDismiss,
   children,
 }: {
   label: string;
   variant: PanelVariant;
+  wideQuery?: string;
   onDismiss: () => void;
   children: ReactNode;
 }) {
-  const wide = useMediaQuery(WIDE_QUERY);
+  const wide = useMediaQuery(wideQuery);
 
   if (wide) {
     return (

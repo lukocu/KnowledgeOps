@@ -196,6 +196,22 @@ export const SystemIcon = ({
   </Icon>
 );
 
+/** Ikona człowieka / decyzji redaktora (kanwa S3/S3N/S3ND). */
+export const PersonIcon = ({
+  size = 18,
+  stroke,
+  className,
+}: {
+  size?: number;
+  stroke?: string;
+  className?: string;
+}) => (
+  <Icon size={size} stroke={stroke} className={className}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+  </Icon>
+);
+
 /** Ikona nawigacji audytu (clipboard-check, kanwa S2). */
 export const AuditNavIcon = ({
   size = 18,
