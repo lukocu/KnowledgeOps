@@ -2,9 +2,9 @@
 
 import logging
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field, field_validator
 
 from app.answering.model import ModelNotConfiguredError
@@ -50,6 +50,7 @@ logger = logging.getLogger(__name__)
 MAX_CASE_REF_LENGTH = 120
 MAX_CASE_TEXT_LENGTH = 4000
 MAX_JUSTIFICATION_LENGTH = 2000
+MAX_SEARCH_QUERY_LENGTH = 200
 
 router = APIRouter(prefix="/api", tags=["audits"])
 
@@ -445,7 +446,7 @@ async def create_audit_endpoint(
 async def list_audits_endpoint(
     pool: PoolDep,
     session_hash: OptionalSessionDep,
-    q: str | None = None,
+    q: Annotated[str | None, Query(max_length=MAX_SEARCH_QUERY_LENGTH)] = None,
     decision_status: DecisionStatus | None = None,
     note_verdict: NoteVerdict | None = None,
     source: AuditSourceFilter = "all",

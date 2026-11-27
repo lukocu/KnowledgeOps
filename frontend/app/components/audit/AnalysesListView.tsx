@@ -100,7 +100,9 @@ export function AnalysesListView() {
   const [prevUrlQ, setPrevUrlQ] = useState(urlQ);
   if (urlQ !== prevUrlQ) {
     setPrevUrlQ(urlQ);
-    setSearchInput(urlQ);
+    if (searchInput.trim() !== urlQ) {
+      setSearchInput(urlQ);
+    }
   }
 
   const [attempt, setAttempt] = useState(0);

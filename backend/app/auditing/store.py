@@ -742,7 +742,9 @@ async def list_audits_for_session(
     demo_count = sum(1 for item, _ in visible_entries if item.is_demo)
     session_count = len(visible_entries) - demo_count
     pending_count = sum(
-        1 for item, _ in visible_entries if item.decision_status == "pending"
+        1
+        for item, _ in visible_entries
+        if item.status == "completed" and item.decision_status == "pending"
     )
     in_progress_count = sum(
         1 for item, _ in visible_entries if item.decision_status == "in_progress"

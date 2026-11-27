@@ -75,6 +75,3 @@ require_session = make_require_session("Nie znaleziono odpowiedzi")
 SessionDep = Annotated[str, Depends(get_or_create_session)]
 ExistingSessionDep = Annotated[str, Depends(require_session)]
 OptionalSessionDep = Annotated[str | None, Depends(get_optional_session)]
-AuditSessionDep = Annotated[
-    str, Depends(make_require_session("Nie znaleziono analizy"))
-]

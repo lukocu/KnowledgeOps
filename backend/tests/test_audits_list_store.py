@@ -459,6 +459,9 @@ async def test_priority_sorting_and_next_pending_selection(
     ]
     assert result.next_pending_audit_id == in_progress_id
     assert result.next_pending_case_ref == "IN-PROGRESS-ACTIVE"
+    assert result.pending_count == 1
+    assert result.in_progress_count == 1
+    assert result.saved_count == 1
 
 
 @pytest.mark.db
