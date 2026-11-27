@@ -10,6 +10,9 @@ const ASIDE_CLASS: Record<PanelVariant, string> = {
     "flex w-[min(400px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-white",
   checked:
     "flex w-[min(420px,45%)] min-w-[300px] flex-none flex-col overflow-hidden border-l border-border-soft bg-surface-alt",
+  // Wariant `decision` używa PanelFrame dla arkusza 3N-D (< 1280 px);
+  // na desktopie (>= 1280 px) stały `<aside>` renderuje bezpośrednio AuditResultView,
+  // aby zachować niezapisany szkic przy tymczasowym podglądzie dowodu lub kontekstu.
   decision:
     "flex w-[340px] flex-none flex-col overflow-hidden border-l border-border-soft bg-surface-alt",
 };

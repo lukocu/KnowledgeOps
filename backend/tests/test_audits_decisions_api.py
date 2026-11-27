@@ -430,3 +430,79 @@ def test_completed_audit_with_zero_claims_has_not_applicable_decision_status(
         "evaluation_completed",
     ]
     assert body["history"][1]["claims_total"] == 0
+
+
+@pytest.mark.db
+def test_demo_audit_http_isolates_decisions_and_history_between_sessions(
+    api_client: TestClient,
+    imported_conn: psycopg.Connection,
+) -> None:
+    owner_token = "sesja-demo-owner"
+    other_token = "sesja-demo-other"
+    audit_id, claim_ids = _seed_audit(
+        imported_conn,
+        session_token=owner_token,
+        claims_count=1,
+    )
+    with imported_conn.transaction():
+        imported_conn.execute(
+            "UPDATE audits SET is_demo = true WHERE id = %s",
+            (audit_id,),
+        )
+
+    # Sesja 1 zapisuje decyzję na audycie demo.
+    api_client.cookies.set(COOKIE, owner_token)
+    resp_owner = api_client.put(
+        f"/api/audits/{audit_id}/claims/{claim_ids[0]}/decision",
+        json={
+            "decision": "agree_with_system",
+            "justification": "Decyzja sesji 1 na przykładzie demo.",
+            "role_label": "editor",
+        },
+    )
+    assert resp_owner.status_code == 200
+    owner_body = resp_owner.json()
+    assert owner_body["decision_status"] == "saved"
+    assert owner_body["decisions_count"] == 1
+    assert owner_body["claims"][0]["decision"]["decision"] == "agree_with_system"
+    assert [e["event_type"] for e in owner_body["history"]] == [
+        "audit_created",
+        "evaluation_completed",
+        "decision_saved",
+    ]
+
+    # Sesja 2 widzi ten sam audyt demo, ale bez decyzji i zdarzeń człowieka sesji 1.
+    api_client.cookies.set(COOKIE, other_token)
+    resp_other_get = api_client.get(f"/api/audits/{audit_id}")
+    assert resp_other_get.status_code == 200
+    other_body = resp_other_get.json()
+    assert other_body["decision_status"] == "pending"
+    assert other_body["decisions_count"] == 0
+    assert other_body["claims"][0]["decision"] is None
+    assert [e["event_type"] for e in other_body["history"]] == [
+        "audit_created",
+        "evaluation_completed",
+    ]
+
+    # Sesja 2 zapisuje własną decyzję — nie nadpisuje decyzji sesji 1.
+    resp_other_put = api_client.put(
+        f"/api/audits/{audit_id}/claims/{claim_ids[0]}/decision",
+        json={
+            "decision": "system_verdict_wrong",
+            "justification": "Odrębna decyzja sesji 2 na przykładzie demo.",
+            "role_label": "editor",
+        },
+    )
+    assert resp_other_put.status_code == 200
+    assert (
+        resp_other_put.json()["claims"][0]["decision"]["decision"]
+        == "system_verdict_wrong"
+    )
+
+    api_client.cookies.set(COOKIE, owner_token)
+    resp_owner_again = api_client.get(f"/api/audits/{audit_id}")
+    assert resp_owner_again.status_code == 200
+    assert (
+        resp_owner_again.json()["claims"][0]["decision"]["decision"]
+        == "agree_with_system"
+    )

@@ -218,6 +218,13 @@ export function AuditResultView({
     audit.claims[0]?.claim_id ?? null,
   );
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+  const [prevIsXl, setPrevIsXl] = useState(isXl);
+  if (isXl !== prevIsXl) {
+    setPrevIsXl(isXl);
+    if (isXl && activePanel?.kind === "decision") {
+      setActivePanel(null);
+    }
+  }
   const lastTrigger = useRef<HTMLElement | null>(null);
   const contextButtonRef = useRef<HTMLButtonElement>(null);
   const decisionBarButtonRef = useRef<HTMLButtonElement>(null);
@@ -249,11 +256,7 @@ export function AuditResultView({
       activePanel !== null && !(isXl && activePanel.kind === "decision");
     if (!hasDismissiblePanel) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape") {
-        if (isEditableTarget(event.target)) return;
-        return;
-      }
-      if (event.defaultPrevented) return;
+      if (event.key !== "Escape" || event.defaultPrevented) return;
       if (isXl && isEditableTarget(event.target)) return;
       event.preventDefault();
       closePanel();
@@ -424,11 +427,20 @@ export function AuditResultView({
         />
       </PanelFrame>
     );
-  } else if (isXl && selectedClaim) {
-    sidePanel = (
+  }
+
+  const desktopDecisionHidden = sidePanel !== null;
+  const desktopDecisionAside =
+    isXl && selectedClaim ? (
       <aside
         aria-label={t("audit.decision.panelLabel")}
-        className="flex w-[340px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 py-5"
+        hidden={desktopDecisionHidden}
+        aria-hidden={desktopDecisionHidden || undefined}
+        className={
+          desktopDecisionHidden
+            ? "hidden"
+            : "flex w-[340px] flex-none flex-col overflow-y-auto border-l border-border-soft bg-surface-alt px-6 py-5"
+        }
       >
         <ClaimDecisionPanel
           key={selectedClaim.claim_id}
@@ -438,8 +450,7 @@ export function AuditResultView({
           variant="aside"
         />
       </aside>
-    );
-  }
+    ) : null;
 
   return (
     <div className="flex min-h-0 flex-1">
@@ -681,6 +692,7 @@ export function AuditResultView({
       </div>
 
       {sidePanel}
+      {desktopDecisionAside}
     </div>
   );
 }
