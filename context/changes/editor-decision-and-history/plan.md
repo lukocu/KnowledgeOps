@@ -364,26 +364,26 @@ Wdrażamy pełny interfejs decyzji redaktora i historii analizy zgodny z makieta
 
 #### Automated
 
-- [x] 1.1 Migracja `0005` aplikuje się czysto i idempotentnie (testy DB + `backend/app/migrations.py`): `cd backend; uv run pytest tests/auditing/test_store.py tests/auditing/test_store_decisions.py`
-- [x] 1.2 Linter i formatowanie backendu przechodzą bez błędów: `cd backend; uv run ruff check .; uv run ruff format --check .`
-- [x] 1.3 Kontrola typów `mypy` w kontenerze Docker przechodzi bez błędów
+- [x] 1.1 Migracja `0005` aplikuje się czysto i idempotentnie (testy DB + `backend/app/migrations.py`): `cd backend; uv run pytest tests/auditing/test_store.py tests/auditing/test_store_decisions.py` — 55bdc76
+- [x] 1.2 Linter i formatowanie backendu przechodzą bez błędów: `cd backend; uv run ruff check .; uv run ruff format --check .` — 55bdc76
+- [x] 1.3 Kontrola typów `mypy` w kontenerze Docker przechodzi bez błędów — 55bdc76
 
 #### Manual
 
-- [x] 1.4 Po restarcie kontenera `backend` migracja `0005` pojawia się w `schema_migrations`, a istniejące w lokalnej bazie audyty z S-08 mają wygenerowane wpisy w `audit_events`
+- [x] 1.4 Po restarcie kontenera `backend` migracja `0005` pojawia się w `schema_migrations`, a istniejące w lokalnej bazie audyty z S-08 mają wygenerowane wpisy w `audit_events` — 55bdc76
 
 ### Phase 2: API decyzji, wyliczany status i kontrakt OpenAPI/TS
 
 #### Automated
 
-- [ ] 2.1 Wszystkie testy backendu przechodzą: `cd backend; uv run pytest`
-- [ ] 2.2 Linter, formatowanie i `mypy` (Docker) przechodzą bez błędów
-- [ ] 2.3 Kontrakt OpenAPI i typy TS są aktualne i `frontend` przechodzi `typecheck`: `export_openapi.py` + `npm run api:types; npm run typecheck`
+- [x] 2.1 Wszystkie testy backendu przechodzą: `cd backend; uv run pytest`
+- [x] 2.2 Linter, formatowanie i `mypy` (Docker) przechodzą bez błędów
+- [x] 2.3 Kontrakt OpenAPI i typy TS są aktualne i `frontend` przechodzi `typecheck`: `export_openapi.py` + `npm run api:types; npm run typecheck`
 
 #### Manual
 
-- [ ] 2.4 W Swagger UI widoczny jest `PUT /api/audits/{audit_id}/claims/{claim_id}/decision` oraz rozszerzony schemat `AuditDetailResponse` z `decision_status`, `decisions_count` i `history`
-- [ ] 2.5 Zapis decyzji przez API nie tworzy żadnego śladu w Langfuse ani nie modyfikuje żadnego dokumentu w bazie
+- [x] 2.4 W Swagger UI widoczny jest `PUT /api/audits/{audit_id}/claims/{claim_id}/decision` oraz rozszerzony schemat `AuditDetailResponse` z `decision_status`, `decisions_count` i `history`
+- [x] 2.5 Zapis decyzji przez API nie tworzy żadnego śladu w Langfuse ani nie modyfikuje żadnego dokumentu w bazie
 
 ### Phase 3: Frontend — panel decyzji (`3`), pasek CTA + arkusz `3N-D` i sekcja `Historia`
 

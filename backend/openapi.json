@@ -246,6 +246,16 @@
             "title": "Claim Text",
             "type": "string"
           },
+          "decision": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClaimDecisionResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "error": {
             "anyOf": [
               {
@@ -409,6 +419,20 @@
             "title": "Created At",
             "type": "string"
           },
+          "decision_status": {
+            "enum": [
+              "pending",
+              "in_progress",
+              "saved",
+              "not_applicable"
+            ],
+            "title": "Decision Status",
+            "type": "string"
+          },
+          "decisions_count": {
+            "title": "Decisions Count",
+            "type": "integer"
+          },
           "duration_ms": {
             "anyOf": [
               {
@@ -430,6 +454,13 @@
               }
             ],
             "title": "Error"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AuditHistoryEventResponse"
+            },
+            "title": "History",
+            "type": "array"
           },
           "include_synthetic": {
             "title": "Include Synthetic",
@@ -491,11 +522,14 @@
           "resolution_note",
           "status",
           "stage",
+          "decision_status",
+          "decisions_count",
           "claims_total",
           "claims_done",
           "note_verdict",
           "case_context",
           "claims",
+          "history",
           "snapshot_id",
           "chunk_set_ids",
           "include_synthetic",
@@ -506,6 +540,129 @@
           "completed_at"
         ],
         "title": "AuditDetailResponse",
+        "type": "object"
+      },
+      "AuditHistoryEventResponse": {
+        "description": "Niemutowalne zdarzenie w historii cyklu życia audytu.",
+        "properties": {
+          "actor_type": {
+            "enum": [
+              "system",
+              "human"
+            ],
+            "title": "Actor Type",
+            "type": "string"
+          },
+          "claim_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Id"
+          },
+          "claim_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claim Index"
+          },
+          "claims_total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claims Total"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "enum": [
+                  "agree_with_system",
+                  "request_source_or_verify",
+                  "consider_doc_update",
+                  "system_verdict_wrong"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "audit_created",
+              "evaluation_completed",
+              "evaluation_failed",
+              "decision_saved",
+              "decision_updated"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "note_verdict": {
+            "anyOf": [
+              {
+                "enum": [
+                  "full",
+                  "partial",
+                  "contradiction",
+                  "insufficient"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Verdict"
+          },
+          "role_label": {
+            "anyOf": [
+              {
+                "enum": [
+                  "editor",
+                  "consultant"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Label"
+          }
+        },
+        "required": [
+          "event_id",
+          "event_type",
+          "actor_type",
+          "created_at"
+        ],
+        "title": "AuditHistoryEventResponse",
         "type": "object"
       },
       "CaseContext": {
@@ -803,6 +960,52 @@
           "quote_end"
         ],
         "title": "CitationClaim",
+        "type": "object"
+      },
+      "ClaimDecisionResponse": {
+        "description": "Bieżąca decyzja redaktora zapisana dla pojedynczej tezy audytu.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "decision": {
+            "enum": [
+              "agree_with_system",
+              "request_source_or_verify",
+              "consider_doc_update",
+              "system_verdict_wrong"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "justification": {
+            "title": "Justification",
+            "type": "string"
+          },
+          "role_label": {
+            "enum": [
+              "editor",
+              "consultant"
+            ],
+            "title": "Role Label",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "justification",
+          "role_label",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ClaimDecisionResponse",
         "type": "object"
       },
       "ClaimEvidence": {
@@ -1535,6 +1738,42 @@
         "title": "ResultEvent",
         "type": "object"
       },
+      "SaveClaimDecisionRequest": {
+        "description": "Wejście zapisu lub edycji decyzji redaktora dla pojedynczej tezy.",
+        "properties": {
+          "decision": {
+            "enum": [
+              "agree_with_system",
+              "request_source_or_verify",
+              "consider_doc_update",
+              "system_verdict_wrong"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "justification": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Justification",
+            "type": "string"
+          },
+          "role_label": {
+            "default": "editor",
+            "enum": [
+              "editor",
+              "consultant"
+            ],
+            "title": "Role Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "justification"
+        ],
+        "title": "SaveClaimDecisionRequest",
+        "type": "object"
+      },
       "StageEvent": {
         "description": "Zdarzenie etapu grafu (`event: stage`).",
         "properties": {
@@ -1819,6 +2058,73 @@
           }
         },
         "summary": "Get Audit Endpoint",
+        "tags": [
+          "audits"
+        ]
+      }
+    },
+    "/api/audits/{audit_id}/claims/{claim_id}/decision": {
+      "put": {
+        "operationId": "save_claim_decision_endpoint_api_audits__audit_id__claims__claim_id__decision_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "audit_id",
+            "required": true,
+            "schema": {
+              "title": "Audit Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "claim_id",
+            "required": true,
+            "schema": {
+              "title": "Claim Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveClaimDecisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Brak analizy lub tezy w tej sesji"
+          },
+          "409": {
+            "description": "Analiza nie jest zakończona"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Claim Decision Endpoint",
         "tags": [
           "audits"
         ]

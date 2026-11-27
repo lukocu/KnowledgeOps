@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/audits/{audit_id}/claims/{claim_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Save Claim Decision Endpoint */
+        put: operations["save_claim_decision_endpoint_api_audits__audit_id__claims__claim_id__decision_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/corpus": {
         parameters: {
             query?: never;
@@ -241,6 +258,7 @@ export interface components {
             claim_label: string;
             /** Claim Text */
             claim_text: string;
+            decision?: components["schemas"]["ClaimDecisionResponse"] | null;
             /** Error */
             error: string | null;
             /** Evidence */
@@ -292,10 +310,19 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /**
+             * Decision Status
+             * @enum {string}
+             */
+            decision_status: "pending" | "in_progress" | "saved" | "not_applicable";
+            /** Decisions Count */
+            decisions_count: number;
             /** Duration Ms */
             duration_ms: number | null;
             /** Error */
             error: string | null;
+            /** History */
+            history: components["schemas"]["AuditHistoryEventResponse"][];
             /** Include Synthetic */
             include_synthetic: boolean;
             /** Note Verdict */
@@ -314,6 +341,41 @@ export interface components {
              * @enum {string}
              */
             status: "queued" | "running" | "completed" | "failed";
+        };
+        /**
+         * AuditHistoryEventResponse
+         * @description Niemutowalne zdarzenie w historii cyklu życia audytu.
+         */
+        AuditHistoryEventResponse: {
+            /**
+             * Actor Type
+             * @enum {string}
+             */
+            actor_type: "system" | "human";
+            /** Claim Id */
+            claim_id?: string | null;
+            /** Claim Index */
+            claim_index?: number | null;
+            /** Claims Total */
+            claims_total?: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Decision */
+            decision?: ("agree_with_system" | "request_source_or_verify" | "consider_doc_update" | "system_verdict_wrong") | null;
+            /** Event Id */
+            event_id: string;
+            /**
+             * Event Type
+             * @enum {string}
+             */
+            event_type: "audit_created" | "evaluation_completed" | "evaluation_failed" | "decision_saved" | "decision_updated";
+            /** Note Verdict */
+            note_verdict?: ("full" | "partial" | "contradiction" | "insufficient") | null;
+            /** Role Label */
+            role_label?: ("editor" | "consultant") | null;
         };
         /**
          * CaseContext
@@ -431,6 +493,34 @@ export interface components {
             quote_end: number;
             /** Quote Start */
             quote_start: number;
+        };
+        /**
+         * ClaimDecisionResponse
+         * @description Bieżąca decyzja redaktora zapisana dla pojedynczej tezy audytu.
+         */
+        ClaimDecisionResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "agree_with_system" | "request_source_or_verify" | "consider_doc_update" | "system_verdict_wrong";
+            /** Justification */
+            justification: string;
+            /**
+             * Role Label
+             * @enum {string}
+             */
+            role_label: "editor" | "consultant";
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /**
          * ClaimEvidence
@@ -710,6 +800,25 @@ export interface components {
             outcome: "answered" | "abstained" | "conflicting";
         };
         /**
+         * SaveClaimDecisionRequest
+         * @description Wejście zapisu lub edycji decyzji redaktora dla pojedynczej tezy.
+         */
+        SaveClaimDecisionRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "agree_with_system" | "request_source_or_verify" | "consider_doc_update" | "system_verdict_wrong";
+            /** Justification */
+            justification: string;
+            /**
+             * Role Label
+             * @default editor
+             * @enum {string}
+             */
+            role_label: "editor" | "consultant";
+        };
+        /**
          * StageEvent
          * @description Zdarzenie etapu grafu (`event: stage`).
          */
@@ -884,6 +993,56 @@ export interface operations {
             };
             /** @description Brak analizy w tej sesji */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_claim_decision_endpoint_api_audits__audit_id__claims__claim_id__decision_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_id: string;
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveClaimDecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditDetailResponse"];
+                };
+            };
+            /** @description Brak analizy lub tezy w tej sesji */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Analiza nie jest zakończona */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
